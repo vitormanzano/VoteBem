@@ -1,5 +1,5 @@
 # Modelo Conceitual para o Banco de Dados usando PostgreSQL
-
+<p> O arquivo dbdiagram.md é o código para gerar o MER no site dbdiagram.io </p>
 ## Tabelas
 
 ### Candidato
