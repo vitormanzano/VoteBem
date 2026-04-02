@@ -24,7 +24,8 @@ bld/
 [Ll]ogs/
 
 # Python files
-__pycache__/                                                                                                                        *.pyc
+__pycache__/
+*.pyc
 
 # MacOS specific files
 *DS_Store
