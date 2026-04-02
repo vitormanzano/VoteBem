@@ -28,6 +28,8 @@ bld/
 
 # Variáveis de ambiente
 .env
+.venv
+etl/data/
 
 #
 .claude
