@@ -23,6 +23,12 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+# MacOS specific files
+*DS_Store
+
+# Variáveis de ambiente
+.env
+
 #
 .claude
 specs
