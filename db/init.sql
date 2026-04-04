@@ -3,6 +3,7 @@
 -- 1. ELEICAO — sem dependências
 CREATE TABLE IF NOT EXISTS ELEICAO (
     nr_eleicao      INT          PRIMARY KEY,
+    nr_turno        INT,
     ds_eleicao      VARCHAR      NOT NULL,
     cd_tipo_eleicao VARCHAR,
     dt_eleicao      DATE
