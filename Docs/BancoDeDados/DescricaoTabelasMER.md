@@ -50,25 +50,31 @@
 
 <p><strong>sq_candidato:</strong> Chave primária gerada pelo TSE. Identifica unicamente aquela candidatura específica.</p>
 <p><strong>nr_cpf_candidato:</strong> Referência ao candidato (pessoa física) que disputou essa eleição. Chave estrangeira para Candidato.</p>
-<p><strong>cd_eleicao:</strong> Referência à eleição em que essa candidatura ocorreu. Chave estrangeira composta com nr_turno para Eleicao.</p>
-<p><strong>nr_turno:</strong> Turno da eleição. Chave estrangeira composta com cd_eleicao para Eleicao.</p>
+<p><strong>cd_eleicao:</strong> Referência à eleição em que essa candidatura ocorreu.</p>
 <p><strong>nr_partido:</strong> Referência ao partido pelo qual o candidato concorreu. Chave estrangeira para Partido.</p>
 <p><strong>sq_coligacao:</strong> Referência à coligação da qual o candidato fazia parte. Chave estrangeira para Coligacao.</p>
 <p><strong>nm_urna_candidato:</strong> Nome de urna usado especificamente nessa candidatura.</p>
-<p><strong>cd_cargo:</strong> Código do cargo disputado no TSE. Ex: "1" para Presidente.</p>
-<p><strong>ds_cargo:</strong> Descrição do cargo. Ex: "PRESIDENTE", "GOVERNADOR".</p>
+<p><strong>cd_cargo:</strong> Código do cargo disputado no TSE. Ex: "1" para Presidente, "2" para Vice-Presidente.</p>
+<p><strong>ds_cargo:</strong> Descrição do cargo. Ex: "PRESIDENTE", "VICE-PRESIDENTE".</p>
 <p><strong>sg_uf:</strong> Estado onde concorreu. Para presidência, é "BR".</p>
 <p><strong>nr_candidato:</strong> Número do candidato na urna eletrônica nessa eleição.</p>
 <p><strong>cd_situacao_candidatura:</strong> Código da situação da candidatura no TSE.</p>
 <p><strong>ds_situacao_candidatura:</strong> Descrição da situação. Ex: "APTO", "INAPTO", "CASSADO".</p>
 <p><strong>cd_ocupacao:</strong> Código da ocupação do candidato no TSE.</p>
 <p><strong>ds_ocupacao:</strong> Ocupação declarada ao TSE. Ex: "SERVIDOR PÚBLICO", "EMPRESÁRIO".</p>
-<p><strong>foto_url:</strong> URL da foto do candidato.</p>
-<p><strong>nr_votos:</strong> Total de votos recebidos nessa eleição.</p>
-<p><strong>cd_sit_tot_turno:</strong> Código do resultado final do turno.</p>
-<p><strong>ds_sit_tot_turno:</strong> Descrição do resultado final. Ex: "ELEITO", "NÃO ELEITO", "2º TURNO".</p>
+<p><strong>foto_url:</strong> Caminho relativo (a partir de data/raw) para a foto oficial do candidato.</p>
 <p><strong>st_reeleicao:</strong> Indica se o candidato concorre à reeleição. "S" = sim, "N" = não.</p>
 <p><strong>vr_despesa_max_campanha:</strong> Valor máximo de despesa de campanha permitido para o candidato.</p>
+
+### Resultado_Turno
+
+<p><strong>sq_candidato:</strong> Referência à candidatura. Chave estrangeira para Candidatura. Chave primária composta.</p>
+<p><strong>cd_eleicao:</strong> Referência à eleição do turno. Chave estrangeira composta com nr_turno para Eleicao.</p>
+<p><strong>nr_turno:</strong> Número do turno (1 ou 2). Chave primária composta.</p>
+<p><strong>nr_votos:</strong> Total de votos nominais recebidos pelo candidato nesse turno. Default 0.</p>
+<p><strong>cd_sit_tot_turno:</strong> Código do resultado final do turno.</p>
+<p><strong>ds_sit_tot_turno:</strong> Descrição do resultado final. Ex: "ELEITO", "NÃO ELEITO", "2º TURNO".</p>
+<p><strong>Chave primária:</strong> Chave primária composta por (sq_candidato, nr_turno).</p>
 
 ### Bem_Candidato
 

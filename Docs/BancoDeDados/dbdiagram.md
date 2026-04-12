@@ -48,8 +48,7 @@ Table COLIGACAO {
 Table CANDIDATURA {
   sq_candidato bigint [primary key]
   nr_cpf_candidato varchar(11) [not null, ref: > CANDIDATO.nr_cpf_candidato]
-  cd_eleicao bigint [not null, ref: > ELEICAO.cd_eleicao]
-  nr_turno int [not null, ref: > ELEICAO.nr_turno]
+  cd_eleicao bigint [not null]
   nr_partido int [ref: > PARTIDO.nr_partido]
   sq_coligacao bigint [ref: > COLIGACAO.sq_coligacao]
   nm_urna_candidato varchar
@@ -62,11 +61,21 @@ Table CANDIDATURA {
   cd_ocupacao int
   ds_ocupacao varchar
   foto_url varchar
-  nr_votos int
-  cd_sit_tot_turno int
-  ds_sit_tot_turno varchar
   st_reeleicao varchar(1)
   vr_despesa_max_campanha decimal(15,2)
+}
+
+Table RESULTADO_TURNO {
+  sq_candidato bigint [not null, ref: > CANDIDATURA.sq_candidato]
+  cd_eleicao bigint [not null, ref: > ELEICAO.cd_eleicao]
+  nr_turno int [not null, ref: > ELEICAO.nr_turno]
+  nr_votos int [default: 0]
+  cd_sit_tot_turno int
+  ds_sit_tot_turno varchar
+
+  indexes {
+    (sq_candidato, nr_turno) [pk]
+  }
 }
 
 Table BEM_CANDIDATO {

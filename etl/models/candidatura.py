@@ -1,4 +1,4 @@
-from sqlalchemy import Column, BigInteger, String, Integer, ForeignKey, ForeignKeyConstraint, Numeric
+from sqlalchemy import Column, BigInteger, String, Integer, ForeignKey, Numeric
 from .base import Base
 
 class Candidatura(Base):
@@ -7,7 +7,6 @@ class Candidatura(Base):
     sq_candidato = Column(BigInteger, primary_key=True)
     nr_cpf_candidato = Column(String(11), ForeignKey("candidato.nr_cpf_candidato"), nullable=False)
     cd_eleicao = Column(BigInteger, nullable=False)
-    nr_turno = Column(Integer, nullable=False)
     nr_partido = Column(Integer, ForeignKey("partido.nr_partido"))
     sq_coligacao = Column(BigInteger, ForeignKey("coligacao.sq_coligacao"))
     nm_urna_candidato = Column(String)
@@ -20,15 +19,5 @@ class Candidatura(Base):
     cd_ocupacao = Column(Integer)
     ds_ocupacao = Column(String)
     foto_url = Column(String)
-    nr_votos = Column(Integer)
-    cd_sit_tot_turno = Column(Integer)
-    ds_sit_tot_turno = Column(String)
     st_reeleicao = Column(String(1))
     vr_despesa_max_campanha = Column(Numeric(15, 2))
-
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["cd_eleicao", "nr_turno"],
-            ["eleicao.cd_eleicao", "eleicao.nr_turno"]
-        ),
-    )

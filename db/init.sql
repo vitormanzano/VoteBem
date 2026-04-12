@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS MOTIVO_CASSACAO CASCADE;
 DROP TABLE IF EXISTS CERTIDAO_CRIMINAL CASCADE;
 DROP TABLE IF EXISTS REDE_SOCIAL CASCADE;
 DROP TABLE IF EXISTS BEM_CANDIDATO CASCADE;
+DROP TABLE IF EXISTS RESULTADO_TURNO CASCADE;
 DROP TABLE IF EXISTS CANDIDATURA CASCADE;
 DROP TABLE IF EXISTS COLIGACAO CASCADE;
 DROP TABLE IF EXISTS CANDIDATO CASCADE;
@@ -65,7 +66,6 @@ CREATE TABLE CANDIDATURA (
     sq_candidato                BIGINT      PRIMARY KEY,
     nr_cpf_candidato            VARCHAR(11) NOT NULL REFERENCES CANDIDATO(nr_cpf_candidato),
     cd_eleicao                  BIGINT      NOT NULL,
-    nr_turno                    INT         NOT NULL,
     nr_partido                  INT         REFERENCES PARTIDO(nr_partido),
     sq_coligacao                BIGINT      REFERENCES COLIGACAO(sq_coligacao),
     nm_urna_candidato           VARCHAR,
@@ -78,11 +78,18 @@ CREATE TABLE CANDIDATURA (
     cd_ocupacao                 INT,
     ds_ocupacao                 VARCHAR,
     foto_url                    VARCHAR,
-    nr_votos                    INT,
-    cd_sit_tot_turno            INT,
-    ds_sit_tot_turno            VARCHAR,
     st_reeleicao                VARCHAR(1),
-    vr_despesa_max_campanha     DECIMAL(15,2),
+    vr_despesa_max_campanha     DECIMAL(15,2)
+);
+
+CREATE TABLE RESULTADO_TURNO (
+    sq_candidato        BIGINT      NOT NULL REFERENCES CANDIDATURA(sq_candidato),
+    cd_eleicao          BIGINT      NOT NULL,
+    nr_turno            INT         NOT NULL,
+    nr_votos            INT         DEFAULT 0,
+    cd_sit_tot_turno    INT,
+    ds_sit_tot_turno    VARCHAR,
+    PRIMARY KEY (sq_candidato, nr_turno),
     FOREIGN KEY (cd_eleicao, nr_turno) REFERENCES ELEICAO(cd_eleicao, nr_turno)
 );
 
@@ -178,6 +185,9 @@ CREATE INDEX idx_eleicao_ano ON ELEICAO(ano_eleicao);
 
 -- Historico eleitoral (candidaturas de um mesmo CPF)
 CREATE INDEX idx_candidatura_cpf ON CANDIDATURA(nr_cpf_candidato);
+
+-- Resultados por turno
+CREATE INDEX idx_resultado_turno_sq ON RESULTADO_TURNO(sq_candidato);
 
 -- Evolucao patrimonial
 CREATE INDEX idx_bem_candidato_sq ON BEM_CANDIDATO(sq_candidato);
