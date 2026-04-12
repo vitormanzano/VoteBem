@@ -138,10 +138,9 @@ CREATE TABLE CERTIDAO_CRIMINAL (
 );
 
 CREATE TABLE MOTIVO_CASSACAO (
-    sq_candidato    BIGINT      NOT NULL REFERENCES CANDIDATURA(sq_candidato),
-    ds_tp_motivo    VARCHAR,
-    ds_motivo       VARCHAR     NOT NULL,
-    nr_processo     VARCHAR,
+    sq_candidato BIGINT NOT NULL REFERENCES CANDIDATURA(sq_candidato),
+    ds_tp_motivo VARCHAR,
+    ds_motivo VARCHAR NOT NULL,
     PRIMARY KEY (sq_candidato, ds_motivo)
 );
 

@@ -123,7 +123,6 @@
 <p><strong>sq_candidato:</strong> Referência à candidatura cassada. Chave estrangeira para Candidatura. Chave primária composta.</p>
 <p><strong>ds_tp_motivo:</strong> Tipo do motivo da cassação.</p>
 <p><strong>ds_motivo:</strong> Descrição do motivo. Ex: "ABUSO DE PODER ECONÔMICO". Chave primária composta.</p>
-<p><strong>nr_processo:</strong> Número do processo judicial relacionado à cassação.</p>
 <p><strong>Chave primária:</strong> Chave primária composta por (sq_candidato, ds_motivo).</p>
 
 ### Despesa_Candidato

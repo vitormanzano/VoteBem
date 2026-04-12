@@ -130,7 +130,6 @@ Table MOTIVO_CASSACAO {
   sq_candidato bigint [not null, ref: > CANDIDATURA.sq_candidato]
   ds_tp_motivo varchar
   ds_motivo varchar [not null]
-  nr_processo varchar
 
   indexes {
     (sq_candidato, ds_motivo) [pk]
