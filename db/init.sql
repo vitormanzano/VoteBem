@@ -129,7 +129,7 @@ CREATE TABLE RESUMO_PROPOSTA (
 );
 
 CREATE TABLE CERTIDAO_CRIMINAL (
-    id_certidao         BIGINT      PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    id_certidao         BIGINT      PRIMARY KEY,
     sq_candidato        BIGINT      NOT NULL REFERENCES CANDIDATURA(sq_candidato),
     nm_arquivo          VARCHAR     NOT NULL,
     ds_caminho_arquivo  VARCHAR,

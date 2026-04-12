@@ -120,12 +120,10 @@ Table RESUMO_PROPOSTA {
 }
 
 Table CERTIDAO_CRIMINAL {
-  id_certidao bigint [primary key, increment]
+  id_certidao bigint [primary key]
   sq_candidato bigint [not null, ref: > CANDIDATURA.sq_candidato]
   nm_arquivo varchar [not null]
   ds_caminho_arquivo varchar
-  dt_emissao date
-  dt_validade date
 }
 
 Table MOTIVO_CASSACAO {

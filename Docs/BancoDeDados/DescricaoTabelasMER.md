@@ -113,12 +113,10 @@
 
 ### Certidao_Criminal
 
-<p><strong>id_certidao:</strong> Identificador auto-gerado. Chave primária.</p>
+<p><strong>id_certidao:</strong> Identificador presente no nome do arquivo. Chave primária.</p>
 <p><strong>sq_candidato:</strong> Referência à candidatura dona da certidão. Chave estrangeira para Candidatura.</p>
 <p><strong>nm_arquivo:</strong> Nome original do arquivo PDF da certidão no TSE.</p>
 <p><strong>ds_caminho_arquivo:</strong> Caminho onde o PDF está armazenado no servidor da plataforma.</p>
-<p><strong>dt_emissao:</strong> Data em que a certidão foi emitida.</p>
-<p><strong>dt_validade:</strong> Data de validade da certidão. Usada para sinalizar certidões desatualizadas.</p>
 
 ### Motivo_Cassacao
 
