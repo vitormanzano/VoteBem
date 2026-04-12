@@ -152,7 +152,10 @@ Table DESPESA_CANDIDATO {
 
 Table NOTA_FISCAL {
   id_nota bigint [primary key, increment]
-  sq_candidato bigint [not null, ref: > CANDIDATURA.sq_candidato]
+  sq_candidato bigint [ref: > CANDIDATURA.sq_candidato]
+  cd_eleicao int [not null]
+  nr_candidato int [not null]
+  sg_uf varchar(2) [not null]
   nr_nota_fiscal varchar
   nr_serie varchar
   cpf_cnpj_emitente varchar
@@ -160,4 +163,9 @@ Table NOTA_FISCAL {
   vr_nota_fiscal decimal(15,2)
   nr_chave_acesso varchar
   nm_url_acesso varchar
+
+  indexes {
+    (cd_eleicao, nr_candidato, sg_uf, nr_nota_fiscal, cpf_cnpj_emitente) [unique]
+  }
 }
+

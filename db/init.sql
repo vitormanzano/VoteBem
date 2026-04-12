@@ -160,16 +160,25 @@ CREATE TABLE DESPESA_CANDIDATO (
 );
 
 CREATE TABLE NOTA_FISCAL (
-    id_nota                 BIGINT          PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    sq_candidato            BIGINT          NOT NULL REFERENCES CANDIDATURA(sq_candidato),
-    nr_nota_fiscal          VARCHAR,
-    nr_serie                VARCHAR,
-    cpf_cnpj_emitente       VARCHAR,
-    dt_emissao              DATE,
-    vr_nota_fiscal          DECIMAL(15,2),
-    nr_chave_acesso         VARCHAR,
-    nm_url_acesso           VARCHAR,
-    UNIQUE (sq_candidato, nr_nota_fiscal, cpf_cnpj_emitente)
+    id_nota BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    sq_candidato BIGINT REFERENCES CANDIDATURA(sq_candidato),
+    cd_eleicao INTEGER NOT NULL,
+    nr_candidato INTEGER NOT NULL,
+    sg_uf VARCHAR(2) NOT NULL,
+    nr_nota_fiscal VARCHAR,
+    nr_serie VARCHAR,
+    cpf_cnpj_emitente VARCHAR,
+    dt_emissao DATE,
+    vr_nota_fiscal DECIMAL(15,2),
+    nr_chave_acesso VARCHAR,
+    nm_url_acesso VARCHAR,
+    CONSTRAINT uq_nota_fiscal UNIQUE (
+        cd_eleicao,
+        nr_candidato,
+        sg_uf,
+        nr_nota_fiscal,
+        cpf_cnpj_emitente
+    )
 );
 
 -- Indíces

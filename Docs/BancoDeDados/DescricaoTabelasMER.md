@@ -143,7 +143,10 @@
 ### Nota_Fiscal
 
 <p><strong>id_nota:</strong> Identificador auto-gerado. Chave primária.</p>
-<p><strong>sq_candidato:</strong> Referência à candidatura que realizou o gasto. Chave estrangeira para Candidatura.</p>
+<p><strong>sq_candidato:</strong> Referência opcional à candidatura vinculada. Chave estrangeira para Candidatura.</p>
+<p><strong>cd_eleicao:</strong> Código da eleição associada à nota fiscal.</p>
+<p><strong>nr_candidato:</strong> Número do candidato na eleição.</p>
+<p><strong>sg_uf:</strong> Sigla da unidade federativa associada ao registro.</p>
 <p><strong>nr_nota_fiscal:</strong> Número da nota fiscal emitida pelo fornecedor.</p>
 <p><strong>nr_serie:</strong> Número de série da nota fiscal.</p>
 <p><strong>cpf_cnpj_emitente:</strong> CPF ou CNPJ do emitente da nota fiscal.</p>
@@ -151,4 +154,5 @@
 <p><strong>vr_nota_fiscal:</strong> Valor da nota fiscal em reais.</p>
 <p><strong>nr_chave_acesso:</strong> Chave de acesso da nota fiscal eletrônica (NF-e).</p>
 <p><strong>nm_url_acesso:</strong> URL para acesso/consulta da nota fiscal.</p>
-<p><strong>Restrição UNIQUE:</strong> (sq_candidato, nr_nota_fiscal, cpf_cnpj_emitente).</p>
+<p><strong>Restrição UNIQUE:</strong> (cd_eleicao, nr_candidato, sg_uf, nr_nota_fiscal, cpf_cnpj_emitente).</p>
+
