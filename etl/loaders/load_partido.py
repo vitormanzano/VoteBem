@@ -2,8 +2,8 @@ import pandas as pd
 from pathlib import Path
 from sqlalchemy.dialects.postgresql import insert
 
-from etl.connection import Session
-from etl.models.partido import Partido
+from connection import Session
+from models.partido import Partido
 
 ANOS = [2010, 2014, 2018, 2022]
 COLUNAS = ["NR_PARTIDO", "SG_PARTIDO", "NM_PARTIDO"]
@@ -12,7 +12,7 @@ def load_partidos(data_dir: Path):
     dfs = []
 
     for ano in ANOS:
-        caminho = data_dir / str(ano) / "consulta_cand" / f"consulta_cand_{ano}_BR.csv"
+        caminho = data_dir / str(ano) / "consulta_candidato" / f"consulta_cand_{ano}_BR.csv"
         
         df = pd.read_csv(
                 caminho,

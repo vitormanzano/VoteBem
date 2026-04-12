@@ -2,17 +2,17 @@ import pandas as pd
 from pathlib import Path
 from sqlalchemy.dialects.postgresql import insert
 
-from etl.connection import Session
-from etl.models.eleicao import Eleicao 
+from connection import Session
+from models.eleicao import Eleicao
 
 ANOS = [2010, 2014, 2018, 2022]
-COLUNAS = ["CD_ELEICAO", "NR_TURNO", "DS_ELEICAO", "CD_TIPO_ELEICAO", "DT_ELEICAO"]
+COLUNAS = ["CD_ELEICAO", "NR_TURNO", "ANO_ELEICAO", "CD_TIPO_ELEICAO", "NM_TIPO_ELEICAO", "DS_ELEICAO", "DT_ELEICAO"]
 
 def load_eleicoes(data_dir: Path):
     dfs = []
 
     for ano in ANOS:
-        caminho = data_dir / str(ano) / "consulta_cand" / f"consulta_cand_{ano}_BR.csv"
+        caminho = data_dir / str(ano) / "consulta_candidato" / f"consulta_cand_{ano}_BR.csv"
 
         df = pd.read_csv(
                 caminho,
@@ -27,14 +27,17 @@ def load_eleicoes(data_dir: Path):
 
     df_total.replace(["#NULO#", "#NULO", "#NE#", "#NE"], None, inplace = True)
 
+    # Códigos que indicam a mesma coisa que valores nulos, eleições inválidas.
     df_total = df_total[~df_total["CD_ELEICAO"].isin(["-1", "-3"])]
 
-    df_total.drop_duplicates(subset = "CD_ELEICAO", inplace = True)
+    df_total.drop_duplicates(subset = ["CD_ELEICAO", "NR_TURNO"], inplace = True)
 
     df_total["CD_ELEICAO"] = df_total["CD_ELEICAO"].astype(int)
     df_total["NR_TURNO"] = df_total["NR_TURNO"].astype(int)
-    df_total["DS_ELEICAO"] = df_total["DS_ELEICAO"].str.strip()
+    df_total["ANO_ELEICAO"] = df_total["ANO_ELEICAO"].astype(int)
     df_total["CD_TIPO_ELEICAO"] = df_total["CD_TIPO_ELEICAO"].astype(int)
+    df_total["NM_TIPO_ELEICAO"] = df_total["NM_TIPO_ELEICAO"].str.strip()
+    df_total["DS_ELEICAO"] = df_total["DS_ELEICAO"].str.strip()
     df_total["DT_ELEICAO"] = pd.to_datetime(df_total["DT_ELEICAO"], format="%d/%m/%Y").dt.date                         
 
     session =  Session()
@@ -42,17 +45,20 @@ def load_eleicoes(data_dir: Path):
     try:
         for _, row in df_total.iterrows():
             statement = insert(Eleicao).values(
-                    nr_eleicao = row["CD_ELEICAO"],
+                    cd_eleicao = row["CD_ELEICAO"],
                     nr_turno = row["NR_TURNO"],
-                    ds_eleicao = row["DS_ELEICAO"],
+                    ano_eleicao = row["ANO_ELEICAO"],
                     cd_tipo_eleicao = row ["CD_TIPO_ELEICAO"],
+                    nm_tipo_eleicao = row["NM_TIPO_ELEICAO"],
+                    ds_eleicao = row["DS_ELEICAO"],
                     dt_eleicao = row["DT_ELEICAO"]
             ).on_conflict_do_update(
-                    index_elements = ["nr_eleicao"],
+                    index_elements = ["cd_eleicao", "nr_turno"],
                     set_ = {
-                        "nr_turno": row["NR_TURNO"],
-                        "ds_eleicao": row["DS_ELEICAO"],
+                        "ano_eleicao": row["ANO_ELEICAO"],
                         "cd_tipo_eleicao": row["CD_TIPO_ELEICAO"],
+                        "nm_tipo_eleicao": row["NM_TIPO_ELEICAO"],
+                        "ds_eleicao": row["DS_ELEICAO"],
                         "dt_eleicao": row["DT_ELEICAO"],
                         }
             )
