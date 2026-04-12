@@ -1,22 +1,34 @@
-from sqlalchemy import Column, BigInteger, String, Integer, ForeignKey
+from sqlalchemy import Column, BigInteger, String, Integer, ForeignKey, ForeignKeyConstraint, Numeric
 from .base import Base
 
 class Candidatura(Base):
     __tablename__ = "candidatura"
 
     sq_candidato = Column(BigInteger, primary_key=True)
-    nr_cpf_candidato = Column(String, ForeignKey("candidato.nr_cpf_candidato"))
-    nr_eleicao = Column(Integer, ForeignKey("eleicao.nr_eleicao"))
+    nr_cpf_candidato = Column(String(11), ForeignKey("candidato.nr_cpf_candidato"), nullable=False)
+    cd_eleicao = Column(BigInteger, nullable=False)
+    nr_turno = Column(Integer, nullable=False)
     nr_partido = Column(Integer, ForeignKey("partido.nr_partido"))
     sq_coligacao = Column(BigInteger, ForeignKey("coligacao.sq_coligacao"))
     nm_urna_candidato = Column(String)
-    cd_cargo = Column(String)
+    cd_cargo = Column(Integer)
     ds_cargo = Column(String)
-    sg_uf = Column(String)
+    sg_uf = Column(String(2))
     nr_candidato = Column(Integer)
-    cd_situacao_candidatura = Column(String)
+    cd_situacao_candidatura = Column(Integer)
     ds_situacao_candidatura = Column(String)
-    nr_votos = Column(BigInteger)
-    cd_sit_tot_turno = Column(String)
-    
+    cd_ocupacao = Column(Integer)
+    ds_ocupacao = Column(String)
+    foto_url = Column(String)
+    nr_votos = Column(Integer)
+    cd_sit_tot_turno = Column(Integer)
+    ds_sit_tot_turno = Column(String)
+    st_reeleicao = Column(String(1))
+    vr_despesa_max_campanha = Column(Numeric(15, 2))
 
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["cd_eleicao", "nr_turno"],
+            ["eleicao.cd_eleicao", "eleicao.nr_turno"]
+        ),
+    )
