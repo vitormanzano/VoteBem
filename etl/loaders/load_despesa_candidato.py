@@ -104,10 +104,15 @@ def load_despesas(data_dir: Path):
     dfs = []
 
     for ano in ANOS:
-        caminho = data_dir / str(ano) / "prestacao_contas" / "candidato" / "DespesasCandidatos.txt"
-        if not caminho.exists():
+        base = data_dir / str(ano) / "prestacao_contas" / "candidato"
+        if not base.exists():
             continue
-        dfs.append(_ler_despesas(caminho))
+        arquivos = list(base.glob("**/DespesasCandidatos.txt")) + list(base.glob("**/despesas_candidatos_*.csv"))
+        for caminho in arquivos:
+            try:
+                dfs.append(_ler_despesas(caminho))
+            except Exception as ex:
+                print(f"[aviso] falhou em {caminho}: {ex}")
 
     if not dfs:
         print("Nenhum arquivo de despesas encontrado.")
