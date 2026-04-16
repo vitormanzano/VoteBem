@@ -23,11 +23,17 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+# Python files
+__pycache__/
+*.pyc
+
 # MacOS specific files
 *DS_Store
 
 # Variáveis de ambiente
 .env
+.venv
+etl/data/
 
 #
 .claude

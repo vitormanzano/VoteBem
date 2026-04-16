@@ -1,83 +1,118 @@
--- Script de criação do banco de dados
+-- =============================================
+-- VoteBem - Schema PostgreSQL
+-- =============================================
 
--- 1. ELEICAO — sem dependências
-CREATE TABLE IF NOT EXISTS ELEICAO (
-    nr_eleicao      INT          PRIMARY KEY,
-    ds_eleicao      VARCHAR      NOT NULL,
-    cd_tipo_eleicao VARCHAR,
-    dt_eleicao      DATE
+DROP TABLE IF EXISTS RESUMO_PROPOSTA CASCADE;
+DROP TABLE IF EXISTS PROPOSTA_GOVERNO CASCADE;
+DROP TABLE IF EXISTS NOTA_FISCAL CASCADE;
+DROP TABLE IF EXISTS DESPESA_CANDIDATO CASCADE;
+DROP TABLE IF EXISTS MOTIVO_CASSACAO CASCADE;
+DROP TABLE IF EXISTS CERTIDAO_CRIMINAL CASCADE;
+DROP TABLE IF EXISTS REDE_SOCIAL CASCADE;
+DROP TABLE IF EXISTS BEM_CANDIDATO CASCADE;
+DROP TABLE IF EXISTS RESULTADO_TURNO CASCADE;
+DROP TABLE IF EXISTS CANDIDATURA CASCADE;
+DROP TABLE IF EXISTS COLIGACAO CASCADE;
+DROP TABLE IF EXISTS CANDIDATO CASCADE;
+DROP TABLE IF EXISTS PARTIDO CASCADE;
+DROP TABLE IF EXISTS ELEICAO CASCADE;
+
+CREATE TABLE ELEICAO (
+    cd_eleicao      BIGINT      NOT NULL,
+    nr_turno        INT         NOT NULL,
+    ano_eleicao     INT         NOT NULL,
+    cd_tipo_eleicao INT,
+    nm_tipo_eleicao VARCHAR,
+    ds_eleicao      VARCHAR,
+    dt_eleicao      DATE,
+    PRIMARY KEY (cd_eleicao, nr_turno)
 );
 
--- 2. PARTIDO — sem dependências
-CREATE TABLE IF NOT EXISTS PARTIDO (
-    nr_partido INT          PRIMARY KEY,
-    sg_partido VARCHAR(20)  NOT NULL,
-    nm_partido VARCHAR      NOT NULL
+CREATE TABLE PARTIDO (
+    nr_partido  INT             PRIMARY KEY,
+    sg_partido  VARCHAR(20)     NOT NULL,
+    nm_partido  VARCHAR         NOT NULL
 );
 
--- 3. CANDIDATO — sem dependências
-CREATE TABLE IF NOT EXISTS CANDIDATO (
-    nr_cpf_candidato    VARCHAR     PRIMARY KEY,
-    nm_candidato        VARCHAR     NOT NULL,
-    nm_urna_candidato   VARCHAR,
+CREATE TABLE CANDIDATO (
+    nr_cpf_candidato    VARCHAR(11)     PRIMARY KEY,
+    nm_candidato        VARCHAR         NOT NULL,
+    nm_social_candidato VARCHAR, 
+    nm_urna_candidato   VARCHAR,         
     dt_nascimento       DATE,
-    ds_genero           VARCHAR,
-    ds_grau_instrucao   VARCHAR,
-    ds_estado_civil     VARCHAR,
-    ds_ocupacao         VARCHAR,
     sg_uf_nascimento    VARCHAR(2),
-    nm_municipio_nascimento VARCHAR
+    cd_genero           INT,
+    ds_genero           VARCHAR,
+    cd_grau_instrucao   INT,
+    ds_grau_instrucao   VARCHAR,
+    cd_estado_civil     INT,
+    ds_estado_civil     VARCHAR,
+    cd_cor_raca         INT,
+    ds_cor_raca         VARCHAR
 );
 
--- 4. COLIGACAO — depende de ELEICAO
-CREATE TABLE IF NOT EXISTS COLIGACAO (
-    sq_coligacao    BIGINT      PRIMARY KEY,
-    nr_eleicao      INT         REFERENCES ELEICAO(nr_eleicao),
-    nm_coligacao    VARCHAR,
-    sg_uf           VARCHAR(2),
-    tp_agremiacao   VARCHAR
-);
-
--- 5. CANDIDATURA — depende de CANDIDATO, ELEICAO, PARTIDO, COLIGACAO
-CREATE TABLE IF NOT EXISTS CANDIDATURA (
-    sq_candidato            BIGINT      PRIMARY KEY,
-    nr_cpf_candidato        VARCHAR     REFERENCES CANDIDATO(nr_cpf_candidato),
-    nr_eleicao              INT         REFERENCES ELEICAO(nr_eleicao),
-    nr_partido              INT         REFERENCES PARTIDO(nr_partido),
-    sq_coligacao            BIGINT      REFERENCES COLIGACAO(sq_coligacao),
-    nm_urna_candidato       VARCHAR,
-    cd_cargo                VARCHAR,
-    ds_cargo                VARCHAR,
+CREATE TABLE COLIGACAO (
+    sq_coligacao            BIGINT      PRIMARY KEY,
+    cd_eleicao              BIGINT      NOT NULL,
+    nr_turno                INT         NOT NULL,
+    nm_coligacao            VARCHAR,
+    ds_composicao_coligacao VARCHAR,
+    tp_agremiacao           VARCHAR,
     sg_uf                   VARCHAR(2),
-    nr_candidato            INT,
-    cd_situacao_candidatura VARCHAR,
-    ds_situacao_candidatura VARCHAR,
-    nr_votos                INT,
-    cd_sit_tot_turno        VARCHAR
+    FOREIGN KEY (cd_eleicao, nr_turno) REFERENCES ELEICAO(cd_eleicao, nr_turno)
 );
 
--- 6. BEM_CANDIDATO — depende de CANDIDATURA
-CREATE TABLE IF NOT EXISTS BEM_CANDIDATO (
-    id_bem          BIGINT          PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    sq_candidato    BIGINT          REFERENCES CANDIDATURA(sq_candidato),
-    nr_ordem_bem    INT,
-    cd_tipo_bem     VARCHAR,
-    ds_tipo_bem     VARCHAR,
-    vr_bem          DECIMAL(15, 2)
+CREATE TABLE CANDIDATURA (
+    sq_candidato                BIGINT      PRIMARY KEY,
+    nr_cpf_candidato            VARCHAR(11) NOT NULL REFERENCES CANDIDATO(nr_cpf_candidato),
+    cd_eleicao                  BIGINT      NOT NULL,
+    nr_partido                  INT         REFERENCES PARTIDO(nr_partido),
+    sq_coligacao                BIGINT      REFERENCES COLIGACAO(sq_coligacao),
+    nm_urna_candidato           VARCHAR,
+    cd_cargo                    INT,
+    ds_cargo                    VARCHAR,
+    sg_uf                       VARCHAR(2),
+    nr_candidato                INT,
+    cd_situacao_candidatura     INT,
+    ds_situacao_candidatura     VARCHAR,
+    cd_ocupacao                 INT,
+    ds_ocupacao                 VARCHAR,
+    foto_url                    VARCHAR,
+    st_reeleicao                VARCHAR(1),
+    vr_despesa_max_campanha     DECIMAL(15,2)
 );
 
--- 7. REDE_SOCIAL — depende de CANDIDATURA
-CREATE TABLE IF NOT EXISTS REDE_SOCIAL (
-    id_rede_social      BIGINT  PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    sq_candidato        BIGINT  REFERENCES CANDIDATURA(sq_candidato),
-    ds_url              VARCHAR,
-    cd_tipo_rede_social VARCHAR
+CREATE TABLE RESULTADO_TURNO (
+    sq_candidato        BIGINT      NOT NULL REFERENCES CANDIDATURA(sq_candidato),
+    cd_eleicao          BIGINT      NOT NULL,
+    nr_turno            INT         NOT NULL,
+    nr_votos            INT         DEFAULT 0,
+    cd_sit_tot_turno    INT,
+    ds_sit_tot_turno    VARCHAR,
+    PRIMARY KEY (sq_candidato, nr_turno),
+    FOREIGN KEY (cd_eleicao, nr_turno) REFERENCES ELEICAO(cd_eleicao, nr_turno)
 );
 
--- 8. PROPOSTA_GOVERNO — depende de CANDIDATURA
-CREATE TABLE IF NOT EXISTS PROPOSTA_GOVERNO (
-    id_proposta             BIGINT      PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    sq_candidato            BIGINT      REFERENCES CANDIDATURA(sq_candidato),
+CREATE TABLE BEM_CANDIDATO (
+    sq_candidato        BIGINT          NOT NULL REFERENCES CANDIDATURA(sq_candidato),
+    nr_ordem_bem        INT             NOT NULL,
+    cd_tipo_bem         INT,
+    ds_tipo_bem         VARCHAR,
+    ds_bem              VARCHAR,
+    vr_bem              DECIMAL(15,2),
+    PRIMARY KEY (sq_candidato, nr_ordem_bem)
+);
+
+CREATE TABLE REDE_SOCIAL (
+    sq_candidato    BIGINT      NOT NULL REFERENCES CANDIDATURA(sq_candidato),
+    nr_ordem        INT         NOT NULL,
+    ds_url          VARCHAR,
+    tipo_rede_social VARCHAR,
+    PRIMARY KEY (sq_candidato, nr_ordem)
+);
+
+CREATE TABLE PROPOSTA_GOVERNO (
+    sq_candidato            BIGINT      PRIMARY KEY REFERENCES CANDIDATURA(sq_candidato),
     nm_arquivo              VARCHAR,
     ds_caminho_arquivo      VARCHAR,
     tx_conteudo_extraido    TEXT,
@@ -85,42 +120,90 @@ CREATE TABLE IF NOT EXISTS PROPOSTA_GOVERNO (
     dt_processamento        TIMESTAMP
 );
 
--- 9. RESUMO_PROPOSTA — depende de PROPOSTA_GOVERNO
-CREATE TABLE IF NOT EXISTS RESUMO_PROPOSTA (
+CREATE TABLE RESUMO_PROPOSTA (
     id_resumo       BIGINT      PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    id_proposta     BIGINT      REFERENCES PROPOSTA_GOVERNO(id_proposta),
-    ds_tema         VARCHAR,
-    tx_resumo       TEXT,
-    dt_geracao      TIMESTAMP
+    sq_candidato    BIGINT      NOT NULL REFERENCES PROPOSTA_GOVERNO(sq_candidato),
+    ds_tema         VARCHAR     NOT NULL,
+    tx_resumo       TEXT        NOT NULL,
+    dt_geracao      TIMESTAMP   DEFAULT CURRENT_TIMESTAMP
 );
 
--- 10. CERTIDAO_CRIMINAL — depende de CANDIDATURA
-CREATE TABLE IF NOT EXISTS CERTIDAO_CRIMINAL (
-    id_certidao         BIGINT  PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    sq_candidato        BIGINT  REFERENCES CANDIDATURA(sq_candidato),
-    nm_arquivo          VARCHAR,
+CREATE TABLE CERTIDAO_CRIMINAL (
+    id_certidao         BIGINT      PRIMARY KEY,
+    sq_candidato        BIGINT      NOT NULL REFERENCES CANDIDATURA(sq_candidato),
+    nm_arquivo          VARCHAR     NOT NULL,
     ds_caminho_arquivo  VARCHAR,
     dt_emissao          DATE,
     dt_validade         DATE
 );
 
--- 11. MOTIVO_CASSACAO — depende de CANDIDATURA
-CREATE TABLE IF NOT EXISTS MOTIVO_CASSACAO (
-    id_cassacao     BIGINT  PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    sq_candidato    BIGINT  REFERENCES CANDIDATURA(sq_candidato),
-    cd_motivo       VARCHAR,
-    ds_motivo       VARCHAR,
-    dt_decisao      DATE,
-    ds_orgao        VARCHAR
+CREATE TABLE MOTIVO_CASSACAO (
+    sq_candidato BIGINT NOT NULL REFERENCES CANDIDATURA(sq_candidato),
+    ds_tp_motivo VARCHAR,
+    ds_motivo VARCHAR NOT NULL,
+    PRIMARY KEY (sq_candidato, ds_motivo)
 );
 
--- 12. NOTA_FISCAL — depende de CANDIDATURA
-CREATE TABLE IF NOT EXISTS NOTA_FISCAL (
-    id_nota         BIGINT          PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    sq_candidato    BIGINT          REFERENCES CANDIDATURA(sq_candidato),
-    nr_nota_fiscal  VARCHAR,
-    nm_fornecedor   VARCHAR,
-    cd_tipo_despesa VARCHAR,
-    vr_despesa      DECIMAL(15, 2),
-    dt_despesa      DATE
+CREATE TABLE DESPESA_CANDIDATO (
+    id_despesa          BIGINT          PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    sq_candidato        BIGINT          NOT NULL REFERENCES CANDIDATURA(sq_candidato),
+    nr_documento        VARCHAR,
+    cpf_cnpj_fornecedor VARCHAR,
+    nm_fornecedor       VARCHAR,
+    dt_despesa          DATE,
+    vr_despesa          DECIMAL(15,2),
+    ds_tipo_despesa     VARCHAR,
+    ds_fonte_recurso    VARCHAR,
+    ds_especie_recurso  VARCHAR,
+    ds_despesa          TEXT,
+    UNIQUE (sq_candidato, nr_documento, cpf_cnpj_fornecedor, dt_despesa)
 );
+
+CREATE TABLE NOTA_FISCAL (
+    id_nota BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    sq_candidato BIGINT REFERENCES CANDIDATURA(sq_candidato),
+    cd_eleicao INTEGER NOT NULL,
+    nr_candidato INTEGER NOT NULL,
+    sg_uf VARCHAR(2) NOT NULL,
+    nr_nota_fiscal VARCHAR,
+    nr_serie VARCHAR,
+    cpf_cnpj_emitente VARCHAR,
+    dt_emissao DATE,
+    vr_nota_fiscal DECIMAL(15,2),
+    nr_chave_acesso VARCHAR,
+    nm_url_acesso VARCHAR,
+    CONSTRAINT uq_nota_fiscal UNIQUE (
+        cd_eleicao,
+        nr_candidato,
+        sg_uf,
+        nr_nota_fiscal,
+        cpf_cnpj_emitente
+    )
+);
+
+-- Indíces
+CREATE INDEX idx_candidato_nome ON CANDIDATO(nm_candidato);
+CREATE INDEX idx_candidatura_urna ON CANDIDATURA(nm_urna_candidato);
+
+-- Busca por partido
+CREATE INDEX idx_candidatura_partido ON CANDIDATURA(nr_partido);
+
+-- Busca por ano eleitoral
+CREATE INDEX idx_eleicao_ano ON ELEICAO(ano_eleicao);
+
+-- Historico eleitoral (candidaturas de um mesmo CPF)
+CREATE INDEX idx_candidatura_cpf ON CANDIDATURA(nr_cpf_candidato);
+
+-- Resultados por turno
+CREATE INDEX idx_resultado_turno_sq ON RESULTADO_TURNO(sq_candidato);
+
+-- Evolucao patrimonial
+CREATE INDEX idx_bem_candidato_sq ON BEM_CANDIDATO(sq_candidato);
+
+--  Situacao juridica
+CREATE INDEX idx_certidao_sq ON CERTIDAO_CRIMINAL(sq_candidato);
+CREATE INDEX idx_cassacao_sq ON MOTIVO_CASSACAO(sq_candidato);
+
+-- Despesas
+CREATE INDEX idx_despesa_sq ON DESPESA_CANDIDATO(sq_candidato);
+CREATE INDEX idx_nota_sq ON NOTA_FISCAL(sq_candidato);
