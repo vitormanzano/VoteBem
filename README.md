@@ -3,6 +3,33 @@ Projeto Integrador V
 
 ## Setup
 
+### Requisitos
+<ul>
+  <li>
+    Python 3.12
+    <p> Download: https://www.python.org/downloads/ </p>
+  </li>
+  <li>
+    Docker + Docker compose v2
+    <p> Download: https://www.docker.com/get-started/ </p>
+  </li>
+  <li>
+    .env na raiz do projeto.
+  </li>
+</ul>
+
 ### 1. Inicializar projeto.
-Dentro da pasta ```./VoteBem``` escreva o comando ```python setup.py```.
-Esse comando irá criar o ambiente de desenvolvimento. Ligar o container docker, baixar os imports necessários para o ETL, fazer o download dos datasets do TSE e inserir os datasets nas tabelas do banco de dados.
+Na raiz do repositório, execute:
+
+```bash
+python setup.py
+```
+Esse comando irá:
+<ul>
+  <li>Subir o container Docker com PostgreSQL e aguardar até que ele possa receber conexões.</li>
+  <li>Criar a venv em .venv/ e instalar as dependências do ETL.</li>
+  <li>
+    Executar o pipeline: baixa os datasets do TSE e popula as tabelas.
+    <p>Flags opicionais: --skip-docker (Não sobe o Postgres) e --skip-pipeline (Não roda o ETL).</p>
+  </li>
+</ul>
