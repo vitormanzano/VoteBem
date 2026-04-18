@@ -22,6 +22,11 @@ Projeto Integrador V
 Na raiz do repositório, execute:
 
 ```bash
+docker pull postgres:16
+```
+Faz upload da imagem do postgres:16
+
+```bash
 python setup.py
 ```
 Esse comando irá:
@@ -30,6 +35,6 @@ Esse comando irá:
   <li>Criar a venv em .venv/ e instalar as dependências do ETL.</li>
   <li>
     Executar o pipeline: baixa os datasets do TSE e popula as tabelas.
-    <p>Flags opicionais: --skip-docker (Não sobe o Postgres) e --skip-pipeline (Não roda o ETL).</p>
+    <p>Flags opcionais: --skip-docker (Não sobe o Postgres) e --skip-pipeline (Não roda o ETL).</p>
   </li>
 </ul>
