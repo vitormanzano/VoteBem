@@ -23,6 +23,8 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+.vs/
+
 # Python files
 __pycache__/
 *.pyc
