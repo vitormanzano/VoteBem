@@ -9,3 +9,5 @@ class CertidaoCriminal(Base):
     sq_candidato = Column(BigInteger, ForeignKey("candidatura.sq_candidato"), nullable=False)
     nm_arquivo = Column(String, nullable=False)
     ds_caminho_arquivo = Column(String)
+    dt_emissao = Column(Date)
+    dt_validade = Column(Date)
