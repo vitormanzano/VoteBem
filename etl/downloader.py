@@ -7,6 +7,7 @@ from pathlib import Path
 import requests
 
 BASE = Path(__file__).parent / "data" / "raw"
+STORAGE_DIR = Path(__file__).parent / "data" / "storage"
 
 TSE_CDN = "https://cdn.tse.jus.br/estatistica/sead/odsele"
 TSE_BASE = "https://cdn.tse.jus.br/estatistica/sead"

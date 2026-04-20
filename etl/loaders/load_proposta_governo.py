@@ -1,8 +1,10 @@
+import shutil
 from pathlib import Path
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy import select
 
 from connection import Session
+from downloader import STORAGE_DIR
 from models.proposta_governo import PropostaGoverno
 from models.candidatura import Candidatura
 
@@ -21,10 +23,14 @@ def load_propostas(data_dir: Path):
             # 2022BR280001600167.pdf → 280001600167
             sq_candidato = arquivo.stem.replace(f"{ano}BR", "")
 
+            dest_dir = STORAGE_DIR / "propostas"
+            dest_dir.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(arquivo, dest_dir / arquivo.name)
+
             arquivos.append({
                 "sq_candidato": sq_candidato,
                 "nm_arquivo": arquivo.name,
-                "ds_caminho_arquivo": str(arquivo),
+                "ds_caminho_arquivo": f"propostas/{arquivo.name}",
             })
 
     session = Session()

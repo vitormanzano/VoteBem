@@ -1,8 +1,10 @@
+import shutil
 import pandas as pd
 from pathlib import Path
 from sqlalchemy.dialects.postgresql import insert
 
 from connection import Session
+from downloader import STORAGE_DIR
 from models.candidatura import Candidatura
 
 ANOS = [2010, 2014, 2018, 2022]
@@ -20,15 +22,17 @@ COLUNAS_OPCIONAIS = ["VR_DESPESA_MAX_CAMPANHA", "ST_REELEICAO"]
 
 
 def _montar_foto_url(ano: int, sq_candidato: str, fotos_dir: Path) -> str | None:
-    # caminho relativo da foto se ela existir.
     # 2010, 2014 : BR{sq}_div.{jpg|jpeg}
     # 2018, 2022 : FBR{sq}_div.{jpg|jpeg}
     prefixo = "FBR" if ano >= 2018 else "BR"
+    dest_dir = STORAGE_DIR / "fotos"
+    dest_dir.mkdir(parents=True, exist_ok=True)
     for ext in ("jpg", "jpeg"):
         nome = f"{prefixo}{sq_candidato}_div.{ext}"
-        caminho = fotos_dir / nome
-        if caminho.exists():
-            return f"{ano}/foto_candidato/{nome}"
+        origem = fotos_dir / nome
+        if origem.exists():
+            shutil.copy2(origem, dest_dir / nome)
+            return f"fotos/{nome}"
     return None
 
 
