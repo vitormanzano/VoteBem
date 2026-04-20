@@ -1,9 +1,16 @@
 using Microsoft.Extensions.FileProviders;
+using VoteBem.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseNpgsql(connectionString: builder.Configuration.GetConnectionString("PostgresConnection"));
+});
 
 var app = builder.Build();
 
