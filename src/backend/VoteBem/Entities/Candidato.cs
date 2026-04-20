@@ -2,20 +2,22 @@ namespace VoteBem.Entities
 {
     public class Candidato
     {
-        public string Nr_cpf_candidato { get; private set; } = null!;
-        public string Nm_candidato { get; private set; } = null!;
-        public string? Nm_social_candidato { get; private set; }
-        public string? Nm_urna_candidato { get; private set; }
-        public DateOnly? Dt_nascimento { get; private set; }
-        public string? Sg_uf_nascimento { get; private set; }
-        public int? Cd_genero { get; private set; }
-        public string? Ds_genero { get; private set; }
-        public int? Cd_grau_instrucao { get; private set; }
-        public string? Ds_grau_instrucao { get; private set; }
-        public int? Cd_estado_civil { get; private set; }
-        public string? Ds_estado_civil { get; private set; }
-        public int? Cd_cor_raca { get; private set; }
-        public string? Ds_cor_raca { get; private set; }
+        public string NrCpfCandidato { get; private set; } = null!;
+        public string NmCandidato { get; private set; } = null!;
+        public string? NmSocialCandidato { get; private set; }
+        public string? NmUrnaCandidato { get; private set; }
+        public DateOnly? DtNascimento { get; private set; }
+        public string? SgUfNascimento { get; private set; }
+        public int? CdGenero { get; private set; }
+        public string? DsGenero { get; private set; }
+        public int? CdGrauInstrucao { get; private set; }
+        public string? DsGrauInstrucao { get; private set; }
+        public int? CdEstadoCivil { get; private set; }
+        public string? DsEstadoCivil { get; private set; }
+        public int? CdCorRaca { get; private set; }
+        public string? DsCorRaca { get; private set; }
+
+        public ICollection<Candidatura> Candidaturas { get; private set; } = [];
 
         protected Candidato() { }
     }

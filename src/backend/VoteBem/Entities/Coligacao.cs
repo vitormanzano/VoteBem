@@ -2,15 +2,16 @@ namespace VoteBem.Entities
 {
     public class Coligacao
     {
-        public long Sq_coligacao { get; private set; }
-        public long Cd_eleicao { get; private set; }
-        public int Nr_turno { get; private set; }
-        public string? Nm_coligacao { get; private set; }
-        public string? Ds_composicao_coligacao { get; private set; }
-        public string? Tp_agremiacao { get; private set; }
-        public string? Sg_uf { get; private set; }
+        public long SqColigacao { get; private set; }
+        public long CdEleicao { get; private set; }
+        public int NrTurno { get; private set; }
+        public string? NmColigacao { get; private set; }
+        public string? DsComposicaoColigacao { get; private set; }
+        public string? TpAgremiacao { get; private set; }
+        public string? SgUf { get; private set; }
 
         public Eleicao Eleicao { get; private set; } = null!;
+        public ICollection<Candidatura> Candidaturas { get; private set; } = [];
 
         protected Coligacao() { }
     }

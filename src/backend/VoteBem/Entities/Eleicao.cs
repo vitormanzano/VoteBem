@@ -2,15 +2,16 @@ namespace VoteBem.Entities
 {
     public class Eleicao
     {
-        public long Cd_eleicao { get; private set; }
-        public int Nr_turno { get; private set; }
-        public int Ano_eleicao { get; private set; }
-        public int? Cd_tipo_eleicao { get; private set; }
-        public string? Nm_tipo_eleicao { get; private set; }
-        public string? Ds_eleicao { get; private set; }
-        public DateOnly? Dt_eleicao { get; private set; }
+        public long CdEleicao { get; private set; }
+        public int NrTurno { get; private set; }
+        public int AnoEleicao { get; private set; }
+        public int? CdTipoEleicao { get; private set; }
+        public string? NmTipoEleicao { get; private set; }
+        public string? DsEleicao { get; private set; }
+        public DateOnly? DtEleicao { get; private set; }
 
-        // Pk -> cd_eleicao + nr_turno
+        public ICollection<Coligacao> Coligacoes { get; private set; } = [];
+        public ICollection<ResultadoTurno> ResultadosTurno { get; private set; } = [];
 
         protected Eleicao() { }
     }

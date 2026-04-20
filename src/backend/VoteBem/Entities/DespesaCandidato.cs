@@ -2,20 +2,19 @@ namespace VoteBem.Entities
 {
     public class DespesaCandidato
     {
-        public long Id_despesa { get; private set; }
-        public long Sq_candidato { get; private set; }
-        public string? Nr_documento { get; private set; }
-        public string? Cpf_cnpj_fornecedor { get; private set; }
-        public string? Nm_fornecedor { get; private set; }
-        public DateOnly? Dt_despesa { get; private set; }
-        public decimal? Vr_despesa { get; private set; }
-        public string? Ds_tipo_despesa { get; private set; }
-        public string? Ds_fonte_recurso { get; private set; }
-        public string? Ds_especie_recurso { get; private set; }
-        public string? Ds_despesa { get; private set; }
+        public long IdDespesa { get; private set; }
+        public long SqCandidato { get; private set; }
+        public string? NrDocumento { get; private set; }
+        public string? CpfCnpjFornecedor { get; private set; }
+        public string? NmFornecedor { get; private set; }
+        public DateOnly? DtDespesa { get; private set; }
+        public decimal? VrDespesa { get; private set; }
+        public string? DsTipoDespesa { get; private set; }
+        public string? DsFonteRecurso { get; private set; }
+        public string? DsEspecieRecurso { get; private set; }
+        public string? DsDespesa { get; private set; }
 
         public Candidatura Candidatura { get; private set; } = null!;
-        // Pk -> id_despesa
 
         protected DespesaCandidato() { }
     }
