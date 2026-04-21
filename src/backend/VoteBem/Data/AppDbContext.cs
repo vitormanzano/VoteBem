@@ -60,5 +60,3 @@ namespace VoteBem.Data
         }
     }
 }
-    
-}
