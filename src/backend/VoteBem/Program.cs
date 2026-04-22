@@ -4,6 +4,8 @@ using VoteBem.Repository.Candidaturas;
 using VoteBem.Services.Candidatos;
 using Microsoft.EntityFrameworkCore;
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -15,6 +17,15 @@ builder.Services.AddScoped<ICandidatoService, CandidatoService>();
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseNpgsql(connectionString: builder.Configuration.GetConnectionString("PostgresConnection"));
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("*");
+                      });
 });
 
 var app = builder.Build();
@@ -38,6 +49,8 @@ if (Directory.Exists(storagePath))
         RequestPath = "/storage"
     });
 }
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthorization();
 
