@@ -6,3 +6,7 @@ Accept: application/json
 
 GET {{VoteBem_HostAddress}}/Candidato/GetCandidatosByNamePaginated?name=lula
 Accept: application/json
+
+### 
+GET {{VoteBem_HostAddress}}/Candidato/GetCandidatosByPartidoPaginated?partido=pt
+Accept: application/json

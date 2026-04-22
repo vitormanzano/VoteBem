@@ -47,5 +47,24 @@ namespace VoteBem.Repository.Candidatos
 
             return (candidatos, quantidadeCandidatos);
         }
+
+        public async Task<(IEnumerable<Candidato> candidatos, int quantidadeCandidatos)> GetCandidatosByPartidoPaginatedAsync(int pageNumber, int pageSize, string partido)
+        {
+            var query = context.Candidatos
+                .Where(c => c.Candidaturas.Any(ca => ca.Partido.SgPartido == partido))
+                .Include(c => c.Candidaturas.OrderByDescending(ca => ca.CdEleicao).Take(1))
+                    .ThenInclude(ca => ca.Partido)
+                .AsNoTracking();
+
+            var quantidadeCandidatos = await query.CountAsync();
+
+            var candidatos = await query
+                .OrderBy(c => c.NmUrnaCandidato)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (candidatos, quantidadeCandidatos); ;
+        }
     }
 }
