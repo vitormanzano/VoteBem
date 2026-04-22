@@ -1,12 +1,12 @@
 @VoteBem_HostAddress = http://localhost:5253
 
-GET {{VoteBem_HostAddress}}/Candidato/GetAllCandidatosPaginated?pageNumber=1&pageSize=10
+GET {{VoteBem_HostAddress}}/candidatos/all-paginated?pageNumber=1&pageSize=10
 Accept: application/json
 ###
 
-GET {{VoteBem_HostAddress}}/Candidato/GetCandidatosByNamePaginated?name=lula
+GET {{VoteBem_HostAddress}}/candidatos/by-name-paginated?name=lula
 Accept: application/json
 
 ### 
-GET {{VoteBem_HostAddress}}/Candidato/GetCandidatosByPartidoPaginated?partido=pt
+GET {{VoteBem_HostAddress}}/candidatos/by-partido-paginated?partido=pt
 Accept: application/json

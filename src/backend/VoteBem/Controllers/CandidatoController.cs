@@ -4,11 +4,11 @@ using VoteBem.Services.Candidatos;
 
 namespace VoteBem.Controllers
 {
-    [Route("[controller]")]
+    [Route("candidatos")]
     [ApiController]
     public class CandidatoController(ICandidatoService candidatoService) : ControllerBase
     {
-        [HttpGet("GetAllCandidatosPaginated")]
+        [HttpGet("all-paginated")]
         public async Task<IActionResult> GetAllCandidatosPaginated(int pageNumber = 1, int pageSize = 10)
         {
             try
@@ -25,14 +25,13 @@ namespace VoteBem.Controllers
             }
         }
 
-        [HttpGet("GetCandidatosByNamePaginated")]
+        [HttpGet("by-name-paginated")]
         public async Task<IActionResult> GetCandidatosByNamePaginated(string name, int pageNumber = 1, int pageSize = 10)
         {
             try
             {
                 var candidatosPaginated = await candidatoService.GetCandidatosByNamePaginatedAsync(pageNumber, pageSize, name);
                 return Ok(candidatosPaginated);
-
             }
             catch (Exception ex)
             {
@@ -44,14 +43,13 @@ namespace VoteBem.Controllers
             }
         }
 
-        [HttpGet("GetCandidatosByPartidoPaginated")]
+        [HttpGet("by-partido-paginated")]
         public async Task<IActionResult> GetCandidatosByPartidoPaginated(string partido, int pageNumber = 1, int pageSize = 10)
         {
             try
             {
                 var candidatosPaginated = await candidatoService.GetCandidatosByPartidoPaginatedAsync(pageNumber, pageSize, partido);
                 return Ok(candidatosPaginated);
-
             }
             catch (Exception ex)
             {
