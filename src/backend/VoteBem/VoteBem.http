@@ -3,3 +3,6 @@
 GET {{VoteBem_HostAddress}}/Candidato/GetAllCandidatosPaginated?pageNumber=1&pageSize=10
 Accept: application/json
 ###
+
+GET {{VoteBem_HostAddress}}/Candidato/GetCandidatosByNamePaginated?name=lula
+Accept: application/json

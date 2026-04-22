@@ -1,10 +1,11 @@
 ﻿using VoteBem.Dtos.Common;
-using VoteBem.Dtos.Candidaturas;
+using VoteBem.Dtos.Candidatos;
 
 namespace VoteBem.Services.Candidatos
 {
     public interface ICandidatoService
     {
-        Task<PagedResultDto<CandidaturaPaginatedResponseDto>> GetAllCandidatosPaginatedAsync(int pageNumber, int pageSize);
+        Task<PagedResultDto<CandidatoPaginatedResponseDto>> GetAllCandidatosPaginatedAsync(int pageNumber, int pageSize);
+        Task<PagedResultDto<CandidatoPaginatedResponseDto>> GetCandidatosByNamePaginatedAsync(int pageNumber, int pageSize, string name);
     }
 }

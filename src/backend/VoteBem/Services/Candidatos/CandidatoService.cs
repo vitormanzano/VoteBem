@@ -1,24 +1,47 @@
-﻿using VoteBem.Dtos.Candidaturas;
+﻿using VoteBem.Dtos.Candidatos;
 using VoteBem.Dtos.Common;
 using VoteBem.Mappers;
-using VoteBem.Repository.Candidaturas;
+using VoteBem.Repository.Candidatos;
 
 namespace VoteBem.Services.Candidatos
 {
-    public class CandidatoService(ICandidaturaRepository candidaturaRepository) : ICandidatoService
+    public class CandidatoService(ICandidatoRepository candidatoRepository) : ICandidatoService
     {
-        public async Task<PagedResultDto<CandidaturaPaginatedResponseDto>> GetAllCandidatosPaginatedAsync(int pageNumber, int pageSize)
+        public async Task<PagedResultDto<CandidatoPaginatedResponseDto>> GetAllCandidatosPaginatedAsync(int pageNumber, int pageSize)
         {
-            var (candidaturas, quantidadeCandidaturas) = await candidaturaRepository.GetAllCandidatosPaginatedAsync(pageNumber, pageSize);
+            var (candidatos, quantidadeCandidatos) = await candidatoRepository.GetAllCandidatosPaginatedAsync(pageNumber, pageSize);
 
-            var totalPages = (int)Math.Ceiling((double)quantidadeCandidaturas / pageSize);
+            var totalPages = (int)Math.Ceiling((double)quantidadeCandidatos / pageSize);
 
-            return new PagedResultDto<CandidaturaPaginatedResponseDto>
+            return new PagedResultDto<CandidatoPaginatedResponseDto>
             {
-                Data = candidaturas.Select(c => c.MapCandidaturaParaCandidatoPaginatedResponseDto()),
+                Data = candidatos.Select(c => c.MapCandidatoParaCandidatoPaginatedResponseDto()),
                 Page = pageNumber,
                 PageSize = pageSize,
-                TotalItems = quantidadeCandidaturas,
+                TotalItems = quantidadeCandidatos,
+                TotalPages = totalPages,
+                HasPreviousPage = pageNumber > 1,
+                HasNextPage = pageNumber < totalPages
+            };
+        }
+
+        public async Task<PagedResultDto<CandidatoPaginatedResponseDto>> GetCandidatosByNamePaginatedAsync(int pageNumber, int pageSize, string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentException("Nome não pode ser vazio!");
+
+            name = name.Trim();
+
+            var (candidatos, quantidadeCandidatos) = await candidatoRepository.GetCandidatosByNamePaginatedAsync(pageNumber, pageSize, name);
+
+            var totalPages = (int)Math.Ceiling((double)quantidadeCandidatos / pageSize);
+
+            return new PagedResultDto<CandidatoPaginatedResponseDto>
+            {
+                Data = candidatos.Select(c => c.MapCandidatoParaCandidatoPaginatedResponseDto()),
+                Page = pageNumber,
+                PageSize = pageSize,
+                TotalItems = quantidadeCandidatos,
                 TotalPages = totalPages,
                 HasPreviousPage = pageNumber > 1,
                 HasNextPage = pageNumber < totalPages

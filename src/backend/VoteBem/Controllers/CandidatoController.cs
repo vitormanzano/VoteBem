@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using VoteBem.Services.Candidatos;
 
 namespace VoteBem.Controllers
@@ -19,7 +20,26 @@ namespace VoteBem.Controllers
             {
                 return ex switch
                 {
-                    _ => BadRequest(ex.Message)
+                    _ => StatusCode(StatusCodes.Status500InternalServerError, ex.Message)
+                };
+            }
+        }
+
+        [HttpGet("GetCandidatosByNamePaginated")]
+        public async Task<IActionResult> GetCandidatosByNamePaginated(string name, int pageNumber = 1, int pageSize = 10)
+        {
+            try
+            {
+                var candidatosPaginated = await candidatoService.GetCandidatosByNamePaginatedAsync(pageNumber, pageSize, name);
+                return Ok(candidatosPaginated);
+
+            }
+            catch (Exception ex)
+            {
+                return ex switch
+                {
+                    ArgumentException => BadRequest(ex.Message),
+                    _ => StatusCode(StatusCodes.Status500InternalServerError, ex.Message)
                 };
             }
         }

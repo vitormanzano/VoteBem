@@ -1,6 +1,6 @@
 using Microsoft.Extensions.FileProviders;
 using VoteBem.Data;
-using VoteBem.Repository.Candidaturas;
+using VoteBem.Repository.Candidatos;
 using VoteBem.Services.Candidatos;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-builder.Services.AddScoped<ICandidaturaRepository, CandidaturaRepository>();
+builder.Services.AddScoped<ICandidatoRepository, CandidatoRepository>();
 builder.Services.AddScoped<ICandidatoService, CandidatoService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
