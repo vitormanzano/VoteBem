@@ -16,15 +16,7 @@ namespace VoteBem.Repository.Candidatos
                     .ThenInclude(ca => ca.Partido)
                 .AsNoTracking();
 
-            var quantidadeCandidatos = await query.CountAsync();
-
-            var candidatos = await query
-                .OrderBy(c => c.NmUrnaCandidato)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            return (candidatos, quantidadeCandidatos);
+            return await PaginateAsync(query, pageNumber, pageSize);
         }
 
         public async Task<(IEnumerable<Candidato> candidatos, int quantidadeCandidatos)> GetCandidatosByNamePaginatedAsync(int pageNumber, int pageSize, string name)
@@ -37,15 +29,7 @@ namespace VoteBem.Repository.Candidatos
                     .ThenInclude(ca => ca.Partido)
                 .AsNoTracking();
 
-            var quantidadeCandidatos = await query.CountAsync();
-
-            var candidatos = await query
-                .OrderBy(c => c.NmUrnaCandidato)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            return (candidatos, quantidadeCandidatos);
+            return await PaginateAsync(query, pageNumber, pageSize);
         }
 
         public async Task<(IEnumerable<Candidato> candidatos, int quantidadeCandidatos)> GetCandidatosByPartidoPaginatedAsync(int pageNumber, int pageSize, string partido)
@@ -56,15 +40,7 @@ namespace VoteBem.Repository.Candidatos
                     .ThenInclude(ca => ca.Partido)
                 .AsNoTracking();
 
-            var quantidadeCandidatos = await query.CountAsync();
-
-            var candidatos = await query
-                .OrderBy(c => c.NmUrnaCandidato)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            return (candidatos, quantidadeCandidatos); ;
+            return await PaginateAsync(query, pageNumber, pageSize);
         }
 
         public async Task<(IEnumerable<Candidato> candidatos, int quantidadeCandidatos)> GetCandidatosByAnoEleitoralPaginatedAsync(int pageNumber, int pageSize, int ano)
@@ -79,15 +55,19 @@ namespace VoteBem.Repository.Candidatos
                    .ThenInclude(ca => ca.Partido)
                .AsNoTracking();
 
-            var quantidadeCandidatos = await query.CountAsync();
+            return await PaginateAsync(query, pageNumber, pageSize);
+        }
 
-            var candidatos = await query
+        private static async Task<(IEnumerable<Candidato>, int)> PaginateAsync(IQueryable<Candidato> query, int pageNumber, int pageSize)
+        {
+            var total = await query.CountAsync();
+            var items = await query
                 .OrderBy(c => c.NmUrnaCandidato)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-            return (candidatos, quantidadeCandidatos); ;
+            return (items, total);
         }
     }
 }
