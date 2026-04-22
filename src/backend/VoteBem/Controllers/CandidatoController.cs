@@ -60,5 +60,24 @@ namespace VoteBem.Controllers
                 };
             }
         }
+
+
+        [HttpGet("by-ano-eleitoral-paginated")]
+        public async Task<IActionResult> GetCandidatosByAnoEleitoralPaginated(int ano, int pageNumber = 1, int pageSize = 10)
+        {
+            try
+            {
+                var candidatosPaginated = await candidatoService.GetCandidatosByAnoEleitoralPaginatedAsync(pageNumber, pageSize, ano);
+                return Ok(candidatosPaginated);
+            }
+            catch (Exception ex)
+            {
+                return ex switch
+                {
+                    ArgumentException => BadRequest(ex.Message),
+                    _ => StatusCode(StatusCodes.Status500InternalServerError, ex.Message)
+                };
+            }
+        }
     }
 }

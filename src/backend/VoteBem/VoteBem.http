@@ -10,3 +10,7 @@ Accept: application/json
 ### 
 GET {{VoteBem_HostAddress}}/candidatos/by-partido-paginated?partido=pt
 Accept: application/json
+
+### 
+GET {{VoteBem_HostAddress}}/candidatos/by-ano-eleitoral-paginated?ano=2022
+Accept: application/json

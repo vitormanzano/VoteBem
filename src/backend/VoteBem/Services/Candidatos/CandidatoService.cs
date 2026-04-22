@@ -1,5 +1,6 @@
 ﻿using VoteBem.Dtos.Candidatos;
 using VoteBem.Dtos.Common;
+using VoteBem.Entities;
 using VoteBem.Mappers;
 using VoteBem.Repository.Candidatos;
 
@@ -70,5 +71,27 @@ namespace VoteBem.Services.Candidatos
                 HasNextPage = pageNumber < totalPages
             };
         }
+
+        public async Task<PagedResultDto<CandidatoPaginatedResponseDto>> GetCandidatosByAnoEleitoralPaginatedAsync(int pageNumber, int pageSize, int ano)
+        {
+            if (ano != 2010 && ano != 2014 && ano != 2018 && ano != 2022)
+                throw new ArgumentException("Ano eleitoral inválido! Os anos válidos são: 2010, 2014, 2018 e 2022.");
+
+            var (candidatos, quantidadeCandidatos) = await candidatoRepository.GetCandidatosByAnoEleitoralPaginatedAsync(pageNumber, pageSize, ano);
+
+            var totalPages = (int)Math.Ceiling((double)quantidadeCandidatos / pageSize);
+
+            return new PagedResultDto<CandidatoPaginatedResponseDto>
+            {
+                Data = candidatos.Select(c => c.MapCandidatoParaCandidatoPaginatedResponseDto()),
+                Page = pageNumber,
+                PageSize = pageSize,
+                TotalItems = quantidadeCandidatos,
+                TotalPages = totalPages,
+                HasPreviousPage = pageNumber > 1,
+                HasNextPage = pageNumber < totalPages
+            };
+        }
+
     }
 }
