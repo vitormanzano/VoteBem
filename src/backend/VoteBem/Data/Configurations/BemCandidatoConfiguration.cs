@@ -12,6 +12,10 @@ namespace VoteBem.Data.Configurations
 
             builder.HasKey(bc => new { bc.SqCandidato, bc.NrOrdemBem});
 
+            builder.Property(bc => bc.SqCandidato)
+                .HasColumnName("sq_candidato")
+                .IsRequired();
+
             builder.Property(bc => bc.NrOrdemBem)
                 .HasColumnName("nr_ordem_bem")
                 .IsRequired();

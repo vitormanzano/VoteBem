@@ -4,6 +4,7 @@ namespace VoteBem.Dtos.Candidatos
 {
     public record CandidatoProfileDto
         (
+            long SqCandidato,
             string FotoUrl,
             string NomeCompleto,
             string NomeUrna,

@@ -31,6 +31,7 @@ namespace VoteBem.Mappers
             var fotoUrl = ultimaCandidatura?.FotoUrl != null ? $"/storage/{ultimaCandidatura.FotoUrl}" : "Dado não disponível";
 
             return new CandidatoProfileDto(
+                ultimaCandidatura.SqCandidato,
                 fotoUrl,
                 nomeCompleto,
                 nomeUrna,

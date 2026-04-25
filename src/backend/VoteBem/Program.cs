@@ -3,6 +3,8 @@ using VoteBem.Data;
 using VoteBem.Repository.Candidatos;
 using VoteBem.Services.Candidatos;
 using Microsoft.EntityFrameworkCore;
+using VoteBem.Repository.BensCadidato;
+using VoteBem.Services.BensCandidato;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -13,6 +15,8 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<ICandidatoRepository, CandidatoRepository>();
 builder.Services.AddScoped<ICandidatoService, CandidatoService>();
+builder.Services.AddScoped<IBemCandidatoRepository, BemCandidatoRepository>();
+builder.Services.AddScoped<IBemCandidatoService, BemCandidatoService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
