@@ -22,3 +22,7 @@ Accept: application/json
 ###
 GET {{VoteBem_HostAddress}}/bem-candidatos/all-by-candidato?sqCandidato=280001735149
 Accept: application/json
+
+###
+GET {{VoteBem_HostAddress}}/candidaturas/all-by-candidato-paginated?nrCpfCandidato=13326724691
+Accept: application/json
