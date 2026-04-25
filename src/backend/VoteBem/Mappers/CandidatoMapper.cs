@@ -13,6 +13,7 @@ namespace VoteBem.Mappers
             var ultimaCandidatura = candidato.Candidaturas.FirstOrDefault();
             var nome = TextInfo.ToTitleCase((candidato.NmUrnaCandidato ?? candidato.NmCandidato).ToLower());
             return new CandidatoPaginatedResponseDto(
+                candidato.NrCpfCandidato,
                 nome,
                 ultimaCandidatura?.Partido?.SgPartido ?? "Dado não disponível",
                 ultimaCandidatura?.DsCargo ?? "Dado não disponível"
