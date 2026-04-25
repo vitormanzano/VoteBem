@@ -1,4 +1,5 @@
-﻿using VoteBem.Dtos.BensCandidato;
+﻿using System.Globalization;
+using VoteBem.Dtos.BensCandidato;
 using VoteBem.Entities;
 
 namespace VoteBem.Mappers
@@ -13,7 +14,7 @@ namespace VoteBem.Mappers
                 bemCandidato.SqCandidato,
                 bemCandidato.DsBem ?? "Dado não disponível",
                 bemCandidato.DsTipoBem ?? "Dado não disponível",
-                bemCandidato.VrBem,
+                bemCandidato.VrBem.HasValue ? $"R${bemCandidato.VrBem.Value.ToString("N2", CultureInfo.GetCultureInfo("pt-BR"))}" : null,
                 bemCandidato.NrOrdemBem
             );
         }

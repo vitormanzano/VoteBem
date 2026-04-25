@@ -1,10 +1,13 @@
-﻿using VoteBem.Dtos.Candidaturas;
+using System.Globalization;
+using VoteBem.Dtos.Candidaturas;
 using VoteBem.Entities;
 
 namespace VoteBem.Mappers
 {
     public static class CandidaturaMapper
     {
+        private static readonly CultureInfo PtBr = CultureInfo.GetCultureInfo("pt-BR");
+
         public static CandidaturaResponseDto MapToCandidaturaResponseDto(this Candidatura candidatura, int anoEleicao)
         {
             return new CandidaturaResponseDto(
@@ -17,9 +20,10 @@ namespace VoteBem.Mappers
                 candidatura.DsSituacaoCandidatura ?? "Dado não disponível!",
                 candidatura.DsOcupacao ?? "Dado não disponível!",
                 candidatura.StReeleicao ?? "Dado não disponível!",
-                candidatura.VrDespesaMaxCampanha
+                candidatura.VrDespesaMaxCampanha.HasValue
+                    ? $"R${candidatura.VrDespesaMaxCampanha.Value.ToString("N2", PtBr)}"
+                    : null
             );
         }
-
     }
 }

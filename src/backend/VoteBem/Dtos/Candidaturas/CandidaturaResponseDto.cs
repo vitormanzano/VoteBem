@@ -11,6 +11,6 @@
             string DsSituacaoCandidatura,
             string DsOcupacao,
             string StReeleicao,
-            decimal? VrDespesaMaxCampanha
+            string? VrDespesaMaxCampanha
         );
 }

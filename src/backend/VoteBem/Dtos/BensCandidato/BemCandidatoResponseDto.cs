@@ -5,7 +5,7 @@
             long SqCandidato,
             string? DsBem,
             string? DsTipoBem,
-            decimal? VrBem,
+            string? VrBem,
             int? NrOrdem
         );
 }
