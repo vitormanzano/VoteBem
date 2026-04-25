@@ -8,6 +8,13 @@ namespace VoteBem.Services.Candidatos
 {
     public class CandidatoService(ICandidatoRepository candidatoRepository) : ICandidatoService
     {
+        public async Task<CandidatoProfileDto> GetCandidatoProfileAsync(string nrCpfCandidato)
+        {
+            var candidato = await candidatoRepository.GetCandidatoByNrCpfAsync(nrCpfCandidato) ?? throw new ArgumentException("Candidato não encontrado!");
+
+            return candidato.MapCandidatoParaCandidatoProfileDto();
+        }
+
         public async Task<PagedResultDto<CandidatoPaginatedResponseDto>> GetAllCandidatosPaginatedAsync(int pageNumber, int pageSize)
         {
             var (candidatos, total) = await candidatoRepository.GetAllCandidatosPaginatedAsync(pageNumber, pageSize);

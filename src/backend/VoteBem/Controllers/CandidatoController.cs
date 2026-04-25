@@ -79,5 +79,24 @@ namespace VoteBem.Controllers
                 };
             }
         }
+
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetCandidatoProfileAsync(string nrCpfCandidato)
+        {
+            try
+            {
+                var candidatoProfile = await candidatoService.GetCandidatoProfileAsync(nrCpfCandidato);
+                return Ok(candidatoProfile);
+            }
+            catch (Exception ex)
+            {
+                return ex switch
+                {
+                    ArgumentException => BadRequest(ex.Message),
+                    _ => StatusCode(StatusCodes.Status500InternalServerError, ex.Message)
+                };
+
+            }
+        }
     }
 }
