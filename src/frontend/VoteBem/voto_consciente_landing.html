@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VOTO CONSCIENTE</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-hero: #111a25;
+      --bg-dark: #0d1f2d;
+      --bg-mid: #131e2b;
+      --bg-card: #192638;
+      --accent: #2596be;
+      --accent-glow: rgba(37, 150, 190, 0.12);
+      --text: #ffffff;
+      --muted: rgba(255, 255, 255, 0.6);
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Inter', sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--mono);
+      background: var(--bg-hero);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 64px;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 16, 24, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(37, 150, 190, 0.18);
+      height: 68px;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .logo-voto {
+      color: var(--accent);
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .logo-sub {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      color: var(--muted);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: .3px;
+      transition: color .2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+
+    .nav-icon {
+      opacity: .55;
+      transition: opacity .2s;
+      cursor: pointer;
+    }
+
+    .nav-icon:hover {
+      opacity: 1;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 64px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(155deg, #0c1a27 0%, #111a25 55%, #091420 100%);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(37, 150, 190, .045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37, 150, 190, .045) 1px, transparent 1px);
+      background-size: 72px 72px;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 500px;
+      pointer-events: none;
+      background: radial-gradient(ellipse, rgba(37, 150, 190, .09) 0%, transparent 65%);
+    }
+
+    .hero-label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--accent);
+      font-weight: 500;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-title {
+      font-size: 62px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.1;
+      max-width: 780px;
+      margin-bottom: 22px;
+      position: relative;
+      z-index: 1;
+      letter-spacing: -.5px;
+    }
+
+    .hero-title em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .hero-desc {
+      font-family: var(--sans);
+      font-size: 17px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 52px;
+      max-width: 520px;
+      line-height: 1.78;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-input-row {
+      width: 100%;
+      max-width: 660px;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 24px;
+    }
+
+    .hero-input {
+      width: 100%;
+      padding: 20px 62px 20px 28px;
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(37, 150, 190, .28);
+      border-radius: 16px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 14px;
+      outline: none;
+      transition: all .3s;
+    }
+
+    .hero-input:focus {
+      background: rgba(255, 255, 255, .09);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(37, 150, 190, .1);
+    }
+
+    .hero-input::placeholder {
+      color: rgba(255, 255, 255, .3);
+    }
+
+    .hero-btn {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--accent);
+      border: none;
+      border-radius: 10px;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s;
+    }
+
+    .hero-btn:hover {
+      background: #1c7ca0;
+      transform: translateY(-50%) scale(1.06);
+    }
+
+    .hero-btn svg {
+      width: 15px;
+      height: 15px;
+      fill: #fff;
+    }
+
+    .pills {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      z-index: 1;
+      position: relative;
+    }
+
+    .pill {
+      padding: 9px 18px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid rgba(255, 255, 255, .1);
+      font-size: 12px;
+      font-family: var(--sans);
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .22s;
+    }
+
+    .pill:hover {
+      background: rgba(37, 150, 190, .14);
+      border-color: rgba(37, 150, 190, .4);
+      color: #fff;
+    }
+
+    /* ── COMO FUNCIONA ── */
+    .how {
+      background: var(--bg-dark);
+      padding: 110px 0;
+    }
+
+    .how-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 90px;
+      align-items: center;
+    }
+
+    .sec-label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--accent);
+      text-transform: uppercase;
+      font-weight: 500;
+      margin-bottom: 14px;
+    }
+
+    .sec-title {
+      font-size: 46px;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 18px;
+      letter-spacing: -.4px;
+    }
+
+    .sec-sub {
+      font-family: var(--sans);
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.75;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      left: 9px;
+      top: 28px;
+      bottom: 28px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent) 0%, rgba(37, 150, 190, .1) 100%);
+    }
+
+    .step {
+      display: flex;
+      gap: 32px;
+      padding: 30px 0;
+    }
+
+    .step+.step {
+      border-top: 1px solid rgba(255, 255, 255, .05);
+    }
+
+    .step-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      background: var(--accent);
+      margin-top: 5px;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 16px rgba(37, 150, 190, .5);
+    }
+
+    .step-num {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 8px;
+      letter-spacing: -.2px;
+    }
+
+    .step-text {
+      font-family: var(--sans);
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.72;
+    }
+
+    /* ── SEM VIES ── */
+    .trust {
+      background: var(--bg-mid);
+      padding: 110px 0;
+    }
+
+    .trust-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 56px;
+      gap: 48px;
+    }
+
+    .trust-title {
+      font-size: 50px;
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -.5px;
+    }
+
+    .trust-title .dim {
+      color: rgba(255, 255, 255, .22);
+    }
+
+    .trust-tagline {
+      font-family: var(--sans);
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 340px;
+      line-height: 1.75;
+      flex-shrink: 0;
+      padding-bottom: 6px;
+    }
+
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 40px;
+    }
+
+    .tcard {
+      background: var(--bg-card);
+      border-radius: 14px;
+      padding: 30px 24px;
+      border: 1px solid rgba(37, 150, 190, .12);
+      transition: border-color .3s, transform .25s;
+    }
+
+    .tcard:hover {
+      border-color: rgba(37, 150, 190, .4);
+      transform: translateY(-3px);
+    }
+
+    .tcard-num {
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 3px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      opacity: .75;
+    }
+
+    .tcard-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .tcard-body {
+      font-family: var(--sans);
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.72;
+    }
+
+    .trust-disclaimer {
+      font-family: var(--sans);
+      font-size: 14px;
+      color: rgba(255, 255, 255, .35);
+      line-height: 1.65;
+      border-left: 2px solid var(--accent);
+      padding-left: 20px;
+    }
+
+    /* ── PERSONAS ── */
+    .personas {
+      background: var(--bg-dark);
+      padding: 110px 0;
+    }
+
+    .personas-head {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: end;
+      margin-bottom: 56px;
+    }
+
+    .personas-title {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -.4px;
+    }
+
+    .personas-note {
+      font-family: var(--sans);
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.78;
+    }
+
+    .personas-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .pcard {
+      background: rgba(255, 255, 255, .035);
+      border-radius: 14px;
+      padding: 26px;
+      border: 1px solid rgba(255, 255, 255, .07);
+      transition: background .3s, border-color .3s;
+    }
+
+    .pcard:hover {
+      background: rgba(37, 150, 190, .08);
+      border-color: rgba(37, 150, 190, .28);
+    }
+
+    .pcard-name {
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+
+    .pcard-desc {
+      font-family: var(--sans);
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.72;
+    }
+
+    .personas-footer {
+      margin-top: 44px;
+      font-family: var(--sans);
+      font-size: 15px;
+      color: var(--muted);
+      font-style: italic;
+      text-align: center;
+      opacity: .65;
+    }
+
+    /* ── POR QUE ── */
+    .why {
+      background: var(--bg-mid);
+      padding: 110px 0;
+    }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 100px;
+      align-items: center;
+    }
+
+    .why-title {
+      font-size: 44px;
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 36px;
+      letter-spacing: -.4px;
+    }
+
+    .why-body {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .why-body p {
+      font-family: var(--sans);
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.82;
+    }
+
+    .why-body strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .stats {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .stat {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 24px 28px;
+      border: 1px solid rgba(37, 150, 190, .12);
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .stat-n {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--accent);
+      min-width: 80px;
+      line-height: 1;
+    }
+
+    .stat-l {
+      font-family: var(--sans);
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #07101a;
+      border-top: 1px solid rgba(37, 150, 190, .12);
+      padding: 48px 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-note {
+      font-family: var(--sans);
+      font-size: 13px;
+      color: rgba(255, 255, 255, .25);
+    }
+
+    /* ── REVEAL ANIMATIONS ── */
+    .rv {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+
+    .rv.on {
+      opacity: 1;
+      transform: none;
+    }
+
+    .d1 {
+      transition-delay: .08s;
+    }
+
+    .d2 {
+      transition-delay: .16s;
+    }
+
+    .d3 {
+      transition-delay: .24s;
+    }
+
+    .d4 {
+      transition-delay: .32s;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="wrap nav-inner">
+      <div>
+        <span class="logo-voto">VOTO</span>
+        <span class="logo-sub">CONSCIENTE</span>
+      </div>
+      <div class="nav-links">
+        <a href="#how">Como funciona</a>
+        <a href="#trust">Transparência</a>
+        <a href="#why">Sobre</a>
+      </div>
+      <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)"
+        stroke-width="2" stroke-linecap="round">
+        <circle cx="11" cy="11" r="7" />
+        <path d="M21 21l-4.35-4.35" />
+      </svg>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <p class="hero-label rv">Plataforma de inteligência política</p>
+    <h1 class="hero-title rv d1">Conheça quem<br><em>te representa.</em></h1>
+    <p class="hero-desc rv d2">Pesquise qualquer candidato à presidência brasileira e tire suas dúvidas com IA baseada
+      em fontes oficiais.</p>
+    <div class="hero-input-row rv d3">
+      <input class="hero-input" type="text" placeholder="Pergunte sobre qualquer candidato..." />
+      <button class="hero-btn">
+        <svg viewBox="0 0 24 24">
+          <path d="M2 21l21-9L2 3v7l15 2-15 2z" />
+        </svg>
+      </button>
+    </div>
+    <div class="pills rv d4">
+      <div class="pill">Quais foram os votos de X?</div>
+      <div class="pill">X votou a favor da reforma?</div>
+      <div class="pill">Histórico de cargos de X?</div>
+      <div class="pill">Projetos de lei aprovados?</div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="how" id="how">
+    <div class="wrap">
+      <div class="how-inner">
+        <div class="how-left rv">
+          <p class="sec-label">Processo</p>
+          <h2 class="sec-title">Como<br>Funciona?</h2>
+          <p class="sec-sub">Três passos diretos ao ponto. Sem cadastro, sem formulário — só você e a informação que
+            precisa.</p>
+        </div>
+        <div class="steps rv d2">
+          <div class="step">
+            <div class="step-dot"></div>
+            <div>
+              <p class="step-num">01 Busque</p>
+              <p class="step-text">Digite o nome de qualquer candidato à presidência brasileira.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot"></div>
+            <div>
+              <p class="step-num">02 Pergunte</p>
+              <p class="step-text">Use suas próprias palavras. Sem filtros, sem formulários. A IA entende o que você
+                quer saber.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-dot"></div>
+            <div>
+              <p class="step-num">03 Decida</p>
+              <p class="step-text">Receba informações claras, com fontes verificáveis. O julgamento é sempre seu.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEM VIES -->
+  <section class="trust" id="trust">
+    <div class="wrap">
+      <div class="trust-head rv">
+        <div>
+          <p class="sec-label">Nosso compromisso</p>
+          <h2 class="trust-title">Sem viés.<br><span class="trust-title">Apenas dados.</span></h2>
+        </div>
+        <p class="trust-tagline">Toda resposta tem origem rastreável. Você não precisa confiar em nós — pode verificar
+          cada afirmação na fonte.</p>
+      </div>
+      <div class="trust-grid">
+        <div class="tcard rv d1">
+          <p class="tcard-num">01</p>
+          <p class="tcard-title">Fontes públicas e oficiais</p>
+          <p class="tcard-body">TSE, Câmara dos Deputados, Senado Federal e Diário Oficial. Nada inventado, nada
+            interpretado.</p>
+        </div>
+        <div class="tcard rv d2">
+          <p class="tcard-num">02</p>
+          <p class="tcard-title">Transparência em cada resposta</p>
+          <p class="tcard-body">Toda resposta da IA vem acompanhada da fonte original. Você pode — e deve — checar.</p>
+        </div>
+        <div class="tcard rv d3">
+          <p class="tcard-num">03</p>
+          <p class="tcard-title">Sem financiamento partidário</p>
+          <p class="tcard-body">Não recebemos dinheiro de partidos, candidatos ou grupos políticos. Nunca.</p>
+        </div>
+        <div class="tcard rv d4">
+          <p class="tcard-num">04</p>
+          <p class="tcard-title">IA como ferramenta, não árbitro</p>
+          <p class="tcard-body">Nossa IA organiza e resume informação pública. Quem forma opinião é você.</p>
+        </div>
+      </div>
+      <p class="trust-disclaimer rv">Desconfie de qualquer plataforma que não te mostre de onde vem a informação.
+        Incluindo a nossa.</p>
+    </div>
+  </section>
+
+  <!-- PERSONAS -->
+  <section class="personas" id="personas">
+    <div class="wrap">
+      <div class="personas-head">
+        <h2 class="personas-title rv">Para todo brasileiro que já se sentiu perdido na hora de votar.</h2>
+        <p class="personas-note rv d2">Não importa de onde você vem ou em quem você vota. Informação é de todo mundo — e
+          ela precisa ser acessível.</p>
+      </div>
+      <div class="personas-grid">
+        <div class="pcard rv d1">
+          <p class="pcard-name">O primeiro voto</p>
+          <p class="pcard-desc">Vai votar pela primeira vez e não sabe por onde começar. Quer entender quem são os
+            candidatos além do que aparece no horário eleitoral.</p>
+        </div>
+        <div class="pcard rv d2">
+          <p class="pcard-name">O pai ou mãe de família</p>
+          <p class="pcard-desc">Não tem tempo de pesquisar horas em notícias. Quer uma resposta rápida e confiável sobre
+            quem cuida da educação e saúde.</p>
+        </div>
+        <div class="pcard rv d3">
+          <p class="pcard-name">O desconfiado de plantão</p>
+          <p class="pcard-desc">Já não acredita em político nenhum — mas ainda vota. Quer dados frios, sem discurso, sem
+            filtro editorial.</p>
+        </div>
+        <div class="pcard rv d4">
+          <p class="pcard-name">O jornalista ou estudante</p>
+          <p class="pcard-desc">Precisa de informação rápida, organizada e com fonte para pesquisa, reportagem ou
+            trabalho acadêmico.</p>
+        </div>
+      </div>
+      <p class="personas-footer rv">Não importa de onde você vem ou em quem você vota. Informação é de todo mundo.</p>
+    </div>
+  </section>
+
+  <!-- POR QUE -->
+  <section class="why" id="why">
+    <div class="wrap">
+      <div class="why-grid">
+        <div>
+          <p class="sec-label rv">Manifesto</p>
+          <h2 class="why-title rv d1">Por que isso existe?</h2>
+          <div class="why-body rv d2">
+            <p>Informação política no Brasil é pública por lei. Mas na prática, está espalhada em portais difíceis,
+              linguagem técnica e PDFs de centenas de páginas.</p>
+            <p>Criamos essa plataforma para mudar isso. Não para dizer em quem votar — mas para garantir que você tenha
+              o que precisa para decidir por conta própria.</p>
+            <p><strong>Democracia não funciona sem cidadão informado.</strong></p>
+          </div>
+        </div>
+        <div class="stats rv d3">
+          <div class="stat">
+            <span class="stat-n">100%</span>
+            <span class="stat-l">das respostas têm fonte verificável</span>
+          </div>
+          <div class="stat">
+            <span class="stat-n">R$0</span>
+            <span class="stat-l">recebidos de partidos ou candidatos</span>
+          </div>
+          <div class="stat">
+            <span class="stat-n">3</span>
+            <span class="stat-l">passos para tomar sua decisão</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div>
+      <span class="logo-voto">VOTO</span>
+      <span class="logo-sub">CONSCIENTE</span>
+    </div>
+    <p class="footer-note">Plataforma independente de transparência política · Brasil 2026</p>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+    // Hero elements visíveis imediatamente
+    document.querySelectorAll('.hero .rv').forEach(el => el.classList.add('on'));
+
+    // Pills preenchem o input
+    document.querySelectorAll('.pill').forEach(pill => {
+      pill.addEventListener('click', function () {
+        const inp = document.querySelector('.hero-input');
+        if (inp) { inp.value = this.textContent.trim(); inp.focus(); }
+      });
+    });
+  </script>
+
+</body>
+
+</html>
