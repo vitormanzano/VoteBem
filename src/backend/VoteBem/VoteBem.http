@@ -28,5 +28,9 @@ GET {{VoteBem_HostAddress}}/candidaturas/all-by-candidato-paginated?nrCpfCandida
 Accept: application/json
 
 ###
-GET {{VoteBem_HostAddress}}/situacao-juridica/all-by-candidato?sqCandidato=280001607829
+GET {{VoteBem_HostAddress}}/situacao-juridica/all-by-Sqcandidato?sqCandidato=280001607829
+Accept: application/json
+
+###
+GET {{VoteBem_HostAddress}}/nota-fiscal/all-by-candidatura?sqCandidato=280001612393
 Accept: application/json
