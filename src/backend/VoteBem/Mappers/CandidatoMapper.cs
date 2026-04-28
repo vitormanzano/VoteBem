@@ -36,7 +36,7 @@ namespace VoteBem.Mappers
                 nomeCompleto,
                 nomeUrna,
                 ultimaCandidatura?.NrCandidato,
-                ultimaCandidatura?.RedesSociais.Select(rs => new RedeSocialResponseDto(rs?.TipoRedeSocial, rs?.DsUrl)).ToList() ?? new List<RedeSocialResponseDto>(),
+                ultimaCandidatura?.RedesSociais.Select(rs => rs.MapRedeSocialToRedeSocialResponseDto()).ToList() ?? new List<RedeSocialResponseDto>(),
                 partido,
                 cargoDisputado,
                 ultimaCandidatura?.SgUf ?? "Dado não disponível",
