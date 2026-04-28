@@ -7,6 +7,8 @@ using VoteBem.Repository.BensCadidato;
 using VoteBem.Repository.Candidaturas;
 using VoteBem.Services.BensCandidato;
 using VoteBem.Services.Candidaturas;
+using VoteBem.Repository.SituacaoJuridica;
+using VoteBem.Services.SituacaoJuridica;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -21,6 +23,8 @@ builder.Services.AddScoped<IBemCandidatoRepository, BemCandidatoRepository>();
 builder.Services.AddScoped<IBemCandidatoService, BemCandidatoService>();
 builder.Services.AddScoped<ICandidaturaRepository, CandidaturaRepository>();
 builder.Services.AddScoped<ICandidaturaService, CandidaturaService>();
+builder.Services.AddScoped<ISituacaoJuridicaRepository, SituacaoJuridicaRepository>();
+builder.Services.AddScoped<ISituacaoJuridicaService, SituacaoJuridicaService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

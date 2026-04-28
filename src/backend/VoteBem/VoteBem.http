@@ -26,3 +26,7 @@ Accept: application/json
 ###
 GET {{VoteBem_HostAddress}}/candidaturas/all-by-candidato-paginated?nrCpfCandidato=13326724691
 Accept: application/json
+
+###
+GET {{VoteBem_HostAddress}}/situacao-juridica/all-by-candidato?sqCandidato=280001607829
+Accept: application/json
