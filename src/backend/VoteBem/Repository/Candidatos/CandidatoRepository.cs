@@ -9,6 +9,21 @@ namespace VoteBem.Repository.Candidatos
     {
         public IUnitOfWork UnitOfWork => context;
 
+        public async Task<Candidato> GetCandidatoByNrCpfAsync(string nrCpf)
+        {
+            var candidato = await context.Candidatos
+                .Where(c => c.NrCpfCandidato.Equals(nrCpf))
+                .Include(c => c.Candidaturas.OrderByDescending(ca => ca.CdEleicao).Take(1))
+                    .ThenInclude(ca => ca.Partido)
+                .Include(c => c.Candidaturas.OrderByDescending(ca => ca.CdEleicao).Take(1))
+                    .ThenInclude(ca => ca.RedesSociais
+                    .Where(rs => ! (rs.TipoRedeSocial.Equals("OUTRO")))
+                    .OrderBy(rs => rs.TipoRedeSocial))
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.NrCpfCandidato == nrCpf);
+            return candidato;
+        }
+
         public async Task<(IEnumerable<Candidato> candidatos, int quantidadeCandidatos)> GetAllCandidatosPaginatedAsync(int pageNumber, int pageSize)
         {
             var query = context.Candidatos

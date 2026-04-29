@@ -1,8 +1,18 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using VoteBem.Data;
+using VoteBem.Repository.BensCadidato;
 using VoteBem.Repository.Candidatos;
+using VoteBem.Repository.Candidaturas;
+using VoteBem.Repository.NotasFiscais;
+using VoteBem.Repository.RedesSociais;
+using VoteBem.Repository.SituacaoJuridica;
+using VoteBem.Services.BensCandidato;
 using VoteBem.Services.Candidatos;
-using Microsoft.EntityFrameworkCore;
+using VoteBem.Services.Candidaturas;
+using VoteBem.Services.NotasFiscais;
+using VoteBem.Services.RedesSociais;
+using VoteBem.Services.SituacaoJuridica;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -13,6 +23,16 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<ICandidatoRepository, CandidatoRepository>();
 builder.Services.AddScoped<ICandidatoService, CandidatoService>();
+builder.Services.AddScoped<IBemCandidatoRepository, BemCandidatoRepository>();
+builder.Services.AddScoped<IBemCandidatoService, BemCandidatoService>();
+builder.Services.AddScoped<ICandidaturaRepository, CandidaturaRepository>();
+builder.Services.AddScoped<ICandidaturaService, CandidaturaService>();
+builder.Services.AddScoped<ISituacaoJuridicaRepository, SituacaoJuridicaRepository>();
+builder.Services.AddScoped<ISituacaoJuridicaService, SituacaoJuridicaService>();
+builder.Services.AddScoped<INotaFiscalRepository, NotaFiscalRepository>();
+builder.Services.AddScoped<INotaFiscalService, NotaFiscalService>();
+builder.Services.AddScoped<IRedeSocialRepository, RedeSocialRepository>();
+builder.Services.AddScoped<IRedeSocialService, RedeSocialService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VOTO CONSCIENTE — Chat</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0d10;
+      --sidebar-bg: #0f1318;
+      --sidebar-hover: rgba(255,255,255,0.06);
+      --sidebar-active: rgba(255,255,255,0.10);
+      --border: rgba(255,255,255,0.08);
+      --input-bg: rgba(255,255,255,0.07);
+      --input-border: rgba(255,255,255,0.12);
+      --text: #f0f2f5;
+      --muted: rgba(240,242,245,0.4);
+      --accent: #3ba8cf;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Inter', sans-serif;
+      --sidebar-w: 272px;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: var(--mono);
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    /* ── LAYOUT ── */
+    .app {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) 1fr;
+      height: 100vh;
+      transition: grid-template-columns .3s ease;
+    }
+    .app.sidebar-hidden {
+      grid-template-columns: 0px 1fr;
+    }
+    .app.sidebar-hidden .sidebar {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .btn-show-sidebar {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s;
+      display: flex;
+      z-index: 20;
+    }
+    .app.sidebar-hidden ~ * .btn-show-sidebar,
+    .btn-show-sidebar.visible { opacity: .5; pointer-events: auto; }
+    .btn-show-sidebar:hover { opacity: 1; background: rgba(255,255,255,0.07); }
+    .btn-show-sidebar svg { width: 18px; height: 18px; stroke: var(--text); fill: none; stroke-width: 1.8; stroke-linecap: round; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      transition: opacity .2s;
+    }
+
+    .sidebar-header {
+      padding: 18px 20px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .logo-voto {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: .04em;
+    }
+    .logo-consciente {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: .1em;
+      margin-top: 2px;
+    }
+
+    .btn-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      opacity: .5;
+      transition: opacity .2s, background .2s;
+      display: flex;
+    }
+    .btn-toggle:hover { opacity: 1; background: var(--sidebar-hover); }
+    .btn-toggle svg { width: 18px; height: 18px; stroke: var(--text); fill: none; stroke-width: 1.8; stroke-linecap: round; }
+
+    /* New chat button */
+    .btn-new {
+      margin: 0 12px 16px;
+      padding: 10px 14px;
+      background: var(--sidebar-active);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      transition: background .2s;
+      flex-shrink: 0;
+    }
+    .btn-new:hover { background: rgba(255,255,255,0.13); }
+    .btn-new svg { width: 15px; height: 15px; stroke: var(--text); fill: none; stroke-width: 1.8; stroke-linecap: round; flex-shrink: 0; }
+
+    /* History */
+    .sidebar-section-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .14em;
+      color: var(--muted);
+      text-transform: uppercase;
+      padding: 0 20px 10px;
+      flex-shrink: 0;
+    }
+
+    .history-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 8px 24px;
+    }
+    .history-list::-webkit-scrollbar { width: 4px; }
+    .history-list::-webkit-scrollbar-track { background: transparent; }
+    .history-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+    .history-item {
+      padding: 9px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .history-item:hover { background: var(--sidebar-hover); color: var(--text); }
+    .history-item.active { background: var(--sidebar-active); color: var(--text); }
+
+    /* ── MAIN ── */
+    .main {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: relative;
+      background: var(--bg);
+    }
+
+    /* Chat messages area */
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-area::-webkit-scrollbar { width: 4px; }
+    .chat-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+
+    /* Empty state */
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .empty-title {
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.2;
+      max-width: 600px;
+    }
+
+    /* Messages */
+    .messages {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      padding: 32px 0;
+      max-width: 760px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .msg {
+      padding: 20px 32px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .msg:hover { background: rgba(255,255,255,0.02); }
+
+    .msg-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+    .msg-avatar.user {
+      background: rgba(255,255,255,0.12);
+      color: var(--text);
+    }
+    .msg-avatar.ai {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .msg-content {
+      flex: 1;
+    }
+    .msg-role {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .msg-text {
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.78;
+    }
+    .msg-text strong { font-weight: 500; }
+
+    .msg-source {
+      margin-top: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent);
+      opacity: .8;
+      border: 1px solid rgba(59,168,207,0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .msg-source::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    /* Typing indicator */
+    .typing {
+      padding: 20px 32px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .typing-dots span {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--muted);
+      animation: blink 1.2s ease infinite;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: .2s; }
+    .typing-dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes blink {
+      0%, 80%, 100% { opacity: .2; transform: scale(1); }
+      40% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* ── INPUT AREA ── */
+    .input-area {
+      padding: 16px 24px 24px;
+      flex-shrink: 0;
+    }
+
+    .input-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .chat-input {
+      width: 100%;
+      padding: 16px 52px 16px 20px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 400;
+      outline: none;
+      resize: none;
+      line-height: 1.5;
+      transition: background .2s, border-color .2s, box-shadow .2s;
+      caret-color: var(--accent);
+      max-height: 180px;
+      overflow-y: auto;
+    }
+    .chat-input::placeholder { color: rgba(255,255,255,0.25); }
+    .chat-input:focus {
+      background: rgba(255,255,255,0.09);
+      border-color: rgba(59,168,207,0.35);
+      box-shadow: 0 0 0 3px rgba(59,168,207,0.07);
+    }
+
+    .send-btn {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      width: 30px; height: 30px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity .2s, transform .15s;
+      flex-shrink: 0;
+      opacity: .55;
+    }
+    .send-btn:hover { opacity: 1; transform: scale(1.1); }
+    .send-btn:disabled { opacity: .2; cursor: not-allowed; transform: none; }
+    .send-btn svg { width: 15px; height: 15px; fill: var(--text); }
+
+    .input-hint {
+      text-align: center;
+      font-family: var(--sans);
+      font-size: 11px;
+      color: rgba(255,255,255,0.18);
+      margin-top: 10px;
+    }
+
+    /* Divider between msgs */
+    .msg-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 32px;
+    }
+
+    /* Hidden */
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <a href="voto-consciente-figma.html" class="logo">
+        <span class="logo-voto">VOTO</span>
+        <span class="logo-consciente">CONSCIENTE</span>
+      </a>
+      <button class="btn-toggle" id="btn-collapse" title="Recolher sidebar" onclick="toggleSidebar()">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+      </button>
+    </div>
+
+    <button class="btn-new" onclick="newChat()">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      Novo chat
+    </button>
+
+    <p class="sidebar-section-label">Recentes</p>
+
+    <div class="history-list" id="history-list">
+      <!-- preenchido por JS -->
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+    <button class="btn-show-sidebar" id="btn-expand" title="Expandir sidebar" onclick="toggleSidebar()">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+    </button>
+
+    <!-- Empty state (inicial) -->
+    <div class="empty-state" id="empty-state">
+      <h1 class="empty-title">Todo voto começa com uma pergunta.</h1>
+    </div>
+
+    <!-- Mensagens (aparece após primeira msg) -->
+    <div class="chat-area hidden" id="chat-area">
+      <div class="messages" id="messages"></div>
+    </div>
+
+    <!-- Input -->
+    <div class="input-area">
+      <div class="input-wrap">
+        <textarea
+          class="chat-input"
+          id="chat-input"
+          rows="1"
+          placeholder="Busque, Pergunte, Decida"
+        ></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+        </button>
+      </div>
+      <p class="input-hint">As respostas são baseadas em fontes públicas oficiais.</p>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // ── Estado ──
+  const historyData = [
+    'Quem votou contra a escala 6x1?',
+    'Histórico de Lula no governo',
+    'Patrimônio declarado de Bolsonaro',
+    'Quais projetos Tarcísio propôs?',
+    'Marina Silva e meio ambiente',
+    'Candidatos ao Senado por SP',
+    'Ciro Gomes propostas econômicas',
+    'Reforma da previdência votações',
+    'Ficha limpa candidatos 2026',
+    'Bolsonaro votos na câmara',
+  ];
+
+  // Preenche sidebar
+  const historyList = document.getElementById('history-list');
+  historyData.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'history-item' + (i === 0 ? ' active' : '');
+    el.textContent = item;
+    el.onclick = () => {
+      document.querySelectorAll('.history-item').forEach(x => x.classList.remove('active'));
+      el.classList.add('active');
+    };
+    historyList.appendChild(el);
+  });
+
+  // ── Auto-resize textarea ──
+  const textarea = document.getElementById('chat-input');
+  textarea.addEventListener('input', () => {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 180) + 'px';
+  });
+
+  // Enter envia, Shift+Enter quebra linha
+  textarea.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // ── Chat ──
+  let firstMessage = true;
+
+  function sendMessage() {
+    const val = textarea.value.trim();
+    if (!val) return;
+
+    // Mostra área de chat
+    if (firstMessage) {
+      document.getElementById('empty-state').classList.add('hidden');
+      document.getElementById('chat-area').classList.remove('hidden');
+      firstMessage = false;
+    }
+
+    // Adiciona msg do usuário
+    appendMessage('user', val);
+    textarea.value = '';
+    textarea.style.height = 'auto';
+
+    // Adiciona ao histórico sidebar
+    addToHistory(val);
+
+    // Simula resposta da IA
+    showTyping();
+    setTimeout(() => {
+      removeTyping();
+      appendMessage('ai', getMockResponse(val));
+    }, 1800);
+
+    scrollToBottom();
+  }
+
+  function appendMessage(role, text) {
+    const messages = document.getElementById('messages');
+
+    // Divider se não for primeira mensagem
+    if (messages.children.length > 0) {
+      const div = document.createElement('div');
+      div.className = 'msg-divider';
+      messages.appendChild(div);
+    }
+
+    const msg = document.createElement('div');
+    msg.className = 'msg';
+
+    const content = document.createElement('div');
+    content.className = 'msg-content';
+
+    const roleLabel = document.createElement('p');
+    roleLabel.className = 'msg-role';
+    roleLabel.textContent = role === 'user' ? 'Você' : 'Voto Consciente';
+
+    const msgText = document.createElement('p');
+    msgText.className = 'msg-text';
+    msgText.innerHTML = text;
+
+    content.appendChild(roleLabel);
+    content.appendChild(msgText);
+
+    if (role === 'ai') {
+      const source = document.createElement('span');
+      source.className = 'msg-source';
+      source.textContent = 'Fonte: TSE · Câmara dos Deputados';
+      content.appendChild(source);
+    }
+
+    msg.appendChild(content);
+    messages.appendChild(msg);
+
+    scrollToBottom();
+  }
+
+  function showTyping() {
+    const messages = document.getElementById('messages');
+
+    if (messages.children.length > 0) {
+      const div = document.createElement('div');
+      div.className = 'msg-divider';
+      div.id = 'typing-divider';
+      messages.appendChild(div);
+    }
+
+    const typing = document.createElement('div');
+    typing.className = 'typing';
+    typing.id = 'typing-indicator';
+    typing.innerHTML = `
+      <div class="typing-dots">
+        <span></span><span></span><span></span>
+      </div>
+    `;
+    messages.appendChild(typing);
+    scrollToBottom();
+  }
+
+  function removeTyping() {
+    const t = document.getElementById('typing-indicator');
+    const d = document.getElementById('typing-divider');
+    if (t) t.remove();
+    if (d) d.remove();
+  }
+
+  function addToHistory(text) {
+    const item = document.createElement('div');
+    item.className = 'history-item active';
+    item.textContent = text.length > 36 ? text.slice(0, 36) + '…' : text;
+    item.onclick = () => {
+      document.querySelectorAll('.history-item').forEach(x => x.classList.remove('active'));
+      item.classList.add('active');
+    };
+    document.querySelectorAll('.history-item').forEach(x => x.classList.remove('active'));
+    historyList.insertBefore(item, historyList.firstChild);
+  }
+
+  function scrollToBottom() {
+    const area = document.getElementById('chat-area');
+    setTimeout(() => { area.scrollTop = area.scrollHeight; }, 50);
+  }
+
+  function newChat() {
+    document.getElementById('messages').innerHTML = '';
+    document.getElementById('empty-state').classList.remove('hidden');
+    document.getElementById('chat-area').classList.add('hidden');
+    document.querySelectorAll('.history-item').forEach(x => x.classList.remove('active'));
+    firstMessage = true;
+    textarea.value = '';
+    textarea.style.height = 'auto';
+    textarea.focus();
+  }
+
+  // Resposta simulada
+  function getMockResponse(q) {
+    return `Com base nos registros do TSE e da Câmara dos Deputados, aqui está o que encontrei sobre <strong>"${q}"</strong>:<br><br>
+    Esta é uma resposta simulada. Quando integrada à API, a IA buscará nos dados oficiais — votações, candidaturas, patrimônio declarado e histórico eleitoral — e retornará uma resposta com fonte verificável para cada afirmação.`;
+  }
+
+  // ── Toggle Sidebar ──
+  function toggleSidebar() {
+    const app = document.querySelector('.app');
+    const expand = document.getElementById('btn-expand');
+    app.classList.toggle('sidebar-hidden');
+    expand.classList.toggle('visible', app.classList.contains('sidebar-hidden'));
+  }
+
+  // Foca no input ao carregar
+  textarea.focus();
+
+  // Se vier com query string ?q=..., envia automaticamente (vindo da home)
+  const params = new URLSearchParams(window.location.search);
+  const query = params.get('q');
+  if (query) {
+    textarea.value = query;
+    setTimeout(() => sendMessage(), 400);
+  }
+</script>
+</body>
+</html>
