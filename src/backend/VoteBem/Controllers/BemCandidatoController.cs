@@ -8,7 +8,7 @@ namespace VoteBem.Controllers
     [ApiController]
     public class BemCandidatoController(IBemCandidatoService bemCandidatoService) : ControllerBase
     {
-        [HttpGet("all-by-candidato")]
+        [HttpGet("all-by-candidatura")]
         public async Task<IActionResult> GetAllByCandidato(long sqCandidato)
         {
             try
