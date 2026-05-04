@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Formats.Asn1;
 using VoteBem.Services.RedesSociais;
 
 namespace VoteBem.Controllers
