@@ -11,6 +11,7 @@
             string DsSituacaoCandidatura,
             string DsOcupacao,
             string StReeleicao,
-            string? VrDespesaMaxCampanha
+            string? VrDespesaMaxCampanha,
+            string? SgPartido
         );
 }

@@ -22,7 +22,8 @@ namespace VoteBem.Mappers
                 candidatura.StReeleicao ?? "Dado não disponível!",
                 candidatura.VrDespesaMaxCampanha.HasValue
                     ? $"R${candidatura.VrDespesaMaxCampanha.Value.ToString("N2", PtBr)}"
-                    : null
+                    : null,
+                candidatura.Partido?.SgPartido
             );
         }
     }

@@ -45,7 +45,6 @@
       justify-content: space-between;
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-
     .logo {
       display: flex;
       flex-direction: column;
@@ -54,15 +53,8 @@
     }
     .logo-voto       { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: .04em; }
     .logo-consciente { font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: .1em; margin-top: 2px; }
-
     .nav-links { display: flex; gap: 48px; }
-    .nav-links a {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color .2s;
-    }
+    .nav-links a { font-size: 14px; font-weight: 500; color: var(--muted); text-decoration: none; transition: color .2s; }
     .nav-links a:hover { color: var(--text); }
     .nav-links a.active { color: var(--text); }
 
@@ -73,26 +65,18 @@
       align-items: flex-end;
       justify-content: space-between;
       gap: 24px;
+      flex-wrap: wrap;
     }
+    .page-title { font-size: 36px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; }
 
-    .page-title {
-      font-size: 36px;
-      font-weight: 700;
-      letter-spacing: -.02em;
-      line-height: 1.1;
-    }
-
-    /* Search + Filter row */
+    /* ── TOOLBAR ── */
     .toolbar {
       display: flex;
       align-items: center;
       gap: 12px;
-      flex-shrink: 0;
+      flex-wrap: wrap;
     }
-
-    .search-bar {
-      position: relative;
-    }
+    .search-bar { position: relative; }
     .search-bar input {
       padding: 10px 40px 10px 16px;
       background: rgba(255,255,255,0.06);
@@ -102,7 +86,7 @@
       font-family: var(--mono);
       font-size: 12px;
       outline: none;
-      width: 220px;
+      width: 240px;
       transition: all .2s;
       caret-color: var(--accent);
     }
@@ -121,9 +105,8 @@
       stroke-width: 2; stroke-linecap: round;
       pointer-events: none;
     }
-
     .filter-select {
-      padding: 10px 14px;
+      padding: 10px 28px 10px 14px;
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 8px;
@@ -134,8 +117,6 @@
       cursor: pointer;
       transition: border-color .2s;
       appearance: none;
-      -webkit-appearance: none;
-      padding-right: 28px;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 10px center;
@@ -144,14 +125,10 @@
     .filter-select option { background: #1a2535; }
 
     /* ── GRID ── */
-    .grid-wrap {
-      padding: 0 40px 60px;
-      flex: 1;
-    }
-
+    .grid-wrap { padding: 0 40px 60px; flex: 1; }
     .candidates-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 20px;
     }
 
@@ -166,15 +143,9 @@
       transition: border-color .25s, transform .25s;
       cursor: pointer;
     }
-    .card:hover {
-      border-color: rgba(59,168,207,0.3);
-      transform: translateY(-2px);
-    }
-
-    /* Avatar */
+    .card:hover { border-color: rgba(59,168,207,0.3); transform: translateY(-2px); }
     .card-avatar {
-      width: 110px;
-      height: 110px;
+      width: 90px; height: 90px;
       border-radius: 50%;
       background: #2a3340;
       margin: 0 auto 20px;
@@ -185,102 +156,71 @@
       flex-shrink: 0;
       border: 2px solid rgba(255,255,255,0.08);
     }
-    .card-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .card-avatar .avatar-initials {
-      font-size: 28px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.3);
-    }
-
-    .card-name {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 16px;
-      text-align: center;
-      line-height: 1.25;
-    }
-
-    .card-fields {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 24px;
-      flex: 1;
-    }
-
-    .field-label {
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--label);
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      margin-bottom: 2px;
-    }
-    .field-value {
-      font-size: 12px;
-      font-weight: 400;
-      color: var(--text);
-      line-height: 1.4;
-    }
-
-    /* Partido badge */
-    .partido-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text);
-    }
-    .partido-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    /* Comparar button */
+    .card-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-initials { font-size: 24px; font-weight: 700; color: rgba(255,255,255,0.3); }
+    .card-name { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 14px; text-align: center; line-height: 1.25; }
+    .card-fields { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; flex: 1; }
+    .field-label { font-size: 10px; font-weight: 700; color: var(--label); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2px; }
+    .field-value { font-size: 12px; font-weight: 400; color: var(--text); line-height: 1.4; }
+    .partido-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: var(--text); }
+    .partido-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: var(--accent); }
     .card-btn {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px;
       background: var(--btn-bg);
       border: 1px solid var(--btn-border);
       border-radius: 8px;
-      font-family: var(--mono);
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text);
-      cursor: pointer;
-      text-decoration: none;
+      font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--text);
+      cursor: pointer; text-decoration: none;
       transition: background .2s, border-color .2s;
-      margin-top: auto;
     }
-    .card-btn:hover {
-      background: #222f42;
-      border-color: rgba(59,168,207,0.3);
-    }
-    .card-btn svg {
-      width: 14px; height: 14px;
-      stroke: var(--text); fill: none;
-      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-      transition: transform .2s;
-    }
+    .card-btn:hover { background: #222f42; border-color: rgba(59,168,207,0.3); }
+    .card-btn svg { width: 13px; height: 13px; stroke: var(--text); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s; }
     .card-btn:hover svg { transform: translateX(3px); }
 
-    /* Empty search state */
-    .no-results {
+    /* ── PAGINAÇÃO ── */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 32px 40px;
+    }
+    .page-btn {
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      font-family: var(--mono); font-size: 12px; color: var(--muted);
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .page-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); color: var(--text); }
+    .page-btn:disabled { opacity: .3; cursor: not-allowed; }
+    .page-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .page-info { font-size: 11px; color: var(--muted); padding: 0 8px; }
+
+    /* ── ESTADOS ── */
+    .state-box {
       grid-column: 1 / -1;
       padding: 80px 0;
       text-align: center;
       color: var(--muted);
       font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
     }
+    .spinner {
+      width: 28px; height: 28px;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-icon { font-size: 28px; }
 
     /* ── FOOTER ── */
     footer {
@@ -292,143 +232,209 @@
       flex-wrap: wrap;
       gap: 16px;
     }
-
-    .footer-left { display: flex; flex-direction: column; gap: 0; }
+    .footer-logo { display: flex; flex-direction: column; gap: 0; }
     .footer-logo-voto { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1; }
     .footer-logo-consciente { font-size: 13px; font-weight: 500; color: var(--muted); margin-top: 3px; }
-
-    .footer-social { display: flex; gap: 14px; margin-top: 16px; }
-    .footer-social a { opacity: .5; transition: opacity .2s; display: flex; }
-    .footer-social a:hover { opacity: 1; }
-    .footer-social svg { width: 22px; height: 22px; fill: white; }
-
-    .footer-note {
-      font-family: var(--sans);
-      font-size: 12px;
-      color: rgba(255,255,255,0.2);
-    }
+    .footer-note { font-family: var(--sans); font-size: 12px; color: rgba(255,255,255,0.2); }
 
     /* Reveal */
     .rv { opacity: 0; transform: translateY(14px); transition: opacity .5s ease, transform .5s ease; }
     .rv.on { opacity: 1; transform: none; }
+
+    @media (max-width: 640px) {
+      nav { padding: 0 20px; }
+      .nav-links { gap: 24px; }
+      .page-header, .grid-wrap, footer { padding-left: 20px; padding-right: 20px; }
+      .candidates-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
 <nav>
-  <a href="voto-consciente-figma.html" class="logo">
+  <a href="index.html" class="logo">
     <span class="logo-voto">VOTO</span>
     <span class="logo-consciente">CONSCIENTE</span>
   </a>
   <div class="nav-links">
-    <a href="sobre.html">Sobre</a>
-    <a href="transparencia.html">Transparência</a>
+    <a href="index.html">Início</a>
+    <a href="chat.html">Chat</a>
     <a href="candidatos.html" class="active">Candidatos</a>
   </div>
 </nav>
 
-<!-- PAGE HEADER -->
 <div class="page-header">
   <h1 class="page-title">Candidatos</h1>
   <div class="toolbar">
     <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Buscar candidato..." oninput="filterCards()" />
+      <input type="text" id="search-input" placeholder="Buscar por nome..." />
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
     </div>
-    <select class="filter-select" id="filter-partido" onchange="filterCards()">
+    <select class="filter-select" id="filter-partido">
       <option value="">Todos os partidos</option>
-      <option value="PT">PT</option>
-      <option value="PL">PL</option>
-      <option value="PSDB">PSDB</option>
-      <option value="MDB">MDB</option>
-      <option value="PSOL">PSOL</option>
-      <option value="PDT">PDT</option>
+    </select>
+    <select class="filter-select" id="filter-ano">
+      <option value="">Todos os anos</option>
+      <option value="2024">2024</option>
+      <option value="2022">2022</option>
+      <option value="2020">2020</option>
+      <option value="2018">2018</option>
+      <option value="2016">2016</option>
     </select>
   </div>
 </div>
 
-<!-- GRID -->
 <div class="grid-wrap">
   <div class="candidates-grid" id="candidates-grid">
-    <!-- gerado por JS -->
+    <div class="state-box">
+      <div class="spinner"></div>
+      <span>Carregando candidatos...</span>
+    </div>
   </div>
 </div>
 
-<!-- FOOTER -->
+<div class="pagination" id="pagination"></div>
+
 <footer>
-  <div class="footer-left">
+  <div class="footer-logo">
     <span class="footer-logo-voto">VOTO</span>
     <span class="footer-logo-consciente">CONSCIENTE</span>
-    <div class="footer-social">
-      <a href="#" aria-label="Instagram">
-        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-      </a>
-      <a href="#" aria-label="Facebook">
-        <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-      </a>
-      <a href="#" aria-label="X">
-        <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.736-8.841L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      </a>
-    </div>
   </div>
-  <p class="footer-note">Plataforma independente · Brasil 2026</p>
+  <p class="footer-note">Dados públicos · TSE · Brasil 2026</p>
 </footer>
 
-<script>
-  const candidates = [
-    { nome: 'Luiz Inácio Lula da Silva', urna: 'Lula', partido: 'PT', cargo: 'Presidente da República', cor: '#e63946' },
-    { nome: 'Jair Messias Bolsonaro',    urna: 'Bolsonaro', partido: 'PL', cargo: 'Ex-Presidente da República', cor: '#1d6fa4' },
-    { nome: 'Ciro Ferreira Gomes',       urna: 'Ciro Gomes', partido: 'PDT', cargo: 'Ex-Ministro da Fazenda', cor: '#e07b2a' },
-    { nome: 'Simone Nassar Tebet',       urna: 'Simone Tebet', partido: 'MDB', cargo: 'Senadora pelo MS', cor: '#4caf50' },
-    { nome: 'Guilherme Boulos',          urna: 'Boulos', partido: 'PSOL', cargo: 'Deputado Federal por SP', cor: '#9c27b0' },
-    { nome: 'Tarcísio de Freitas',       urna: 'Tarcísio', partido: 'Republicanos', cargo: 'Governador de SP', cor: '#1d6fa4' },
-  ];
+<script type="module">
+  // ── Config ───────────────────────────────────────────────
+  const API_BASE = 'http://localhost:5253';
 
-  function getInitials(name) {
-    return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  async function apiFetch(path) {
+    const res = await fetch(`${API_BASE}${path}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
   }
 
-  function renderCards(list) {
-    const grid = document.getElementById('candidates-grid');
-    grid.innerHTML = '';
+  async function getCandidatosPaginated(pageNumber = 1, pageSize = 12) {
+    return apiFetch(`/candidatos/all-paginated?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+  }
 
-    if (list.length === 0) {
-      grid.innerHTML = '<div class="no-results">Nenhum candidato encontrado.</div>';
+  async function getCandidatosByName(name, pageNumber = 1, pageSize = 12) {
+    return apiFetch(`/candidatos/by-name-paginated?name=${encodeURIComponent(name)}&pageNumber=${pageNumber}&pageSize=${pageSize}`);
+  }
+
+  async function getCandidatosByPartido(partido, pageNumber = 1, pageSize = 12) {
+    return apiFetch(`/candidatos/by-partido-paginated?partido=${encodeURIComponent(partido)}&pageNumber=${pageNumber}&pageSize=${pageSize}`);
+  }
+
+  async function getCandidatosByAno(ano, pageNumber = 1, pageSize = 12) {
+    return apiFetch(`/candidatos/by-ano-eleitoral-paginated?ano=${ano}&pageNumber=${pageNumber}&pageSize=${pageSize}`);
+  }
+
+  // ── Estado ───────────────────────────────────────────────
+  let state = {
+    page: 1,
+    pageSize: 12,
+    totalPages: 1,
+    totalItems: 0,
+    search: '',
+    partido: '',
+    ano: '',
+    loading: false,
+  };
+
+  const grid       = document.getElementById('candidates-grid');
+  const pagination = document.getElementById('pagination');
+  const searchEl   = document.getElementById('search-input');
+  const partidoEl  = document.getElementById('filter-partido');
+  const anoEl      = document.getElementById('filter-ano');
+
+  // ── Busca de dados ───────────────────────────────────────
+  async function loadCandidatos() {
+    if (state.loading) return;
+    state.loading = true;
+    renderLoading();
+
+    try {
+      let data;
+      if (state.search)        data = await getCandidatosByName(state.search, state.page, state.pageSize);
+      else if (state.ano)      data = await getCandidatosByAno(state.ano, state.page, state.pageSize);
+      else if (state.partido)  data = await getCandidatosByPartido(state.partido, state.page, state.pageSize);
+      else                     data = await getCandidatosPaginated(state.page, state.pageSize);
+
+      state.totalPages = data.totalPages ?? 1;
+      state.totalItems = data.totalItems ?? 0;
+
+      // Popular partidos no select (apenas na primeira carga sem filtros)
+      if (!state.search && !state.partido && !state.ano && state.page === 1) {
+        populatePartidos(data.data ?? []);
+      }
+
+      renderCards(data.data ?? []);
+      renderPagination();
+    } catch (err) {
+      renderError(err.message);
+    } finally {
+      state.loading = false;
+    }
+  }
+
+  // ── Renderers ────────────────────────────────────────────
+  function renderLoading() {
+    grid.innerHTML = `
+      <div class="state-box">
+        <div class="spinner"></div>
+        <span>Carregando candidatos...</span>
+      </div>`;
+    pagination.innerHTML = '';
+  }
+
+  function renderError(msg) {
+    grid.innerHTML = `
+      <div class="state-box">
+        <span class="error-icon">⚠</span>
+        <span>Erro ao carregar candidatos</span>
+        <span style="font-size:11px;opacity:.6">${msg}</span>
+        <button onclick="loadCandidatos()" style="margin-top:8px;padding:8px 20px;background:var(--accent);border:none;border-radius:6px;color:#fff;font-family:var(--mono);font-size:12px;cursor:pointer">Tentar novamente</button>
+      </div>`;
+  }
+
+  function renderCards(items) {
+    if (!items.length) {
+      grid.innerHTML = `<div class="state-box"><span>Nenhum candidato encontrado.</span></div>`;
       return;
     }
 
-    list.forEach((c, i) => {
+    grid.innerHTML = '';
+    items.forEach((c, i) => {
       const card = document.createElement('div');
       card.className = 'card rv';
-      card.style.transitionDelay = `${(i % 3) * 0.07}s`;
-      card.onclick = () => window.location.href = `candidato.html?nome=${encodeURIComponent(c.urna)}`;
+      card.style.transitionDelay = `${(i % 4) * 0.06}s`;
+      card.onclick = () => {
+        window.location.href = `candidato.html?cpf=${encodeURIComponent(c.nrCpfCandidato)}`;
+      };
+
+      const initials = (c.nomeUrna || '?').split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
 
       card.innerHTML = `
         <div class="card-avatar">
-          <span class="avatar-initials">${getInitials(c.nome)}</span>
+          <span class="avatar-initials">${initials}</span>
         </div>
-        <h2 class="card-name">${c.urna}</h2>
+        <h2 class="card-name">${c.nomeUrna ?? '—'}</h2>
         <div class="card-fields">
-          <div>
-            <p class="field-label">Nome Completo</p>
-            <p class="field-value">${c.nome}</p>
-          </div>
-          <div>
-            <p class="field-label">Nome de Urna</p>
-            <p class="field-value">${c.urna}</p>
-          </div>
           <div>
             <p class="field-label">Partido</p>
             <p class="field-value">
               <span class="partido-badge">
-                <span class="partido-dot" style="background:${c.cor}"></span>
-                ${c.partido}
+                <span class="partido-dot"></span>
+                ${c.partido ?? '—'}
               </span>
             </p>
           </div>
+          <div>
+            <p class="field-label">Cargo Disputado</p>
+            <p class="field-value">${c.cargoDisputado ?? '—'}</p>
+          </div>
         </div>
-        <a class="card-btn" href="candidato.html?nome=${encodeURIComponent(c.urna)}">
+        <a class="card-btn" href="candidato.html?cpf=${encodeURIComponent(c.nrCpfCandidato)}">
           Ver perfil completo
           <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
@@ -445,21 +451,78 @@
     });
   }
 
-  function filterCards() {
-    const q       = document.getElementById('search-input').value.toLowerCase();
-    const partido = document.getElementById('filter-partido').value;
+  function renderPagination() {
+    if (state.totalPages <= 1) { pagination.innerHTML = ''; return; }
 
-    const filtered = candidates.filter(c => {
-      const matchSearch  = c.nome.toLowerCase().includes(q) || c.urna.toLowerCase().includes(q);
-      const matchPartido = partido === '' || c.partido === partido;
-      return matchSearch && matchPartido;
+    const prev = state.page > 1;
+    const next = state.page < state.totalPages;
+
+    let html = `
+      <button class="page-btn" ${!prev ? 'disabled' : ''} id="pg-prev">← Anterior</button>
+      <span class="page-info">Página ${state.page} de ${state.totalPages} · ${state.totalItems} candidatos</span>
+      <button class="page-btn" ${!next ? 'disabled' : ''} id="pg-next">Próxima →</button>
+    `;
+    pagination.innerHTML = html;
+
+    document.getElementById('pg-prev')?.addEventListener('click', () => {
+      state.page--; loadCandidatos();
     });
-
-    renderCards(filtered);
+    document.getElementById('pg-next')?.addEventListener('click', () => {
+      state.page++; loadCandidatos();
+    });
   }
 
-  // Init
-  renderCards(candidates);
+  // ── Partidos dinâmicos ───────────────────────────────────
+  const partidosVisto = new Set();
+  function populatePartidos(items) {
+    items.forEach(c => {
+      if (c.partido && !partidosVisto.has(c.partido)) {
+        partidosVisto.add(c.partido);
+        const opt = document.createElement('option');
+        opt.value = c.partido;
+        opt.textContent = c.partido;
+        partidoEl.appendChild(opt);
+      }
+    });
+  }
+
+  // ── Event Listeners ──────────────────────────────────────
+  let searchTimer;
+  searchEl.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      state.search  = searchEl.value.trim();
+      state.partido = '';
+      state.ano     = '';
+      state.page    = 1;
+      partidoEl.value = '';
+      anoEl.value     = '';
+      loadCandidatos();
+    }, 400);
+  });
+
+  partidoEl.addEventListener('change', () => {
+    state.partido = partidoEl.value;
+    state.search  = '';
+    state.ano     = '';
+    state.page    = 1;
+    searchEl.value  = '';
+    anoEl.value     = '';
+    loadCandidatos();
+  });
+
+  anoEl.addEventListener('change', () => {
+    state.ano     = anoEl.value;
+    state.search  = '';
+    state.partido = '';
+    state.page    = 1;
+    searchEl.value  = '';
+    partidoEl.value = '';
+    loadCandidatos();
+  });
+
+  // ── Init ─────────────────────────────────────────────────
+  loadCandidatos();
 </script>
 </body>
 </html>

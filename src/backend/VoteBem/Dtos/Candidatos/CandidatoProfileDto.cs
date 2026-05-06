@@ -12,9 +12,13 @@ namespace VoteBem.Dtos.Candidatos
             List<RedeSocialResponseDto> RedesSociais,
             string Partido,
             string CargoDisputado,
-            string UF,
+            string SgUf,
             string GrauInstrucao,
             string OcupacaoDeclarada,
-            string SituacaoCandidatura
+            string SituacaoCandidatura,
+            DateOnly? DtNascimento,
+            string? DsGenero,
+            string? SgUfNascimento,
+            string? DsEstadoCivil
         );
 }

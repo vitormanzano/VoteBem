@@ -15,6 +15,8 @@ Accept: application/json
 GET {{VoteBem_HostAddress}}/candidatos/by-ano-eleitoral-paginated?ano=2022
 Accept: application/json
 
+
+
 ### 
 GET {{VoteBem_HostAddress}}/candidatos/profile?nrCpfCandidato=07068093868
 Accept: application/json

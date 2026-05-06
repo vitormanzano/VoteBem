@@ -42,7 +42,11 @@ namespace VoteBem.Mappers
                 ultimaCandidatura?.SgUf ?? "Dado não disponível",
                 candidato.DsGrauInstrucao ?? "Dado não disponível",
                 ultimaCandidatura?.DsOcupacao ?? "Dado não disponível",
-                ultimaCandidatura?.DsSituacaoCandidatura ?? "Dado não disponível"
+                ultimaCandidatura?.DsSituacaoCandidatura ?? "Dado não disponível",
+                candidato.DtNascimento,
+                candidato.DsGenero,
+                candidato.SgUfNascimento,
+                candidato.DsEstadoCivil
             );
         }
     }

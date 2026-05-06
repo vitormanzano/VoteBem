@@ -181,6 +181,7 @@
   <aside class="left-panel">
     <div class="left-top">
       <div class="avatar">
+        <img id="avatar-img" src="" alt="" style="display:none">
         <span class="avatar-initials" id="avatar-initials">--</span>
       </div>
       <h1 class="candidate-name" id="candidate-name">—</h1>
@@ -193,7 +194,8 @@
         <div><p class="field-label">Nome Completo</p><p class="field-value" id="f-nome">—</p></div>
         <div><p class="field-label">Data de Nascimento</p><p class="field-value" id="f-nascimento">—</p></div>
         <div><p class="field-label">Gênero</p><p class="field-value" id="f-genero">—</p></div>
-        <div><p class="field-label">Município de Nascimento</p><p class="field-value" id="f-municipio">—</p></div>
+        <div><p class="field-label">Estado Civil</p><p class="field-value" id="f-civil">—</p></div>
+        <div><p class="field-label">UF de Nascimento</p><p class="field-value" id="f-municipio">—</p></div>
         <div><p class="field-label">Grau de Instrução</p><p class="field-value" id="f-instrucao">—</p></div>
         <div><p class="field-label">Ocupação</p><p class="field-value" id="f-ocupacao">—</p></div>
       </div>
@@ -207,7 +209,6 @@
         <div><p class="field-label">Partido</p><p class="field-value" id="f-partido">—</p></div>
         <div><p class="field-label">Cargo Disputado</p><p class="field-value" id="f-cargo">—</p></div>
         <div><p class="field-label">UF</p><p class="field-value" id="f-uf">—</p></div>
-        <div><p class="field-label">Estado Civil</p><p class="field-value" id="f-civil">—</p></div>
         <div>
           <p class="field-label">Redes Sociais</p>
           <div class="social-row" id="f-social"><span style="font-size:11px;color:var(--muted)">—</span></div>
@@ -228,24 +229,18 @@
   <div class="right-panel">
     <div class="year-row">
       <div class="year-select-wrap">
-        <select class="year-select" id="year-select" onchange="onYearChange()">
+        <select class="year-select" id="year-select">
           <option value="">Selecione um ano</option>
-          <option value="2022">2022</option>
-          <option value="2018">2018</option>
-          <option value="2014">2014</option>
-          <option value="2010">2010</option>
-          <option value="2006">2006</option>
-          <option value="2002">2002</option>
         </select>
         <div class="year-chevron"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>
       </div>
     </div>
 
     <div class="tabs">
-      <button class="tab active" onclick="switchTab('patrimonio',this)">Patrimônio</button>
-      <button class="tab"        onclick="switchTab('propostas',this)">Propostas</button>
-      <button class="tab"        onclick="switchTab('candidaturas',this)">Candidaturas</button>
-      <button class="tab"        onclick="switchTab('ficha',this)">Ficha</button>
+      <button class="tab active" id="tab-btn-patrimonio">Patrimônio</button>
+      <button class="tab"        id="tab-btn-propostas">Propostas</button>
+      <button class="tab"        id="tab-btn-candidaturas">Candidaturas</button>
+      <button class="tab"        id="tab-btn-ficha">Ficha</button>
     </div>
 
     <div class="tab-content active" id="tab-patrimonio"><div id="patrimonio-content"></div></div>
@@ -253,28 +248,7 @@
 
     <!-- Candidaturas: sempre visível (histórico completo) -->
     <div class="tab-content" id="tab-candidaturas">
-      <div id="candidaturas-content">
-        <div class="candidatura-item">
-          <div class="cand-ano">2022</div>
-          <div><p class="cand-cargo">Presidente da República</p><p class="cand-info">PT · Coligação Brasil da Esperança</p><p class="cand-info">60.345.999 votos no 2º turno</p></div>
-          <span class="cand-status status-eleito">Eleito</span>
-        </div>
-        <div class="candidatura-item">
-          <div class="cand-ano">2018</div>
-          <div><p class="cand-cargo">Presidente da República</p><p class="cand-info">PT</p><p class="cand-info">Candidatura impugnada</p></div>
-          <span class="cand-status status-nao">Impugnado</span>
-        </div>
-        <div class="candidatura-item">
-          <div class="cand-ano">2006</div>
-          <div><p class="cand-cargo">Presidente da República</p><p class="cand-info">PT · Coligação A Força do Povo</p><p class="cand-info">58.295.042 votos no 2º turno</p></div>
-          <span class="cand-status status-eleito">Eleito</span>
-        </div>
-        <div class="candidatura-item">
-          <div class="cand-ano">2002</div>
-          <div><p class="cand-cargo">Presidente da República</p><p class="cand-info">PT · Coligação Lula Presidente</p><p class="cand-info">52.793.364 votos no 2º turno</p></div>
-          <span class="cand-status status-eleito">Eleito</span>
-        </div>
-      </div>
+      <div id="candidaturas-content"></div>
     </div>
 
     <div class="tab-content" id="tab-ficha"><div id="ficha-content"></div></div>
@@ -294,89 +268,154 @@
   <p class="footer-note">Plataforma independente · Brasil 2026</p>
 </footer>
 
-<script>
-  // ── Mock data estruturado por ano (espelhando o banco) ──
-  const db = {
-    fixed: {
-      nome: 'Luiz Inácio Lula da Silva',
-      urna: 'Lula',
-      nascimento: '27/10/1945',
-      genero: 'Masculino',
-      municipio: 'Caetés - PE',
-      instrucao: 'Ensino Médio Completo',
-      ocupacao: 'Presidente da República',
-    },
-    candidaturas: {
-      '2022': { urna:'Lula', partido:'PT — Partido dos Trabalhadores', cargo:'Presidente da República', uf:'São Paulo', civil:'Casado', social:{ instagram:'#', facebook:'#', twitter:'#' } },
-      '2006': { urna:'Lula', partido:'PT — Partido dos Trabalhadores', cargo:'Presidente da República', uf:'São Paulo', civil:'Casado', social:{ facebook:'#' } },
-      '2002': { urna:'Lula', partido:'PT — Partido dos Trabalhadores', cargo:'Presidente da República', uf:'São Paulo', civil:'Viúvo',  social:{} },
-    },
-    patrimonio: {
-      '2022': { itens:[{tipo:'Bem imóvel',desc:'Apartamento em São Bernardo do Campo - SP',valor:'R$ 380.000,00'},{tipo:'Bem imóvel',desc:'Sítio rural em Caetés - PE',valor:'R$ 1.200.000,00'},{tipo:'Veículo',desc:'Automóvel de passeio',valor:'R$ 95.000,00'},{tipo:'Aplicação financeira',desc:'Fundo de renda fixa',valor:'R$ 540.000,00'}], total:'R$ 2.215.000,00' },
-      '2006': { itens:[{tipo:'Bem imóvel',desc:'Apartamento em São Bernardo do Campo - SP',valor:'R$ 190.000,00'},{tipo:'Veículo',desc:'Automóvel de passeio',valor:'R$ 42.000,00'}], total:'R$ 232.000,00' },
-      '2002': { itens:[{tipo:'Bem imóvel',desc:'Apartamento em São Bernardo do Campo - SP',valor:'R$ 120.000,00'}], total:'R$ 120.000,00' },
-    },
-    propostas: {
-      '2022': [
-        {tema:'Economia',resumo:'Retomada de programas de transferência de renda e ampliação do salário mínimo acima da inflação.',fonte:'Programa de Governo · TSE 2022'},
-        {tema:'Meio Ambiente',resumo:'Reativação do Fundo Amazônia e desmatamento zero até 2030.',fonte:'Programa de Governo · TSE 2022'},
-        {tema:'Educação',resumo:'Expansão das universidades federais com foco em Norte e Nordeste, retomada do ProUni e FIES.',fonte:'Programa de Governo · TSE 2022'},
-        {tema:'Saúde',resumo:'Fortalecimento do SUS, expansão do Mais Médicos e reestruturação da atenção básica.',fonte:'Programa de Governo · TSE 2022'},
-      ],
-      '2006': [
-        {tema:'Economia',resumo:'Continuidade do Bolsa Família e manutenção do superávit primário.',fonte:'Programa de Governo · TSE 2006'},
-        {tema:'Emprego',resumo:'Geração de emprego formal com incentivo às MPEs via Simples Nacional.',fonte:'Programa de Governo · TSE 2006'},
-      ],
-      '2002': [
-        {tema:'Economia',resumo:'Carta ao Povo Brasileiro — controle fiscal e respeito aos contratos.',fonte:'Programa de Governo · TSE 2002'},
-        {tema:'Social',resumo:'Unificação dos programas de transferência de renda no que viria a ser o Bolsa Família.',fonte:'Programa de Governo · TSE 2002'},
-      ],
-    },
-    ficha: {
-      '2022': {
-        criminal:[{label:'Condenações transitadas em julgado',badge:'alerta',valor:'Consta'},{label:'Situação perante a Justiça Eleitoral',badge:'ok',valor:'Regular'}],
-        campanha:[{label:'Total arrecadado',valor:'R$ 204.827.436,00'},{label:'Total gasto',valor:'R$ 198.341.120,00'},{label:'Prestação de contas',badge:'ok',valor:'Aprovada'}],
-        cassacao:[{label:'Registro de cassação de mandato',badge:'ok',valor:'Não consta'}],
-      },
-      '2006': {
-        criminal:[{label:'Condenações transitadas em julgado',badge:'ok',valor:'Não consta'},{label:'Situação perante a Justiça Eleitoral',badge:'ok',valor:'Regular'}],
-        campanha:[{label:'Total arrecadado',valor:'R$ 56.000.000,00'},{label:'Total gasto',valor:'R$ 54.200.000,00'},{label:'Prestação de contas',badge:'ok',valor:'Aprovada'}],
-        cassacao:[{label:'Registro de cassação de mandato',badge:'ok',valor:'Não consta'}],
-      },
-    },
-  };
+<script type="module">
+  import {
+    getCandidatoProfile,
+    getCandidaturasByCpf,
+    getBensBySqCandidato,
+    getSituacaoJuridicaBySqCandidato,
+    getRedesSociaisBySqCandidato,
+  } from '../js/api.js';
+
+  const API_BASE = 'http://localhost:5253';
 
   const ICONS = {
-    instagram:`<svg viewBox="0 0 24 24" fill="white" width="20" height="20"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`,
-    facebook:`<svg viewBox="0 0 24 24" fill="white" width="20" height="20"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`,
-    twitter:`<svg viewBox="0 0 24 24" fill="white" width="20" height="20"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.736-8.841L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+    instagram: `<svg viewBox="0 0 24 24" fill="white" width="20" height="20"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`,
+    facebook: `<svg viewBox="0 0 24 24" fill="white" width="20" height="20"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`,
+    twitter: `<svg viewBox="0 0 24 24" fill="white" width="20" height="20"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.736-8.841L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
   };
+
+  function getSocialIcon(tipo) {
+    if (!tipo) return null;
+    const t = tipo.toLowerCase();
+    if (t.includes('instagram')) return ICONS.instagram;
+    if (t.includes('facebook')) return ICONS.facebook;
+    if (t.includes('twitter') || t === 'x') return ICONS.twitter;
+    return null;
+  }
+
+  function initials(nome) {
+    return (nome || '?').split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '—';
+    const [y, m, d] = String(dateStr).split('-');
+    return `${d}/${m}/${y}`;
+  }
 
   function noYear(tipo) {
     return `<div class="state-msg"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><p>Selecione um ano para ver ${tipo}.</p></div>`;
   }
+
   function noData(tipo) {
     return `<div class="state-msg"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p>Sem ${tipo} registrado para este ano.</p><span>Os dados podem não estar disponíveis para todas as candidaturas.</span></div>`;
   }
 
-  function initFixed() {
-    const f = db.fixed;
-    document.getElementById('candidate-name').textContent  = f.urna;
-    document.getElementById('avatar-initials').textContent = f.nome.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
-    document.getElementById('f-nome').textContent       = f.nome;
-    document.getElementById('f-nascimento').textContent = f.nascimento;
-    document.getElementById('f-genero').textContent     = f.genero;
-    document.getElementById('f-municipio').textContent  = f.municipio;
-    document.getElementById('f-instrucao').textContent  = f.instrucao;
-    document.getElementById('f-ocupacao').textContent   = f.ocupacao;
-    document.title = f.urna + ' — VOTO CONSCIENTE';
+  function loading() {
+    return `<div class="state-msg"><p style="color:var(--muted)">Carregando...</p></div>`;
   }
 
-  function updateDynamic(year) {
-    const cand   = db.candidaturas[year];
+  let allCandidaturas = [];
+
+  // ── Tabs ───────────────────────────────────────────────────
+  ['patrimonio', 'propostas', 'candidaturas', 'ficha'].forEach(id => {
+    document.getElementById('tab-btn-' + id).addEventListener('click', function () {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      this.classList.add('active');
+      document.getElementById('tab-' + id).classList.add('active');
+    });
+  });
+
+  // ── Renderizadores ─────────────────────────────────────────
+  function renderPatrimonio(bens) {
+    const el = document.getElementById('patrimonio-content');
+    if (!bens || bens.length === 0) { el.innerHTML = noData('patrimônio declarado'); return; }
+
+    let total = 0;
+    bens.forEach(b => {
+      if (b.vrBem) {
+        const num = parseFloat(b.vrBem.replace('R$', '').replace(/\./g, '').replace(',', '.'));
+        if (!isNaN(num)) total += num;
+      }
+    });
+    const totalFmt = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    el.innerHTML = `
+      <table class="patrimonio-table">
+        <thead><tr><th class="col-tipo">Tipo</th><th class="col-desc">Descrição</th><th class="col-val">Valor declarado</th></tr></thead>
+        <tbody>${bens.map(b => `<tr>
+          <td class="col-tipo">${b.dsTipoBem || '—'}</td>
+          <td class="col-desc">${b.dsBem || '—'}</td>
+          <td class="col-val">${b.vrBem || '—'}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+      <div class="patrimonio-total">
+        <span class="total-label">Total declarado</span>
+        <span class="total-val">${totalFmt}</span>
+      </div>`;
+  }
+
+  function renderFicha(situacao) {
+    const el = document.getElementById('ficha-content');
+    const certidoes = situacao?.certidoesCriminais ?? [];
+    const cassacoes = situacao?.motivosCassacao ?? [];
+
+    el.innerHTML = `
+      <div class="ficha-section">
+        <p class="ficha-section-title">Certidão Criminal</p>
+        ${certidoes.length > 0
+          ? certidoes.map(c => `
+            <div class="ficha-item">
+              <span class="ficha-item-label">${c.nmArquivo || 'Registro criminal'}</span>
+              <span class="ficha-badge badge-alerta">Consta</span>
+            </div>`).join('')
+          : `<div class="ficha-item">
+              <span class="ficha-item-label">Condenações transitadas em julgado</span>
+              <span class="ficha-badge badge-ok">Não consta</span>
+             </div>`}
+      </div>
+      <div class="ficha-section">
+        <p class="ficha-section-title">Cassações</p>
+        ${cassacoes.length > 0
+          ? cassacoes.map(c => `
+            <div class="ficha-item">
+              <span class="ficha-item-label">${c.dsTpMotivo || c.dsMotivo || 'Cassação'}</span>
+              <span class="ficha-badge badge-alerta">Consta</span>
+            </div>`).join('')
+          : `<div class="ficha-item">
+              <span class="ficha-item-label">Registro de cassação de mandato</span>
+              <span class="ficha-badge badge-ok">Não consta</span>
+             </div>`}
+      </div>`;
+  }
+
+  function renderCandidaturas() {
+    const el = document.getElementById('candidaturas-content');
+    if (!allCandidaturas.length) { el.innerHTML = noData('candidaturas'); return; }
+
+    el.innerHTML = allCandidaturas.map(c => {
+      const sit = (c.dsSituacaoCandidatura || '').toUpperCase();
+      const isEleito = sit.includes('ELEITO') && !sit.includes('NÃO') && !sit.includes('NAO');
+      const badgeClass = isEleito ? 'status-eleito' : 'status-nao';
+      return `
+        <div class="candidatura-item">
+          <div class="cand-ano">${c.anoEleicao}</div>
+          <div>
+            <p class="cand-cargo">${c.dsCargo || '—'}</p>
+            <p class="cand-info">${c.sgPartido || '—'} · ${c.sgUf || '—'}</p>
+            ${c.vrDespesaMaxCampanha ? `<p class="cand-info">Teto de campanha: ${c.vrDespesaMaxCampanha}</p>` : ''}
+          </div>
+          <span class="cand-status ${badgeClass}">${c.dsSituacaoCandidatura || '—'}</span>
+        </div>`;
+    }).join('');
+  }
+
+  function updateDynamic(cand, redesSociais) {
     const fields = document.getElementById('dynamic-fields');
     const empty  = document.getElementById('dynamic-empty');
-    document.getElementById('dynamic-year').textContent = year;
+    document.getElementById('dynamic-year').textContent = cand?.anoEleicao || '';
 
     if (!cand) {
       fields.style.display = 'none';
@@ -386,111 +425,148 @@
     fields.style.display = 'flex';
     empty.style.display  = 'none';
 
-    document.getElementById('f-urna').textContent    = cand.urna;
-    document.getElementById('f-partido').textContent = cand.partido;
-    document.getElementById('f-cargo').textContent   = cand.cargo;
-    document.getElementById('f-uf').textContent      = cand.uf;
-    document.getElementById('f-civil').textContent   = cand.civil;
+    document.getElementById('f-urna').textContent    = cand.nmUrnaCandidato || '—';
+    document.getElementById('f-partido').textContent = cand.sgPartido || '—';
+    document.getElementById('f-cargo').textContent   = cand.dsCargo || '—';
+    document.getElementById('f-uf').textContent      = cand.sgUf || '—';
 
     const socialEl = document.getElementById('f-social');
     socialEl.innerHTML = '';
-    const entries = Object.entries(cand.social).filter(([,v])=>v);
-    if (entries.length === 0) {
+    const redes = (redesSociais || []).filter(rs => rs.urlPerfil);
+    if (redes.length === 0) {
       socialEl.innerHTML = '<span style="font-size:11px;color:var(--muted)">Não informado</span>';
     } else {
-      entries.forEach(([key, url]) => {
+      let added = 0;
+      redes.forEach(rs => {
+        const icon = getSocialIcon(rs.tipoRedeSocial);
+        if (!icon) return;
         const a = document.createElement('a');
-        a.href = url; a.style.cssText = 'opacity:.5;transition:opacity .2s;display:flex';
-        a.onmouseover = ()=>a.style.opacity='1';
-        a.onmouseout  = ()=>a.style.opacity='.5';
-        a.innerHTML = ICONS[key]||'';
+        a.href = rs.urlPerfil;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.style.cssText = 'opacity:.5;transition:opacity .2s;display:flex';
+        a.onmouseover = () => a.style.opacity = '1';
+        a.onmouseout  = () => a.style.opacity = '.5';
+        a.innerHTML = icon;
         socialEl.appendChild(a);
+        added++;
       });
+      if (!added) {
+        socialEl.innerHTML = '<span style="font-size:11px;color:var(--muted)">Não informado</span>';
+      }
     }
+
     fields.classList.remove('fade');
     void fields.offsetWidth;
     fields.classList.add('fade');
   }
 
-  function updatePatrimonio(year) {
-    const el = document.getElementById('patrimonio-content');
-    if (!year) { el.innerHTML = noYear('o patrimônio declarado'); return; }
-    const data = db.patrimonio[year];
-    if (!data) { el.innerHTML = noData('patrimônio declarado'); return; }
-    el.innerHTML = `
-      <table class="patrimonio-table">
-        <thead><tr><th class="col-tipo">Tipo</th><th class="col-desc">Descrição</th><th class="col-val">Valor declarado</th></tr></thead>
-        <tbody>${data.itens.map(i=>`<tr><td class="col-tipo">${i.tipo}</td><td class="col-desc">${i.desc}</td><td class="col-val">${i.valor}</td></tr>`).join('')}</tbody>
-      </table>
-      <div class="patrimonio-total"><span class="total-label">Total declarado</span><span class="total-val">${data.total}</span></div>`;
+  // ── Mudança de ano ─────────────────────────────────────────
+  async function onYearChange() {
+    const year = parseInt(document.getElementById('year-select').value);
+    if (!year) {
+      updateDynamic(null, []);
+      document.getElementById('patrimonio-content').innerHTML = noYear('o patrimônio declarado');
+      document.getElementById('propostas-content').innerHTML  = noYear('as propostas de governo');
+      document.getElementById('ficha-content').innerHTML      = noYear('a ficha desta candidatura');
+      return;
+    }
+
+    const cand = allCandidaturas.find(c => c.anoEleicao === year);
+    if (!cand) return;
+
+    document.getElementById('patrimonio-content').innerHTML = loading();
+    document.getElementById('ficha-content').innerHTML      = loading();
+    document.getElementById('propostas-content').innerHTML  = loading();
+
+    const [bensResult, situacaoResult, redesResult] = await Promise.allSettled([
+      getBensBySqCandidato(cand.sqCandidato),
+      getSituacaoJuridicaBySqCandidato(cand.sqCandidato),
+      getRedesSociaisBySqCandidato(cand.sqCandidato, 1, 50),
+    ]);
+
+    const bens     = bensResult.status     === 'fulfilled' ? (bensResult.value ?? []) : [];
+    const situacao = situacaoResult.status === 'fulfilled' ? situacaoResult.value : { certidoesCriminais: [], motivosCassacao: [] };
+    const redes    = redesResult.status    === 'fulfilled' ? (redesResult.value?.data ?? []) : [];
+
+    updateDynamic(cand, redes);
+    renderPatrimonio(bens);
+    renderFicha(situacao);
+
+    document.getElementById('propostas-content').innerHTML = noData('propostas de governo');
   }
 
-  function updatePropostas(year) {
-    const el = document.getElementById('propostas-content');
-    if (!year) { el.innerHTML = noYear('as propostas de governo'); return; }
-    const data = db.propostas[year];
-    if (!data) { el.innerHTML = noData('propostas de governo'); return; }
-    el.innerHTML = data.map(p=>`
-      <div class="proposta-item">
-        <p class="proposta-tema">${p.tema}</p>
-        <p class="proposta-resumo">${p.resumo}</p>
-        <span class="proposta-source">Fonte: ${p.fonte}</span>
-      </div>`).join('');
+  document.getElementById('year-select').addEventListener('change', onYearChange);
+
+  // ── Inicialização ──────────────────────────────────────────
+  async function init() {
+    const cpf = new URLSearchParams(window.location.search).get('cpf');
+    if (!cpf) {
+      document.getElementById('candidate-name').textContent = 'Candidato não encontrado';
+      return;
+    }
+
+    document.getElementById('patrimonio-content').innerHTML = noYear('o patrimônio declarado');
+    document.getElementById('propostas-content').innerHTML  = noYear('as propostas de governo');
+    document.getElementById('ficha-content').innerHTML      = noYear('a ficha desta candidatura');
+
+    try {
+      const [profile, candidaturasResult] = await Promise.all([
+        getCandidatoProfile(cpf),
+        getCandidaturasByCpf(cpf, 1, 100),
+      ]);
+
+      // Dados fixos
+      const nomeUrna = profile.nomeUrna || profile.nomeCompleto || '—';
+      document.getElementById('candidate-name').textContent  = nomeUrna;
+      document.getElementById('avatar-initials').textContent = initials(profile.nomeCompleto);
+      document.title = nomeUrna + ' — VOTO CONSCIENTE';
+
+      document.getElementById('f-nome').textContent       = profile.nomeCompleto || '—';
+      document.getElementById('f-nascimento').textContent = profile.dtNascimento ? formatDate(profile.dtNascimento) : '—';
+      document.getElementById('f-genero').textContent     = profile.dsGenero || '—';
+      document.getElementById('f-civil').textContent      = profile.dsEstadoCivil || '—';
+      document.getElementById('f-municipio').textContent  = profile.sgUfNascimento || '—';
+      document.getElementById('f-instrucao').textContent  = profile.grauInstrucao || '—';
+      document.getElementById('f-ocupacao').textContent   = profile.ocupacaoDeclarada || '—';
+
+      // Foto
+      if (profile.fotoUrl && profile.fotoUrl !== 'Dado não disponível') {
+        const img = document.getElementById('avatar-img');
+        img.src = API_BASE + profile.fotoUrl;
+        img.alt = nomeUrna;
+        img.onload = () => {
+          img.style.display = 'block';
+          document.getElementById('avatar-initials').style.display = 'none';
+        };
+      }
+
+      // Candidaturas
+      allCandidaturas = candidaturasResult?.data ?? [];
+      renderCandidaturas();
+
+      // Popular select de ano
+      const yearSelect = document.getElementById('year-select');
+      yearSelect.innerHTML = '<option value="">Selecione um ano</option>';
+      allCandidaturas.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.anoEleicao;
+        opt.textContent = c.anoEleicao;
+        yearSelect.appendChild(opt);
+      });
+
+      // Seleciona o ano mais recente
+      if (allCandidaturas.length > 0) {
+        yearSelect.value = allCandidaturas[0].anoEleicao;
+        await onYearChange();
+      }
+    } catch (err) {
+      console.error(err);
+      document.getElementById('candidate-name').textContent = 'Erro ao carregar candidato';
+    }
   }
 
-  function updateFicha(year) {
-    const el = document.getElementById('ficha-content');
-    if (!year) { el.innerHTML = noYear('a ficha desta candidatura'); return; }
-    const data = db.ficha[year];
-    if (!data) { el.innerHTML = noData('dados de ficha'); return; }
-    const rows = items => items.map(i=>`
-      <div class="ficha-item">
-        <span class="ficha-item-label">${i.label}</span>
-        ${i.badge ? `<span class="ficha-badge badge-${i.badge}">${i.valor}</span>` : `<span class="ficha-item-value">${i.valor}</span>`}
-      </div>`).join('');
-    el.innerHTML = `
-      <div class="ficha-section"><p class="ficha-section-title">Certidão Criminal</p>${rows(data.criminal)}</div>
-      <div class="ficha-section"><p class="ficha-section-title">Notas Fiscais de Campanha</p>${rows(data.campanha)}</div>
-      <div class="ficha-section"><p class="ficha-section-title">Cassações</p>${rows(data.cassacao)}</div>`;
-  }
-
-  function switchTab(id, btn) {
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-'+id).classList.add('active');
-  }
-
-  function onYearChange() {
-    const year = document.getElementById('year-select').value;
-    if (year) updateDynamic(year);
-    updatePatrimonio(year);
-    updatePropostas(year);
-    updateFicha(year);
-  }
-
-  // Init
-  initFixed();
-  // Inicializa painéis com estado "selecione um ano"
-  updatePatrimonio('');
-  updatePropostas('');
-  updateFicha('');
-
-  // Carrega ano mais recente como padrão
-  document.getElementById('year-select').value = '2022';
-  updateDynamic('2022');
-  updatePatrimonio('2022');
-  updatePropostas('2022');
-  updateFicha('2022');
-
-  // Query string
-  const params = new URLSearchParams(window.location.search);
-  const nomeParam = params.get('nome');
-  if (nomeParam) {
-    document.getElementById('candidate-name').textContent = nomeParam;
-    document.title = nomeParam + ' — VOTO CONSCIENTE';
-    document.getElementById('avatar-initials').textContent = nomeParam.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
-  }
+  init();
 </script>
 </body>
 </html>
