@@ -71,3 +71,7 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+#testes ia
+modelo_votebem/
+modelo_votebem_merged/
