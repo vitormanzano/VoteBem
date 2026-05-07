@@ -74,4 +74,7 @@ nunit-*.xml
 
 #testes ia
 modelo_votebem/
+modelo_votebem_merged/*.gguf
+*.deb
+*.safetensors
 modelo_votebem_merged/

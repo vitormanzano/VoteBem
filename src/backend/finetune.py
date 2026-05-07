@@ -1,5 +1,5 @@
 """
-finetune.py - Fine-tuning do Phi-3-mini com dados politicos
+finetune.py - Fine-tuning do Phi-3-mini com dados politicos (AMD/ROCm)
 """
 import torch
 import json
@@ -11,7 +11,6 @@ from transformers import (
     TrainingArguments,
     DataCollatorForLanguageModeling,
     Trainer,
-    BitsAndBytesConfig,
 )
 from peft import LoraConfig, get_peft_model, TaskType
 
@@ -46,12 +45,7 @@ def treinar():
     print(f"GPU: {torch.cuda.get_device_name(0)}")
     print(f"VRAM: {torch.cuda.get_device_properties(0).total_memory / 1024**3:.1f} GB")
 
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.float16,
-        bnb_4bit_use_double_quant=True,
-    )
+    os.environ["PYTORCH_HIP_ALLOC_CONF"] = "expandable_segments:True"
 
     print(f"Carregando modelo: {MODEL_NAME}")
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, trust_remote_code=True)
@@ -60,26 +54,26 @@ def treinar():
 
     model = AutoModelForCausalLM.from_pretrained(
         MODEL_NAME,
-        quantization_config=bnb_config,
-        device_map="auto",
+        device_map="cuda:0",
         trust_remote_code=True,
         attn_implementation="eager",
+        dtype=torch.float16,
     )
     model.config.use_cache = False
+    model.gradient_checkpointing_enable()
 
     lora_config = LoraConfig(
         task_type=TaskType.CAUSAL_LM,
-        r=16,
-        lora_alpha=32,
+        r=8,
+        lora_alpha=16,
         lora_dropout=0.05,
-        target_modules=["q_proj", "v_proj", "k_proj", "o_proj"],
+        target_modules=["qkv_proj", "o_proj"],
         bias="none",
     )
     model = get_peft_model(model, lora_config)
     model.print_trainable_parameters()
 
     dataset = carregar_dataset(tokenizer)
-
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
     training_args = TrainingArguments(
@@ -87,6 +81,7 @@ def treinar():
         num_train_epochs=5,
         per_device_train_batch_size=1,
         gradient_accumulation_steps=8,
+        gradient_checkpointing=True,
         learning_rate=2e-4,
         fp16=True,
         logging_steps=20,
@@ -95,7 +90,7 @@ def treinar():
         warmup_steps=20,
         lr_scheduler_type="cosine",
         report_to="none",
-        optim="paged_adamw_8bit",
+        optim="adamw_torch",
     )
 
     trainer = Trainer(
