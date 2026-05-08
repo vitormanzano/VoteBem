@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="VoteBem.Tests\VoteBem.Tests.csproj" />
+  <Project Path="VoteBem/VoteBem.csproj" />
+</Solution>

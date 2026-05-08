@@ -18,7 +18,7 @@ Accept: application/json
 
 
 ### 
-GET {{VoteBem_HostAddress}}/candidatos/profile?nrCpfCandidato=07068093868
+GET {{VoteBem_HostAddress}}/candidatos/profile?nrCpfCandidato=""
 Accept: application/json
 
 ###
@@ -38,5 +38,5 @@ GET {{VoteBem_HostAddress}}/nota-fiscal/all-by-candidatura?sqCandidato=280001612
 Accept: application/json
 
 ###
-GET {{VoteBem_HostAddress}}/rede-social/all-by-candidatura?sqCandidato=280001612393
+GET {{VoteBem_HostAddress}}/rede-social/all-by-candidatura?sqCandidato
 Accept: application/json

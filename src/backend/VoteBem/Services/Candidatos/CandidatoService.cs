@@ -10,6 +10,9 @@ namespace VoteBem.Services.Candidatos
     {
         public async Task<CandidatoProfileDto> GetCandidatoProfileAsync(string nrCpfCandidato)
         {
+            if (string.IsNullOrWhiteSpace(nrCpfCandidato.Trim()))
+                throw new ArgumentException("NrCpfCandidato é obrigatório!");
+
             var candidato = await candidatoRepository.GetCandidatoByNrCpfAsync(nrCpfCandidato) ?? throw new ArgumentException("Candidato não encontrado!");
 
             return candidato.MapCandidatoParaCandidatoProfileDto();

@@ -9,6 +9,9 @@ namespace VoteBem.Services.NotasFiscais
     {
         public async Task<PagedResultDto<NotaFiscalResponseDto>> GetNotasFiscaisBySqCandidatoAsync(long sqCandidato, int pageNumber, int pageSize)
         {
+            if (sqCandidato == null)
+                throw new Exception("sqCandidato é obrigatório!");
+
             var (notas, total) = await notaFiscalRepository.GetNotasFiscaisBySqCandidatoAsync(sqCandidato, pageNumber, pageSize);
 
             var totalPages = (int)Math.Ceiling((double)total / pageSize);
