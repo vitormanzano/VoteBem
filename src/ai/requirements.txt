@@ -1,6 +1,6 @@
 fastapi==0.115.0
 uvicorn[standard]==0.30.6
-groq==0.11.0
+groq>=0.20.0
 sentence-transformers==3.1.1
 pymupdf==1.24.10
 pgvector==0.3.4
