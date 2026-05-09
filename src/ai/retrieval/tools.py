@@ -59,6 +59,9 @@ def get_candidato_por_nome(termo: str) -> list[dict]:
     O LLM deve usar isto primeiro para descobrir o sq_candidato.
     """
     pattern = f"%{termo.strip()}%"
+    # nota: filtra apenas por nm_urna_candidato — o nm_candidato (nome civil)
+    # está corrompido para todas as candidaturas de 2014 no banco
+    # (ETL preencheu CPF sentinela e nome civil único). Pendência do ETL.
     rows = _query("""
         SELECT c.sq_candidato,
                c.nr_cpf_candidato,
@@ -70,12 +73,12 @@ def get_candidato_por_nome(termo: str) -> list[dict]:
           FROM candidatura c
           JOIN candidato cand ON cand.nr_cpf_candidato = c.nr_cpf_candidato
           LEFT JOIN partido p ON p.nr_partido = c.nr_partido
-          JOIN eleicao e ON e.cd_eleicao = c.cd_eleicao AND e.nr_turno = 1
+          JOIN eleicao e ON e.cd_eleicao = c.cd_eleicao
          WHERE c.ds_cargo = 'PRESIDENTE'
-           AND (c.nm_urna_candidato ILIKE %s OR cand.nm_candidato ILIKE %s)
+           AND c.nm_urna_candidato ILIKE %s
          ORDER BY e.ano_eleicao DESC, c.nm_urna_candidato
          LIMIT 20
-    """, (pattern, pattern))
+    """, (pattern,))
     return rows
 
 
@@ -102,7 +105,7 @@ def get_perfil(sq_candidato: int) -> dict:
           FROM candidatura c
           JOIN candidato cand ON cand.nr_cpf_candidato = c.nr_cpf_candidato
           LEFT JOIN partido p ON p.nr_partido = c.nr_partido
-          JOIN eleicao e ON e.cd_eleicao = c.cd_eleicao AND e.nr_turno = 1
+          JOIN eleicao e ON e.cd_eleicao = c.cd_eleicao
          WHERE c.sq_candidato = %s
     """, (sq_candidato,))
     if not rows:
@@ -148,7 +151,7 @@ def get_situacao_juridica(sq_candidato: int) -> dict:
     perfil = _query("""
         SELECT c.ds_situacao_candidatura, e.ano_eleicao, c.nm_urna_candidato
           FROM candidatura c
-          JOIN eleicao e ON e.cd_eleicao = c.cd_eleicao AND e.nr_turno = 1
+          JOIN eleicao e ON e.cd_eleicao = c.cd_eleicao
          WHERE c.sq_candidato = %s
     """, (sq_candidato,))
     if not perfil:
@@ -191,7 +194,7 @@ def get_historico_eleitoral(nr_cpf_candidato: str) -> list[dict]:
                (ARRAY_AGG(rt.ds_sit_tot_turno ORDER BY rt.nr_turno DESC))[1]
                    AS situacao_final
           FROM candidatura c
-          JOIN eleicao e ON e.cd_eleicao = c.cd_eleicao AND e.nr_turno = 1
+          JOIN eleicao e ON e.cd_eleicao = c.cd_eleicao
           LEFT JOIN partido p ON p.nr_partido = c.nr_partido
           LEFT JOIN resultado_turno rt ON rt.sq_candidato = c.sq_candidato
          WHERE c.nr_cpf_candidato = %s
@@ -212,7 +215,7 @@ def listar_candidatos_por_ano(ano: int) -> list[dict]:
                c.ds_situacao_candidatura
           FROM candidatura c
           LEFT JOIN partido p ON p.nr_partido = c.nr_partido
-          JOIN eleicao e ON e.cd_eleicao = c.cd_eleicao AND e.nr_turno = 1
+          JOIN eleicao e ON e.cd_eleicao = c.cd_eleicao
          WHERE c.ds_cargo = 'PRESIDENTE'
            AND e.ano_eleicao = %s
          ORDER BY c.nm_urna_candidato

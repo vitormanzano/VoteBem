@@ -24,15 +24,20 @@ def chat_completion(
     temperature: float = 0.1,
     max_tokens: int = 1024,
     retries: int = 3,
+    model: str | None = None,
 ):
-    """Chamada ao Groq com retry exponencial em erros transitórios."""
+    """Chamada ao Groq com retry exponencial em erros transitórios.
+
+    `model` sobrescreve o default de config.GROQ_MODEL — útil para
+    rodar batches em modelos mais leves sem mexer no .env do servidor.
+    """
     client = get_client()
     last_error: Exception | None = None
 
     for attempt in range(retries):
         try:
             kwargs = {
-                "model": config.GROQ_MODEL,
+                "model": model or config.GROQ_MODEL,
                 "messages": messages,
                 "temperature": temperature,
                 "max_tokens": max_tokens,
