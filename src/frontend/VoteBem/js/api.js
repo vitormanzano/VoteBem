@@ -6,13 +6,21 @@
 const API_BASE = 'http://localhost:5253';   // ← ajuste para o endereço do backend
 
 // ── Utilitário ──────────────────────────────────────────────
-async function apiFetch(path) {
-  const res = await fetch(`${API_BASE}${path}`);
+async function apiFetch(path, options = {}) {
+  const res = await fetch(`${API_BASE}${path}`, options);
   if (!res.ok) {
     const msg = await res.text().catch(() => res.statusText);
     throw new Error(msg || `HTTP ${res.status}`);
   }
   return res.json();
+}
+
+async function apiPost(path, body) {
+  return apiFetch(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
 }
 
 // ============================================================
@@ -139,4 +147,39 @@ export async function getRedesSociaisBySqCandidato(sqCandidato, pageNumber = 1, 
  */
 export async function getSituacaoJuridicaBySqCandidato(sqCandidato) {
   return apiFetch(`/situacao-juridica/all-by-candidatura?sqCandidato=${sqCandidato}`);
+}
+
+// ============================================================
+// IA — Chat, Comparação e Resumos de Propostas
+// ============================================================
+
+/**
+ * Pergunta em linguagem natural para o chatbot.
+ * POST /ai/chat
+ * @param {string} pergunta
+ * @returns ChatResponseDto { resposta, fontes, categoria }
+ */
+export async function chatIA(pergunta) {
+  return apiPost('/ai/chat', { pergunta });
+}
+
+/**
+ * Comparação de propostas de governo entre 2-4 candidatos.
+ * POST /ai/propostas/comparar
+ * @param {{ sqCandidatos: number[], temas?: string[] }} body
+ * @returns CompararResponseDto { candidatos, comparacoes }
+ */
+export async function compararPropostasIA({ sqCandidatos, temas = null }) {
+  const body = { sqCandidatos };
+  if (temas && temas.length) body.temas = temas;
+  return apiPost('/ai/propostas/comparar', body);
+}
+
+/**
+ * Resumos pré-computados (por tema) das propostas de um candidato.
+ * GET /ai/propostas/{sqCandidato}/resumos
+ * @returns ResumoPropostaDto[] — { idResumo, sqCandidato, dsTema, txResumo, dtGeracao }
+ */
+export async function getResumosBySqCandidato(sqCandidato) {
+  return apiFetch(`/ai/propostas/${sqCandidato}/resumos`);
 }

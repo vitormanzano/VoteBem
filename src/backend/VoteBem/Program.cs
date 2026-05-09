@@ -6,10 +6,12 @@ using VoteBem.Repository.Candidatos;
 using VoteBem.Repository.Candidaturas;
 using VoteBem.Repository.NotasFiscais;
 using VoteBem.Repository.RedesSociais;
+using VoteBem.Repository.ResumosProposta;
 using VoteBem.Repository.SituacaoJuridica;
 using VoteBem.Services.BensCandidato;
 using VoteBem.Services.Candidatos;
 using VoteBem.Services.Candidaturas;
+using VoteBem.Services.IA;
 using VoteBem.Services.NotasFiscais;
 using VoteBem.Services.RedesSociais;
 using VoteBem.Services.SituacaoJuridica;
@@ -33,6 +35,14 @@ builder.Services.AddScoped<INotaFiscalRepository, NotaFiscalRepository>();
 builder.Services.AddScoped<INotaFiscalService, NotaFiscalService>();
 builder.Services.AddScoped<IRedeSocialRepository, RedeSocialRepository>();
 builder.Services.AddScoped<IRedeSocialService, RedeSocialService>();
+builder.Services.AddScoped<IResumoPropostaRepository, ResumoPropostaRepository>();
+
+builder.Services.AddHttpClient<IAiService, AiService>(client =>
+{
+    var baseUrl = builder.Configuration["Ai:BaseUrl"] ?? "http://127.0.0.1:8001";
+    client.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(60);
+});
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

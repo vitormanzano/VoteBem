@@ -7,6 +7,14 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    .msg-fontes { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+    .msg-fonte-item { display: flex; align-items: flex-start; gap: 8px; font-family: var(--sans); font-size: 12px; color: rgba(240,242,245,0.7); line-height: 1.55; padding: 8px 12px; background: rgba(59,168,207,0.04); border-left: 2px solid rgba(59,168,207,0.3); border-radius: 4px; cursor: pointer; transition: background .15s; }
+    .msg-fonte-item:hover { background: rgba(59,168,207,0.08); }
+    .msg-fonte-texto { flex: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-wrap; }
+    .msg-fonte-item.expanded .msg-fonte-texto { -webkit-line-clamp: unset; display: block; }
+    .msg-fonte-toggle { font-size: 10px; color: var(--muted); margin-top: 4px; opacity: .6; user-select: none; }
+    .msg-fonte-ref { font-weight: 600; color: var(--accent); flex-shrink: 0; }
+    .msg-categoria { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 8px; padding: 2px 8px; border: 1px solid var(--border); border-radius: 10px; }
     :root {
       --bg: #0a0d10; --sidebar-bg: #0f1318;
       --sidebar-hover: rgba(255,255,255,0.06); --sidebar-active: rgba(255,255,255,0.10);
@@ -120,7 +128,9 @@
 </div>
 
 <script>
-  const BACKEND_URL = 'http://localhost:8000';
+  // Aponta para a API .NET (que faz proxy para o serviço Python de IA).
+  // Porta padrão do launchSettings.json (perfil "http").
+  const BACKEND_URL = 'http://localhost:5253';
   let historicoChat = [];
   let carregando = false;
   let firstMessage = true;
@@ -145,7 +155,7 @@
     }
   }
 
-  function appendMessage(role, text) {
+  function appendMessage(role, text, extras = {}) {
     mostrarChat();
     const messages = document.getElementById('messages');
     if (messages.children.length > 0) {
@@ -165,11 +175,58 @@
     msgText.textContent = text;
     content.appendChild(roleLabel);
     content.appendChild(msgText);
+
     if (role === 'ai') {
-      const source = document.createElement('span');
-      source.className = 'msg-source';
-      source.textContent = 'Fonte: TSE · Dados oficiais';
-      content.appendChild(source);
+      const fontes = extras.fontes || [];
+      if (fontes.length) {
+        const wrap = document.createElement('div');
+        wrap.className = 'msg-fontes';
+        fontes.forEach(f => {
+          const item = document.createElement('div');
+          item.className = 'msg-fonte-item';
+          const refSpan = document.createElement('span');
+          refSpan.className = 'msg-fonte-ref';
+          refSpan.textContent = `[${f.ref}]`;
+
+          const body = document.createElement('div');
+          body.style.flex = '1';
+
+          const txt = document.createElement('div');
+          txt.className = 'msg-fonte-texto';
+          const ano = f.ano ? ` (${f.ano})` : '';
+          const trecho = (f.trecho || '').trim();
+          txt.textContent = `${f.nome}${ano} — ${trecho}`;
+
+          const toggle = document.createElement('div');
+          toggle.className = 'msg-fonte-toggle';
+          toggle.textContent = '↓ clique para expandir';
+
+          body.appendChild(txt);
+          body.appendChild(toggle);
+
+          item.appendChild(refSpan);
+          item.appendChild(body);
+
+          item.addEventListener('click', () => {
+            const expanded = item.classList.toggle('expanded');
+            toggle.textContent = expanded ? '↑ clique para recolher' : '↓ clique para expandir';
+          });
+
+          wrap.appendChild(item);
+        });
+        content.appendChild(wrap);
+      } else {
+        const source = document.createElement('span');
+        source.className = 'msg-source';
+        source.textContent = 'Fonte: TSE · Dados oficiais';
+        content.appendChild(source);
+      }
+      if (extras.categoria) {
+        const cat = document.createElement('div');
+        cat.className = 'msg-categoria';
+        cat.textContent = extras.categoria;
+        content.appendChild(cat);
+      }
     }
     msg.appendChild(content);
     messages.appendChild(msg);
@@ -241,23 +298,28 @@
     showTyping();
 
     try {
-      const res = await fetch(`${BACKEND_URL}/chat`, {
+      const res = await fetch(`${BACKEND_URL}/ai/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pergunta: val, historico: historicoChat.slice(-6) })
+        body: JSON.stringify({ pergunta: val })
       });
 
       removeTyping();
 
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.detail || `Erro ${res.status}`);
+        const errText = await res.text().catch(() => '');
+        let detail = errText;
+        try { detail = JSON.parse(errText).detail || errText; } catch {}
+        throw new Error(detail || `Erro ${res.status}`);
       }
 
       const data = await res.json();
-      appendMessage('ai', data.resposta);
+      appendMessage('ai', data.resposta || '', {
+        fontes: data.fontes || [],
+        categoria: data.categoria,
+      });
       historicoChat.push({ papel: 'usuário', texto: val });
-      historicoChat.push({ papel: 'assistente', texto: data.resposta });
+      historicoChat.push({ papel: 'assistente', texto: data.resposta || '' });
 
     } catch (err) {
       removeTyping();

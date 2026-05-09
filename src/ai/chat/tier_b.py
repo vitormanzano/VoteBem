@@ -86,7 +86,7 @@ def run(
             "sq_candidato": int(c["sq_candidato"]),
             "nome": c["nm_urna_candidato"],
             "ano": int(c["ano_eleicao"]),
-            "trecho": c["texto"][:200] + ("…" if len(c["texto"]) > 200 else ""),
+            "trecho": c["texto"],
         })
 
     prompt_user = (
