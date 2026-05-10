@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 import config
 from chat import tier_a, tier_b, router, comparison
+from chat.formatting import normalize
 
 RECUSA_OPINIAO = (
     "O VoteBem é estritamente informativo e não emite recomendações de voto. "
@@ -89,13 +90,13 @@ def chat(req: ChatRequest):
         if categoria == "proposta":
             resposta, fontes = tier_b.run(req.pergunta)
             return ChatResponse(
-                resposta=resposta,
+                resposta=normalize(resposta),
                 fontes=[Fonte(**f) for f in fontes],
                 categoria=categoria,
             )
 
         resposta = tier_a.run(req.pergunta)
-        return ChatResponse(resposta=resposta, fontes=[], categoria=categoria)
+        return ChatResponse(resposta=normalize(resposta), fontes=[], categoria=categoria)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -111,6 +112,10 @@ def comparar(req: CompararRequest):
         )
     try:
         candidatos, comparacoes = comparison.comparar(req.sq_candidatos, temas)
+        # normaliza valores monetários e datas em cada bloco da comparação
+        comparacoes = [
+            {**c, "texto": normalize(c.get("texto", ""))} for c in comparacoes
+        ]
         return CompararResponse(
             candidatos=[CandidatoResumido(**c) for c in candidatos],
             comparacoes=[TemaComparado(**c) for c in comparacoes],
