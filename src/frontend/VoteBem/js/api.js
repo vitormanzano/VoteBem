@@ -150,6 +150,31 @@ export async function getSituacaoJuridicaBySqCandidato(sqCandidato) {
 }
 
 // ============================================================
+// PROPOSTAS (IA)
+// ============================================================
+
+/**
+ * Dados do PDF do programa de governo por sqCandidato.
+ * GET /ai/propostas/{sqCandidato}
+ * @returns PropostaGovernoDto | null (404 → null)
+ */
+export async function getPropostaGoverno(sqCandidato) {
+  const res = await fetch(`${API_BASE}/ai/propostas/${sqCandidato}`);
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+/**
+ * Resumos das propostas de governo gerados por IA por sqCandidato.
+ * GET /ai/propostas/{sqCandidato}/resumos
+ * @returns ResumoPropostaDto[]
+ */
+export async function getPropostasResumos(sqCandidato) {
+  return apiFetch(`/ai/propostas/${sqCandidato}/resumos`);
+}
+
+// ============================================================
 // IA — Chat, Comparação e Resumos de Propostas
 // ============================================================
 

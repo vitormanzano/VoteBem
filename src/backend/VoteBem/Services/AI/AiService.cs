@@ -51,6 +51,22 @@ namespace VoteBem.Services.IA
             });
         }
 
+        public async Task<PropostaGovernoDto?> GetPropostaGovernoAsync(long sqCandidato)
+        {
+            if (sqCandidato <= 0)
+                throw new ArgumentException("sq_candidato inválido.");
+
+            var proposta = await resumoRepository.GetPropostaGovernoAsync(sqCandidato);
+            if (proposta is null) return null;
+
+            return new PropostaGovernoDto(
+                proposta.SqCandidato,
+                proposta.NmArquivo,
+                proposta.DsCaminhoArquivo,
+                proposta.StProcessado
+            );
+        }
+
         private static async Task EnsureSuccessOrThrowAsync(HttpResponseMessage resp, CancellationToken ct)
         {
             if (resp.IsSuccessStatusCode) return;

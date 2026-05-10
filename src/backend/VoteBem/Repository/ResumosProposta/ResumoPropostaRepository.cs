@@ -17,5 +17,13 @@ namespace VoteBem.Repository.ResumosProposta
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        public async Task<PropostaGoverno?> GetPropostaGovernoAsync(long sqCandidato)
+        {
+            return await context.PropostasGoverno
+                .Where(pg => pg.SqCandidato == sqCandidato)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+        }
     }
 }

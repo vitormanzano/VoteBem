@@ -8,6 +8,25 @@ namespace VoteBem.Controllers
     [Route("ai")]
     public class AiController(IAiService aiService) : ControllerBase
     {
+        [HttpGet("propostas/{sqCandidato:long}")]
+        public async Task<IActionResult> GetPropostaGoverno(long sqCandidato)
+        {
+            try
+            {
+                var proposta = await aiService.GetPropostaGovernoAsync(sqCandidato);
+                if (proposta is null) return NotFound();
+                return Ok(proposta);
+            }
+            catch (Exception ex)
+            {
+                return ex switch
+                {
+                    ArgumentException => BadRequest(ex.Message),
+                    _ => StatusCode(StatusCodes.Status500InternalServerError, ex.Message)
+                };
+            }
+        }
+
         [HttpGet("propostas/{sqCandidato:long}/resumos")]
         public async Task<IActionResult> GetPropostasResumos(long sqCandidato)
         {

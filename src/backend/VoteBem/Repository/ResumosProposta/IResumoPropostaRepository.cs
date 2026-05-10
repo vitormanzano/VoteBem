@@ -7,5 +7,6 @@ namespace VoteBem.Repository.ResumosProposta
     {
         IUnitOfWork UnitOfWork { get; }
         Task<IEnumerable<ResumoProposta>> GetResumosBySqCandidatoAsync(long sqCandidato);
+        Task<PropostaGoverno?> GetPropostaGovernoAsync(long sqCandidato);
     }
 }
