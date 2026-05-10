@@ -2,8 +2,11 @@
 import json
 import re
 
+from psycopg2.extras import RealDictCursor
+
 from llm import chat_completion
 from chat.system_prompts import SYSTEM_PROMPT_BASE
+from db import get_connection
 from retrieval.vector_search import search_chunks
 from retrieval.tools import get_candidato_por_nome
 
@@ -41,15 +44,79 @@ def _analyze_query(pergunta: str) -> tuple[str, list[str]]:
     return trecho, [c for c in candidatos if isinstance(c, str) and c.strip()]
 
 
-def _resolver_sqs(nomes: list[str]) -> list[int]:
-    """Resolve cada nome em sq_candidatos via get_candidato_por_nome (todos os anos)."""
-    sqs: list[int] = []
-    for nome in nomes:
-        for r in get_candidato_por_nome(nome):
-            sq = int(r["sq_candidato"])
-            if sq not in sqs:
-                sqs.append(sq)
-    return sqs
+def _disponibilidade(nomes: list[str]) -> list[dict]:
+    """Para cada nome citado, lista todas as candidaturas presidenciais com info
+    sobre disponibilidade de proposta pesquisável.
+
+    Retorna [{termo, sq_candidato, nome, ano, tem_chunks}, ...]
+    """
+    if not nomes:
+        return []
+    conn = get_connection()
+    try:
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        infos: list[dict] = []
+        vistos: set[int] = set()
+        for nome in nomes:
+            cur.execute(
+                """
+                SELECT c.sq_candidato,
+                       c.nm_urna_candidato,
+                       e.ano_eleicao,
+                       EXISTS (
+                         SELECT 1 FROM proposta_chunk pc
+                          WHERE pc.sq_candidato = c.sq_candidato
+                       ) AS tem_chunks
+                  FROM candidatura c
+                  JOIN eleicao e ON e.cd_eleicao = c.cd_eleicao
+                 WHERE c.ds_cargo = 'PRESIDENTE'
+                   AND c.nm_urna_candidato ILIKE %s
+                 ORDER BY e.ano_eleicao
+                """,
+                (f"%{nome}%",),
+            )
+            for r in cur.fetchall():
+                sq = int(r["sq_candidato"])
+                if sq in vistos:
+                    continue
+                vistos.add(sq)
+                infos.append({
+                    "termo": nome,
+                    "sq_candidato": sq,
+                    "nome": r["nm_urna_candidato"],
+                    "ano": int(r["ano_eleicao"]),
+                    "tem_chunks": bool(r["tem_chunks"]),
+                })
+        cur.close()
+        return infos
+    finally:
+        conn.close()
+
+
+def _msg_indisponibilidade(infos: list[dict]) -> str:
+    """Mensagem útil quando nenhum candidato citado tem proposta pesquisável."""
+    if not infos:
+        return (
+            "Os candidatos citados não constam na base de dados do TSE "
+            "como candidatos à Presidência entre 2010 e 2022."
+        )
+
+    # agrupa por nome de urna
+    por_nome: dict[str, list[int]] = {}
+    for i in infos:
+        por_nome.setdefault(i["nome"], []).append(i["ano"])
+
+    partes = []
+    for nome, anos in por_nome.items():
+        anos_str = ", ".join(str(a) for a in sorted(anos))
+        partes.append(
+            f"{nome} concorreu em {anos_str}, mas o TSE disponibilizou "
+            f"apenas digitalização escaneada (sem texto pesquisável) das propostas."
+        )
+    return (
+        "Não há propostas em formato pesquisável para essa consulta:\n- "
+        + "\n- ".join(partes)
+    )
 
 
 def run(
@@ -60,11 +127,43 @@ def run(
     """Pipeline RAG: análise → resolução → busca → resposta com citações."""
     trecho, nomes = _analyze_query(pergunta)
 
-    # Filtro por candidato: se a pergunta cita nomes e o caller não passou
-    # uma lista explícita, resolvemos os sq_candidato dos nomes citados.
     filtro = sq_candidatos
+    aviso_anos = ""
+
     if filtro is None and nomes:
-        filtro = _resolver_sqs(nomes) or None
+        infos = _disponibilidade(nomes)
+        sqs_com = [i["sq_candidato"] for i in infos if i["tem_chunks"]]
+        sqs_sem = [i for i in infos if not i["tem_chunks"]]
+
+        if not sqs_com:
+            # nenhum dos candidatos citados tem proposta pesquisável
+            return _msg_indisponibilidade(infos), []
+
+        filtro = sqs_com
+
+        # Sempre informa ao LLM a disponibilidade completa dos candidatos
+        # citados — anos que ele concorreu e quais têm texto pesquisável.
+        # Assim o LLM sabe responder "X não concorreu em Y" e
+        # "PDF de Y é só digitalização" sem inventar.
+        por_nome: dict[str, list[tuple[int, bool]]] = {}
+        for i in infos:
+            por_nome.setdefault(i["nome"], []).append((i["ano"], i["tem_chunks"]))
+
+        linhas = []
+        for nome, lista in por_nome.items():
+            partes_anos = [
+                f"{ano} ({'disponível' if tem else 'apenas digitalização escaneada'})"
+                for ano, tem in sorted(lista)
+            ]
+            linhas.append(f"- {nome}: {', '.join(partes_anos)}")
+        aviso_anos = (
+            "DISPONIBILIDADE DOS CANDIDATOS CITADOS (use SEMPRE esta informação "
+            "antes de responder):\n"
+            + "\n".join(linhas)
+            + "\nSe o eleitor pediu um ano em que o candidato não concorreu, "
+            "informe isso explicitamente. Se pediu um ano sem texto pesquisável, "
+            "diga que apenas a digitalização está disponível e ofereça os anos cobertos.\n\n"
+        )
 
     chunks = search_chunks(trecho, sq_candidatos=filtro, k=k)
 
@@ -91,10 +190,11 @@ def run(
 
     prompt_user = (
         f"Pergunta do eleitor: {pergunta}\n\n"
-        f"Use APENAS os trechos abaixo. Toda afirmação deve ser seguida da "
-        f"referência [N] correspondente. Se os trechos não tratam da pergunta, "
-        f"responda \"Não consta na base de dados oficial do TSE.\"\n\n"
-        f"Trechos:\n\n"
+        + aviso_anos
+        + "Use APENAS os trechos abaixo. Toda afirmação deve ser seguida da "
+        + "referência [N] correspondente. Se os trechos não tratam da pergunta, "
+        + "responda \"Não consta na base de dados oficial do TSE.\"\n\n"
+        + "Trechos:\n\n"
         + "\n\n".join(contexto_partes)
     )
 

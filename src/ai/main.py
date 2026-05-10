@@ -90,7 +90,7 @@ def chat(req: ChatRequest):
         if categoria == "proposta":
             resposta, fontes = tier_b.run(req.pergunta)
             return ChatResponse(
-                resposta=normalize(resposta),
+                resposta=normalize(resposta, max_ref_citacao=len(fontes)),
                 fontes=[Fonte(**f) for f in fontes],
                 categoria=categoria,
             )
