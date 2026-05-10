@@ -112,10 +112,20 @@ def test_validar_citacoes_ajusta_pontuacao_adjacente():
     assert " ." not in out
 
 
-def test_validar_citacoes_sem_max_ref():
-    """max_ref=0 desliga a validação — devolve string idêntica."""
+def test_validar_citacoes_max_ref_zero_remove_tudo():
+    """Com max_ref=0 nenhuma referência é válida; todas são removidas.
+    Quem quer desligar a validação deve usar normalize() sem o
+    parâmetro max_ref_citacao (default 0 ali pula o validador)."""
     txt = "Cita [1] e [99]."
-    assert validar_citacoes(txt, max_ref=0) == txt
+    out = validar_citacoes(txt, max_ref=0)
+    assert "[1]" not in out
+    assert "[99]" not in out
+
+
+def test_normalize_desliga_validacao_de_citacoes_por_default():
+    """normalize() sem max_ref_citacao deve preservar todas as citações."""
+    txt = "Cita [1] e [99] sem mexer."
+    assert normalize(txt) == txt
 
 
 def test_validar_citacoes_string_vazia():

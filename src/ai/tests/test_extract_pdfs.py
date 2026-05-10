@@ -39,11 +39,13 @@ def test_clean_text_remove_caracteres_de_controle():
     assert "\x07" not in clean_text(txt)
 
 
-def test_clean_text_preserva_quebras_simples_e_tabs():
+def test_clean_text_preserva_quebras_de_linha():
+    """Quebras simples (\\n) são preservadas; tabs são colapsadas em espaço."""
     txt = "Linha 1\nLinha 2\tcom tab"
     out = clean_text(txt)
     assert "\n" in out
-    assert "\t" in out
+    # tab é tratado como espaço em branco e colapsado pela regex [ \t]+ → ' '
+    assert "Linha 2 com tab" in out
 
 
 def test_clean_text_string_vazia():
