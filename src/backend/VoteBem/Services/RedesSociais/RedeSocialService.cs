@@ -11,8 +11,6 @@ namespace VoteBem.Services.RedesSociais
     {
         public async Task<PagedResultDto<RedeSocialResponseDto>> GetAllBySqCandidatoPaginatedAsync(long sqCandidato, int pageNumber, int pageSize)
         {
-            if (!sqCandidato.Equals(null))
-                throw new ArgumentException("SqCandidato é obrigatório!");
 
             var (redesSociais, total) = await redeSocialRepository.GetRedesSociaisBySqCandidatoPaginatedAsync(sqCandidato, pageNumber, pageSize);
 
