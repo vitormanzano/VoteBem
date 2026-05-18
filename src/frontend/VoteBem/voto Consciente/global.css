@@ -1,0 +1,91 @@
+/* ── NAVBAR ── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #0a0d10;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  justify-content: space-between;
+}
+
+.logo-mark {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: .05em;
+  color: #f0f2f5;
+  text-decoration: none;
+}
+
+.logo-mark span {
+  color: white;
+  font-weight: 800;
+}
+
+.nav-links {
+  display: flex;
+  gap: 48px;
+}
+
+.nav-links a {
+  font-size: 16px;
+  font-weight: 500;
+  color: #f0f2f5;
+  text-decoration: none;
+  transition: opacity .2s;
+}
+
+.nav-links a:hover {
+  opacity: .6;
+}
+
+/* ── FOOTER ── */
+footer {
+  padding: 44px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: auto;
+}
+
+.footer-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-social {
+  display: flex;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.footer-social a {
+  opacity: .4;
+  transition: opacity .2s;
+  display: flex;
+}
+
+.footer-social a:hover {
+  opacity: 1;
+}
+
+.footer-social svg {
+  width: 20px;
+  height: 20px;
+  fill: white;
+}
+
+.footer-note {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.18);
+  max-width: 460px;
+  line-height: 1.6;
+  text-align: right;
+}
