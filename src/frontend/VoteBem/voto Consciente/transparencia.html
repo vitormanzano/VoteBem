@@ -97,8 +97,6 @@
       align-items: start;
     }
 
-    .manifesto-left {}
-
     .manifesto-title {
       font-size: clamp(26px, 2.8vw, 38px);
       font-weight: 700;
@@ -297,6 +295,9 @@
   <!-- NAV -->
   <nav>
     <a href="index.html" class="logo-mark">VOTE<span>BEM</span></a>
+    <button class="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
     <div class="nav-links">
       <a href="sobre.html">Sobre</a>
       <a href="transparencia.html">Transparência</a>
@@ -427,6 +428,7 @@
       exibidas são de fontes públicas. Plataforma independente · Brasil 2026</p>
   </footer>
 
+  <script src="global.js"></script>
   <script>
     const io = new IntersectionObserver(
       entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); }),

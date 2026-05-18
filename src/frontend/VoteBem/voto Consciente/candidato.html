@@ -1,353 +1,970 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Candidato — VOTO CONSCIENTE</title>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@300;400;500&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="global.css">
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     :root {
       --bg: #0a0d10;
       --panel: #0f1318;
-      --border: rgba(255,255,255,0.09);
-      --border-strong: rgba(255,255,255,0.14);
-      --input-bg: rgba(255,255,255,0.06);
+      --border: rgba(255, 255, 255, 0.09);
+      --border-strong: rgba(255, 255, 255, 0.14);
+      --input-bg: rgba(255, 255, 255, 0.06);
       --text: #f0f2f5;
-      --muted: rgba(240,242,245,0.45);
-      --label: rgba(240,242,245,0.35);
+      --muted: rgba(240, 242, 245, 0.45);
+      --label: rgba(240, 242, 245, 0.35);
       --accent: #3ba8cf;
       --mono: 'JetBrains Mono', monospace;
       --sans: 'Inter', sans-serif;
       --left-w: 280px;
     }
 
-    html { scroll-behavior: smooth; }
-    body { font-family: var(--mono); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--mono);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
     /* LAYOUT */
-    .page-wrap { flex: 1; padding: 24px 40px 40px; display: grid; grid-template-columns: var(--left-w) 1fr; gap: 20px; max-width: 1100px; margin: 0 auto; width: 100%; }
+    .page-wrap {
+      flex: 1;
+      padding: 24px 40px 40px;
+      display: grid;
+      grid-template-columns: var(--left-w) 1fr;
+      gap: 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
 
     /* LEFT */
-    .left-panel { background: var(--panel); border: 1px solid var(--border-strong); border-radius: 6px; display: flex; flex-direction: column; align-self: start; position: sticky; top: 88px; overflow: hidden; }
+    .left-panel {
+      background: var(--panel);
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      align-self: start;
+      position: sticky;
+      top: 88px;
+      overflow: hidden;
+    }
 
-    .left-top { padding: 28px 24px 20px; }
+    .left-top {
+      padding: 28px 24px 20px;
+    }
 
-    .avatar { width: 120px; height: 120px; border-radius: 50%; background: #2a3340; margin: 0 auto 18px; overflow: hidden; border: 2px solid var(--border-strong); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .avatar-initials { font-size: 32px; font-weight: 700; color: rgba(255,255,255,0.22); }
+    .avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: #2a3340;
+      margin: 0 auto 18px;
+      overflow: hidden;
+      border: 2px solid var(--border-strong);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
 
-    .candidate-name { font-size: 18px; font-weight: 700; color: var(--text); text-align: center; line-height: 1.2; }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-initials {
+      font-size: 32px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.22);
+    }
+
+    .candidate-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      text-align: center;
+      line-height: 1.2;
+    }
 
     /* Bloco fixo */
-    .block-fixed { padding: 18px 24px; border-top: 1px solid var(--border); }
+    .block-fixed {
+      padding: 18px 24px;
+      border-top: 1px solid var(--border);
+    }
 
-    .block-label { font-size: 9px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--label); margin-bottom: 14px; }
+    .block-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--label);
+      margin-bottom: 14px;
+    }
 
-    .info-fields { display: flex; flex-direction: column; gap: 11px; }
+    .info-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
 
-    .field-label { font-size: 10px; font-weight: 700; color: var(--label); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2px; }
-    .field-value { font-size: 12px; font-weight: 400; color: var(--text); line-height: 1.45; }
+    .field-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--label);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .field-value {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.45;
+    }
 
     /* Bloco dinâmico */
-    .block-dynamic { padding: 18px 24px; border-top: 1px solid var(--border); }
+    .block-dynamic {
+      padding: 18px 24px;
+      border-top: 1px solid var(--border);
+    }
 
-    .block-dynamic-label { font-size: 9px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
-    .block-dynamic-label::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: .7; }
+    .block-dynamic-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-    .dynamic-empty { font-size: 12px; color: var(--muted); font-style: italic; line-height: 1.6; display: none; }
+    .block-dynamic-label::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: .7;
+    }
 
-    .social-row { display: flex; gap: 10px; margin-top: 4px; }
-    .social-row a { opacity: .5; transition: opacity .2s; display: flex; }
-    .social-row a:hover { opacity: 1; }
-    .social-row svg { width: 20px; height: 20px; fill: white; }
+    .dynamic-empty {
+      font-size: 12px;
+      color: var(--muted);
+      font-style: italic;
+      line-height: 1.6;
+      display: none;
+    }
+
+    .social-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .social-row a {
+      opacity: .5;
+      transition: opacity .2s;
+      display: flex;
+    }
+
+    .social-row a:hover {
+      opacity: 1;
+    }
+
+    .social-row svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
 
     /* Left footer */
-    .left-footer { padding: 14px 24px 18px; border-top: 1px solid var(--border); }
+    .left-footer {
+      padding: 14px 24px 18px;
+      border-top: 1px solid var(--border);
+    }
 
-    .btn-comparar { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #1a2535; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer; text-decoration: none; transition: background .2s, border-color .2s; width: 100%; }
-    .btn-comparar:hover { background: #222f42; border-color: rgba(59,168,207,0.3); }
-    .btn-comparar svg { width: 14px; height: 14px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s; }
-    .btn-comparar:hover svg { transform: translateX(3px); }
+    .btn-comparar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: #1a2535;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s, border-color .2s;
+      width: 100%;
+    }
+
+    .btn-comparar:hover {
+      background: #222f42;
+      border-color: rgba(59, 168, 207, 0.3);
+    }
+
+    .btn-comparar svg {
+      width: 14px;
+      height: 14px;
+      stroke: white;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: transform .2s;
+    }
+
+    .btn-comparar:hover svg {
+      transform: translateX(3px);
+    }
 
     /* RIGHT */
-    .right-panel { background: var(--panel); border: 1px solid var(--border-strong); border-radius: 6px; display: flex; flex-direction: column; min-height: 600px; }
+    .right-panel {
+      background: var(--panel);
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      min-height: 600px;
+    }
 
-    .year-row { padding: 20px 24px; border-bottom: 1px solid var(--border); }
-    .year-select-wrap { position: relative; }
-    .year-select { width: 100%; padding: 12px 40px 12px 16px; background: var(--input-bg); border: 1px solid var(--border-strong); border-radius: 8px; color: var(--text); font-family: var(--mono); font-size: 13px; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; transition: border-color .2s; }
-    .year-select:focus { border-color: rgba(59,168,207,0.4); }
-    .year-select option { background: #1a2535; }
-    .year-chevron { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; }
-    .year-chevron svg { width: 16px; height: 16px; stroke: var(--muted); fill: none; stroke-width: 2; stroke-linecap: round; }
+    .year-row {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
 
-    .tabs { display: flex; padding: 0 24px; border-bottom: 1px solid var(--border); }
-    .tab { padding: 16px 20px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: color .2s, border-color .2s; margin-bottom: -1px; white-space: nowrap; background: none; border-left: none; border-right: none; border-top: none; font-family: var(--mono); }
-    .tab:hover { color: var(--text); }
-    .tab.active { color: var(--text); border-bottom-color: var(--text); }
+    .year-select-wrap {
+      position: relative;
+    }
 
-    .tab-content { flex: 1; padding: 32px 24px; display: none; }
-    .tab-content.active { display: block; }
+    .year-select {
+      width: 100%;
+      padding: 12px 40px 12px 16px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: border-color .2s;
+    }
+
+    .year-select:focus {
+      border-color: rgba(59, 168, 207, 0.4);
+    }
+
+    .year-select option {
+      background: #1a2535;
+    }
+
+    .year-chevron {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .year-chevron svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--muted);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+
+    .tabs {
+      display: flex;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      padding: 16px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color .2s, border-color .2s;
+      margin-bottom: -1px;
+      white-space: nowrap;
+      background: none;
+      border-left: none;
+      border-right: none;
+      border-top: none;
+      font-family: var(--mono);
+    }
+
+    .tab:hover {
+      color: var(--text);
+    }
+
+    .tab.active {
+      color: var(--text);
+      border-bottom-color: var(--text);
+    }
+
+    .tab-content {
+      flex: 1;
+      padding: 32px 24px;
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
 
     /* No year / no data state */
-    .state-msg { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; height: 220px; color: var(--muted); text-align: center; }
-    .state-msg svg { width: 28px; height: 28px; stroke: var(--muted); fill: none; stroke-width: 1.5; opacity: .35; }
-    .state-msg p { font-size: 13px; line-height: 1.6; max-width: 260px; }
-    .state-msg span { font-size: 11px; opacity: .6; }
+    .state-msg {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      height: 220px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .state-msg svg {
+      width: 28px;
+      height: 28px;
+      stroke: var(--muted);
+      fill: none;
+      stroke-width: 1.5;
+      opacity: .35;
+    }
+
+    .state-msg p {
+      font-size: 13px;
+      line-height: 1.6;
+      max-width: 260px;
+    }
+
+    .state-msg span {
+      font-size: 11px;
+      opacity: .6;
+    }
 
     /* PATRIMÔNIO */
-    .patrimonio-table { width: 100%; border-collapse: collapse; }
-    .patrimonio-table th { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--label); text-align: left; padding: 0 0 14px; border-bottom: 1px solid var(--border); }
-    .patrimonio-table td { font-size: 13px; color: var(--text); padding: 14px 0; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
-    .patrimonio-table tr:last-child td { border-bottom: none; }
-    .col-tipo { width: 38%; color: var(--muted); font-size: 12px; }
-    .col-desc { width: 37%; }
-    .col-val  { width: 25%; text-align: right; font-weight: 600; color: var(--accent); }
-    .patrimonio-total { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-strong); }
-    .total-label { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; }
-    .total-val   { font-size: 20px; font-weight: 800; color: var(--text); }
+    .patrimonio-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .patrimonio-table th {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--label);
+      text-align: left;
+      padding: 0 0 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .patrimonio-table td {
+      font-size: 13px;
+      color: var(--text);
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .patrimonio-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .col-tipo {
+      width: 38%;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .col-desc {
+      width: 37%;
+    }
+
+    .col-val {
+      width: 25%;
+      text-align: right;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .patrimonio-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-strong);
+    }
+
+    .total-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .total-val {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+    }
 
     /* PROPOSTAS */
-    .proposta-item { padding: 20px 0; border-bottom: 1px solid var(--border); }
-    .proposta-item:last-child { border-bottom: none; }
-    .proposta-tema { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; opacity: .8; }
-    .proposta-resumo { font-family: var(--sans); font-size: 14px; font-weight: 300; color: var(--text); line-height: 1.75; }
-    .proposta-source { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 11px; font-weight: 500; color: var(--accent); opacity: .7; border: 1px solid rgba(59,168,207,0.2); padding: 3px 10px; border-radius: 20px; }
+    .proposta-item {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .proposta-item:last-child {
+      border-bottom: none;
+    }
+
+    .proposta-tema {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+      opacity: .8;
+    }
+
+    .proposta-resumo {
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    .proposta-source {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent);
+      opacity: .7;
+      border: 1px solid rgba(59, 168, 207, 0.2);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
 
     /* CANDIDATURAS */
-    .candidatura-item { display: grid; grid-template-columns: 72px 1fr auto; gap: 16px; align-items: start; padding: 18px 0; border-bottom: 1px solid var(--border); }
-    .candidatura-item:last-child { border-bottom: none; }
-    .cand-ano   { font-size: 22px; font-weight: 800; color: var(--accent); line-height: 1; }
-    .cand-cargo { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-    .cand-info  { font-size: 12px; color: var(--muted); margin-bottom: 3px; }
-    .cand-status { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 5px 10px; border-radius: 20px; white-space: nowrap; }
-    .status-eleito  { background: rgba(76,175,80,.15); color: #81c784; border: 1px solid rgba(76,175,80,.25); }
-    .status-nao     { background: rgba(244,67,54,.12); color: #ef9a9a; border: 1px solid rgba(244,67,54,.2); }
+    .candidatura-item {
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
+      gap: 16px;
+      align-items: start;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .candidatura-item:last-child {
+      border-bottom: none;
+    }
+
+    .cand-ano {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .cand-cargo {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .cand-info {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+
+    .cand-status {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .status-eleito {
+      background: rgba(76, 175, 80, .15);
+      color: #81c784;
+      border: 1px solid rgba(76, 175, 80, .25);
+    }
+
+    .status-nao {
+      background: rgba(244, 67, 54, .12);
+      color: #ef9a9a;
+      border: 1px solid rgba(244, 67, 54, .2);
+    }
 
     /* FICHA */
-    .ficha-section { margin-bottom: 28px; }
-    .ficha-section-title { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--label); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-    .ficha-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); gap: 16px; }
-    .ficha-item:last-child { border-bottom: none; }
-    .ficha-item-label { font-size: 12px; color: var(--muted); }
-    .ficha-item-value { font-size: 12px; font-weight: 500; color: var(--text); text-align: right; }
-    .ficha-badge { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; }
-    .badge-ok     { background: rgba(76,175,80,.15); color: #81c784; border: 1px solid rgba(76,175,80,.2); }
-    .badge-alerta { background: rgba(244,67,54,.12); color: #ef9a9a; border: 1px solid rgba(244,67,54,.2); }
+    .ficha-section {
+      margin-bottom: 28px;
+    }
 
-    .fade { animation: fadeIn .3s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+    .ficha-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--label);
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ficha-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      gap: 16px;
+    }
+
+    .ficha-item:last-child {
+      border-bottom: none;
+    }
+
+    .ficha-item-label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .ficha-item-value {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+      text-align: right;
+    }
+
+    .ficha-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .badge-ok {
+      background: rgba(76, 175, 80, .15);
+      color: #81c784;
+      border: 1px solid rgba(76, 175, 80, .2);
+    }
+
+    .badge-alerta {
+      background: rgba(244, 67, 54, .12);
+      color: #ef9a9a;
+      border: 1px solid rgba(244, 67, 54, .2);
+    }
+
+    .fade {
+      animation: fadeIn .3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
 
     /* BOTÃO PDF */
-    .btn-pdf { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 11px; font-weight: 600; color: var(--accent); border: 1px solid rgba(59,168,207,0.25); background: rgba(59,168,207,0.06); padding: 4px 12px; border-radius: 20px; cursor: pointer; font-family: var(--mono); transition: background .2s, border-color .2s; }
-    .btn-pdf:hover { background: rgba(59,168,207,0.14); border-color: rgba(59,168,207,0.5); }
+    .btn-pdf {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      border: 1px solid rgba(59, 168, 207, 0.25);
+      background: rgba(59, 168, 207, 0.06);
+      padding: 4px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: var(--mono);
+      transition: background .2s, border-color .2s;
+    }
+
+    .btn-pdf:hover {
+      background: rgba(59, 168, 207, 0.14);
+      border-color: rgba(59, 168, 207, 0.5);
+    }
 
     /* MODAL PDF */
-    .pdf-modal { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.75); align-items: center; justify-content: center; }
-    .pdf-modal.open { display: flex; }
-    .pdf-box { background: var(--panel); border: 1px solid var(--border-strong); border-radius: 8px; width: 90vw; height: 88vh; display: flex; flex-direction: column; overflow: hidden; }
-    .pdf-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-    .pdf-title { font-size: 13px; font-weight: 600; color: var(--text); }
-    .pdf-close { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 4px; }
-    .pdf-close:hover { color: var(--text); background: rgba(255,255,255,0.08); }
-    .pdf-frame { flex: 1; width: 100%; border: none; background: #fff; }
+    .pdf-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, 0.75);
+      align-items: center;
+      justify-content: center;
+    }
 
+    .pdf-modal.open {
+      display: flex;
+    }
+
+    .pdf-box {
+      background: var(--panel);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      width: 90vw;
+      height: 88vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .pdf-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .pdf-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .pdf-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .pdf-close:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .pdf-frame {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: #fff;
+    }
   </style>
 </head>
+
 <body>
 
-<nav>
-  <a href="index.html" class="logo-mark">VOTE<span>BEM</span></a>
-  <div class="nav-links">
-    <a href="sobre.html">Sobre</a>
-    <a href="transparencia.html">Transparência</a>
-    <a href="candidatos.html">Candidatos</a>
-    <a href="chat.html">Chat</a>
-  </div>
-</nav>
-
-<div class="page-wrap">
-
-  <!-- LEFT -->
-  <aside class="left-panel">
-    <div class="left-top">
-      <div class="avatar">
-        <img id="avatar-img" src="" alt="" style="display:none">
-        <span class="avatar-initials" id="avatar-initials">--</span>
-      </div>
-      <h1 class="candidate-name" id="candidate-name">—</h1>
+  <nav>
+    <a href="index.html" class="logo-mark">VOTE<span>BEM</span></a>
+    <button class="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links">
+      <a href="sobre.html">Sobre</a>
+      <a href="transparencia.html">Transparência</a>
+      <a href="candidatos.html">Candidatos</a>
+      <a href="chat.html">Chat</a>
     </div>
+  </nav>
 
-    <!-- FIXO: tabela CANDIDATO -->
-    <div class="block-fixed">
-      <p class="block-label">Dados Pessoais</p>
-      <div class="info-fields">
-        <div><p class="field-label">Nome Completo</p><p class="field-value" id="f-nome">—</p></div>
-        <div><p class="field-label">Data de Nascimento</p><p class="field-value" id="f-nascimento">—</p></div>
-        <div><p class="field-label">Gênero</p><p class="field-value" id="f-genero">—</p></div>
-        <div><p class="field-label">Estado Civil</p><p class="field-value" id="f-civil">—</p></div>
-        <div><p class="field-label">UF de Nascimento</p><p class="field-value" id="f-municipio">—</p></div>
-        <div><p class="field-label">Grau de Instrução</p><p class="field-value" id="f-instrucao">—</p></div>
-        <div><p class="field-label">Ocupação</p><p class="field-value" id="f-ocupacao">—</p></div>
+  <div class="page-wrap">
+
+    <!-- LEFT -->
+    <aside class="left-panel">
+      <div class="left-top">
+        <div class="avatar">
+          <img id="avatar-img" src="" alt="" style="display:none">
+          <span class="avatar-initials" id="avatar-initials">--</span>
+        </div>
+        <h1 class="candidate-name" id="candidate-name">—</h1>
       </div>
-    </div>
 
-    <!-- DINÂMICO: tabela CANDIDATURA filtrada por ano -->
-    <div class="block-dynamic">
-      <p class="block-dynamic-label">Candidatura <span id="dynamic-year"></span></p>
-      <div id="dynamic-fields" class="info-fields">
-        <div><p class="field-label">Nome de Urna</p><p class="field-value" id="f-urna">—</p></div>
-        <div><p class="field-label">Partido</p><p class="field-value" id="f-partido">—</p></div>
-        <div><p class="field-label">Cargo Disputado</p><p class="field-value" id="f-cargo">—</p></div>
-        <div><p class="field-label">UF</p><p class="field-value" id="f-uf">—</p></div>
-        <div>
-          <p class="field-label">Redes Sociais</p>
-          <div class="social-row" id="f-social"><span style="font-size:11px;color:var(--muted)">—</span></div>
+      <!-- FIXO: tabela CANDIDATO -->
+      <div class="block-fixed">
+        <p class="block-label">Dados Pessoais</p>
+        <div class="info-fields">
+          <div>
+            <p class="field-label">Nome Completo</p>
+            <p class="field-value" id="f-nome">—</p>
+          </div>
+          <div>
+            <p class="field-label">Data de Nascimento</p>
+            <p class="field-value" id="f-nascimento">—</p>
+          </div>
+          <div>
+            <p class="field-label">Gênero</p>
+            <p class="field-value" id="f-genero">—</p>
+          </div>
+          <div>
+            <p class="field-label">Estado Civil</p>
+            <p class="field-value" id="f-civil">—</p>
+          </div>
+          <div>
+            <p class="field-label">UF de Nascimento</p>
+            <p class="field-value" id="f-municipio">—</p>
+          </div>
+          <div>
+            <p class="field-label">Grau de Instrução</p>
+            <p class="field-value" id="f-instrucao">—</p>
+          </div>
+          <div>
+            <p class="field-label">Ocupação</p>
+            <p class="field-value" id="f-ocupacao">—</p>
+          </div>
         </div>
       </div>
-      <p class="dynamic-empty" id="dynamic-empty">Selecione um ano para ver os dados desta candidatura.</p>
-    </div>
 
-    <div class="left-footer">
-      <a href="#" class="btn-comparar">
-        Comparar
-        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </a>
-    </div>
-  </aside>
+      <!-- DINÂMICO: tabela CANDIDATURA filtrada por ano -->
+      <div class="block-dynamic">
+        <p class="block-dynamic-label">Candidatura <span id="dynamic-year"></span></p>
+        <div id="dynamic-fields" class="info-fields">
+          <div>
+            <p class="field-label">Nome de Urna</p>
+            <p class="field-value" id="f-urna">—</p>
+          </div>
+          <div>
+            <p class="field-label">Partido</p>
+            <p class="field-value" id="f-partido">—</p>
+          </div>
+          <div>
+            <p class="field-label">Cargo Disputado</p>
+            <p class="field-value" id="f-cargo">—</p>
+          </div>
+          <div>
+            <p class="field-label">UF</p>
+            <p class="field-value" id="f-uf">—</p>
+          </div>
+          <div>
+            <p class="field-label">Redes Sociais</p>
+            <div class="social-row" id="f-social"><span style="font-size:11px;color:var(--muted)">—</span></div>
+          </div>
+        </div>
+        <p class="dynamic-empty" id="dynamic-empty">Selecione um ano para ver os dados desta candidatura.</p>
+      </div>
 
-  <!-- RIGHT -->
-  <div class="right-panel">
-    <div class="year-row">
-      <div class="year-select-wrap">
-        <select class="year-select" id="year-select">
-          <option value="">Selecione um ano</option>
-        </select>
-        <div class="year-chevron"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="left-footer">
+        <a href="#" class="btn-comparar">
+          Comparar
+          <svg viewBox="0 0 24 24">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+    </aside>
+
+    <!-- RIGHT -->
+    <div class="right-panel">
+      <div class="year-row">
+        <div class="year-select-wrap">
+          <select class="year-select" id="year-select">
+            <option value="">Selecione um ano</option>
+          </select>
+          <div class="year-chevron"><svg viewBox="0 0 24 24">
+              <path d="M6 9l6 6 6-6" />
+            </svg></div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" id="tab-btn-patrimonio">Patrimônio</button>
+        <button class="tab" id="tab-btn-propostas">Propostas</button>
+        <button class="tab" id="tab-btn-candidaturas">Candidaturas</button>
+        <button class="tab" id="tab-btn-ficha">Ficha</button>
+      </div>
+
+      <div class="tab-content active" id="tab-patrimonio">
+        <div id="patrimonio-content"></div>
+      </div>
+      <div class="tab-content" id="tab-propostas">
+        <div id="propostas-content"></div>
+      </div>
+
+      <!-- Candidaturas: sempre visível (histórico completo) -->
+      <div class="tab-content" id="tab-candidaturas">
+        <div id="candidaturas-content"></div>
+      </div>
+
+      <div class="tab-content" id="tab-ficha">
+        <div id="ficha-content"></div>
       </div>
     </div>
-
-    <div class="tabs">
-      <button class="tab active" id="tab-btn-patrimonio">Patrimônio</button>
-      <button class="tab"        id="tab-btn-propostas">Propostas</button>
-      <button class="tab"        id="tab-btn-candidaturas">Candidaturas</button>
-      <button class="tab"        id="tab-btn-ficha">Ficha</button>
-    </div>
-
-    <div class="tab-content active" id="tab-patrimonio"><div id="patrimonio-content"></div></div>
-    <div class="tab-content"        id="tab-propostas"><div id="propostas-content"></div></div>
-
-    <!-- Candidaturas: sempre visível (histórico completo) -->
-    <div class="tab-content" id="tab-candidaturas">
-      <div id="candidaturas-content"></div>
-    </div>
-
-    <div class="tab-content" id="tab-ficha"><div id="ficha-content"></div></div>
   </div>
-</div>
 
-<!-- Modal PDF -->
-<div class="pdf-modal" id="pdf-modal">
-  <div class="pdf-box">
-    <div class="pdf-header">
-      <span class="pdf-title" id="pdf-modal-title">Certidão Criminal</span>
-      <button class="pdf-close" id="pdf-modal-close">✕</button>
-    </div>
-    <iframe class="pdf-frame" id="pdf-frame" src=""></iframe>
-  </div>
-</div>
-
-<footer>
-  <div class="footer-left">
-    <a href="index.html" class="logo-mark">VOTE<span>BEM</span></a>
-    <div class="footer-social">
-      <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
-      <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
-      <a href="#" aria-label="X"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.736-8.841L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+  <!-- Modal PDF -->
+  <div class="pdf-modal" id="pdf-modal">
+    <div class="pdf-box">
+      <div class="pdf-header">
+        <span class="pdf-title" id="pdf-modal-title">Certidão Criminal</span>
+        <button class="pdf-close" id="pdf-modal-close">✕</button>
+      </div>
+      <iframe class="pdf-frame" id="pdf-frame" src=""></iframe>
     </div>
   </div>
-  <p class="footer-note">Este site não é afiliado a nenhum partido, candidato ou grupo político. As informações exibidas são de fontes públicas. Plataforma independente · Brasil 2026</p>
-</footer>
 
-<script type="module">
-  import {
-    getCandidatoProfile,
-    getCandidaturasByCpf,
-    getBensBySqCandidato,
-    getSituacaoJuridicaBySqCandidato,
-    getRedesSociaisBySqCandidato,
-    getPropostasResumos,
-    getPropostaGoverno,
-  } from '../js/api.js';
+  <footer>
+    <div class="footer-left">
+      <a href="index.html" class="logo-mark">VOTE<span>BEM</span></a>
+      <div class="footer-social">
+        <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24">
+            <path
+              d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+          </svg></a>
+        <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24">
+            <path
+              d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+          </svg></a>
+        <a href="#" aria-label="X"><svg viewBox="0 0 24 24">
+            <path
+              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.736-8.841L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+          </svg></a>
+      </div>
+    </div>
+    <p class="footer-note">Este site não é afiliado a nenhum partido, candidato ou grupo político. As informações
+      exibidas são de fontes públicas. Plataforma independente · Brasil 2026</p>
+  </footer>
 
-  const API_BASE = 'http://localhost:5253';
+  <script src="global.js"></script>
+  <script type="module">
+    import {
+      getCandidatoProfile,
+      getCandidaturasByCpf,
+      getBensBySqCandidato,
+      getSituacaoJuridicaBySqCandidato,
+      getRedesSociaisBySqCandidato,
+      getPropostasResumos,
+      getPropostaGoverno,
+    } from '../js/api.js';
 
-  const ICONS = {
-    instagram: `<svg viewBox="0 0 24 24" fill="white" width="20" height="20"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`,
-    facebook: `<svg viewBox="0 0 24 24" fill="white" width="20" height="20"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`,
-    twitter: `<svg viewBox="0 0 24 24" fill="white" width="20" height="20"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.736-8.841L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
-  };
+    const API_BASE = 'http://localhost:5253';
 
-  function getSocialIcon(tipo) {
-    if (!tipo) return null;
-    const t = tipo.toLowerCase();
-    if (t.includes('instagram')) return ICONS.instagram;
-    if (t.includes('facebook')) return ICONS.facebook;
-    if (t.includes('twitter') || t === 'x') return ICONS.twitter;
-    return null;
-  }
+    const ICONS = {
+      instagram: `<svg viewBox="0 0 24 24" fill="white" width="20" height="20"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`,
+      facebook: `<svg viewBox="0 0 24 24" fill="white" width="20" height="20"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`,
+      twitter: `<svg viewBox="0 0 24 24" fill="white" width="20" height="20"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.736-8.841L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+    };
 
-  function initials(nome) {
-    return (nome || '?').split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
-  }
+    function getSocialIcon(tipo) {
+      if (!tipo) return null;
+      const t = tipo.toLowerCase();
+      if (t.includes('instagram')) return ICONS.instagram;
+      if (t.includes('facebook')) return ICONS.facebook;
+      if (t.includes('twitter') || t === 'x') return ICONS.twitter;
+      return null;
+    }
 
-  function formatDate(dateStr) {
-    if (!dateStr) return '—';
-    const [y, m, d] = String(dateStr).split('-');
-    return `${d}/${m}/${y}`;
-  }
+    function initials(nome) {
+      return (nome || '?').split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+    }
 
-  function noYear(tipo) {
-    return `<div class="state-msg"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><p>Selecione um ano para ver ${tipo}.</p></div>`;
-  }
+    function formatDate(dateStr) {
+      if (!dateStr) return '—';
+      const [y, m, d] = String(dateStr).split('-');
+      return `${d}/${m}/${y}`;
+    }
 
-  function noData(tipo) {
-    return `<div class="state-msg"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p>Sem ${tipo} registrado para este ano.</p><span>Os dados podem não estar disponíveis para todas as candidaturas.</span></div>`;
-  }
+    function noYear(tipo) {
+      return `<div class="state-msg"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><p>Selecione um ano para ver ${tipo}.</p></div>`;
+    }
 
-  function loading() {
-    return `<div class="state-msg"><p style="color:var(--muted)">Carregando...</p></div>`;
-  }
+    function noData(tipo) {
+      return `<div class="state-msg"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p>Sem ${tipo} registrado para este ano.</p><span>Os dados podem não estar disponíveis para todas as candidaturas.</span></div>`;
+    }
 
-  let allCandidaturas = [];
+    function loading() {
+      return `<div class="state-msg"><p style="color:var(--muted)">Carregando...</p></div>`;
+    }
 
-  // ── Tabs ───────────────────────────────────────────────────
-  ['patrimonio', 'propostas', 'candidaturas', 'ficha'].forEach(id => {
-    document.getElementById('tab-btn-' + id).addEventListener('click', function () {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      this.classList.add('active');
-      document.getElementById('tab-' + id).classList.add('active');
+    let allCandidaturas = [];
+
+    // ── Tabs ───────────────────────────────────────────────────
+    ['patrimonio', 'propostas', 'candidaturas', 'ficha'].forEach(id => {
+      document.getElementById('tab-btn-' + id).addEventListener('click', function () {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        document.getElementById('tab-' + id).classList.add('active');
+      });
     });
-  });
 
-  // ── Renderizadores ─────────────────────────────────────────
-  function renderPatrimonio(bens) {
-    const el = document.getElementById('patrimonio-content');
-    if (!bens || bens.length === 0) { el.innerHTML = noData('patrimônio declarado'); return; }
+    // ── Renderizadores ─────────────────────────────────────────
+    function renderPatrimonio(bens) {
+      const el = document.getElementById('patrimonio-content');
+      if (!bens || bens.length === 0) { el.innerHTML = noData('patrimônio declarado'); return; }
 
-    let total = 0;
-    bens.forEach(b => {
-      if (b.vrBem) {
-        const num = parseFloat(b.vrBem.replace('R$', '').replace(/\./g, '').replace(',', '.'));
-        if (!isNaN(num)) total += num;
-      }
-    });
-    const totalFmt = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      let total = 0;
+      bens.forEach(b => {
+        if (b.vrBem) {
+          const num = parseFloat(b.vrBem.replace('R$', '').replace(/\./g, '').replace(',', '.'));
+          if (!isNaN(num)) total += num;
+        }
+      });
+      const totalFmt = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-    el.innerHTML = `
+      el.innerHTML = `
       <table class="patrimonio-table">
         <thead><tr><th class="col-tipo">Tipo</th><th class="col-desc">Descrição</th><th class="col-val">Valor declarado</th></tr></thead>
         <tbody>${bens.map(b => `<tr>
@@ -360,44 +977,44 @@
         <span class="total-label">Total declarado</span>
         <span class="total-val">${totalFmt}</span>
       </div>`;
-  }
+    }
 
-  function renderFicha(situacao) {
-    const el = document.getElementById('ficha-content');
-    const certidoes = situacao?.certidoesCriminais ?? [];
-    const cassacoes = situacao?.motivosCassacao ?? [];
+    function renderFicha(situacao) {
+      const el = document.getElementById('ficha-content');
+      const certidoes = situacao?.certidoesCriminais ?? [];
+      const cassacoes = situacao?.motivosCassacao ?? [];
 
-    const certidoesHtml = certidoes.length > 0
-      ? `<p style="font-size:11px;color:var(--muted);margin-bottom:14px;font-family:var(--sans);line-height:1.6;">
+      const certidoesHtml = certidoes.length > 0
+        ? `<p style="font-size:11px;color:var(--muted);margin-bottom:14px;font-family:var(--sans);line-height:1.6;">
            O conteúdo de cada certidão (NADA CONSTA ou CONSTA) está no próprio documento. Abra o PDF para verificar.
          </p>`
         + certidoes.map(c => `
           <div class="ficha-item">
             <span class="ficha-item-label" style="font-size:11px;word-break:break-all;">${c.nmArquivo || 'Certidão Criminal'}</span>
             ${c.dsCaminhoArquivo
-              ? `<button class="btn-pdf" data-path="${c.dsCaminhoArquivo}" data-title="${c.nmArquivo || 'Certidão Criminal'}">
+            ? `<button class="btn-pdf" data-path="${c.dsCaminhoArquivo}" data-title="${c.nmArquivo || 'Certidão Criminal'}">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                   Ver PDF
                 </button>`
-              : '<span class="ficha-badge" style="background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--border)">Sem arquivo</span>'}
+            : '<span class="ficha-badge" style="background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--border)">Sem arquivo</span>'}
           </div>`).join('')
-      : `<div class="ficha-item">
+        : `<div class="ficha-item">
            <span class="ficha-item-label">Nenhuma certidão criminal registrada</span>
            <span class="ficha-badge badge-ok">Sem registros</span>
          </div>`;
 
-    const cassacoesHtml = cassacoes.length > 0
-      ? cassacoes.map(c => `
+      const cassacoesHtml = cassacoes.length > 0
+        ? cassacoes.map(c => `
           <div class="ficha-item">
             <span class="ficha-item-label">${c.dsTpMotivo || c.dsMotivo || 'Cassação'}</span>
             <span class="ficha-badge badge-alerta">Consta</span>
           </div>`).join('')
-      : `<div class="ficha-item">
+        : `<div class="ficha-item">
            <span class="ficha-item-label">Registro de cassação de mandato</span>
            <span class="ficha-badge badge-ok">Não consta</span>
          </div>`;
 
-    el.innerHTML = `
+      el.innerHTML = `
       <div class="ficha-section">
         <p class="ficha-section-title">Certidão Criminal</p>
         ${certidoesHtml}
@@ -407,73 +1024,73 @@
         ${cassacoesHtml}
       </div>`;
 
-    // Ativa botões de PDF após render
-    el.querySelectorAll('.btn-pdf').forEach(btn => {
-      btn.addEventListener('click', () => openPdfModal(btn.dataset.path, btn.dataset.title));
-    });
-  }
+      // Ativa botões de PDF após render
+      el.querySelectorAll('.btn-pdf').forEach(btn => {
+        btn.addEventListener('click', () => openPdfModal(btn.dataset.path, btn.dataset.title));
+      });
+    }
 
-  function renderPropostas(resumos, proposta) {
-    const el = document.getElementById('propostas-content');
+    function renderPropostas(resumos, proposta) {
+      const el = document.getElementById('propostas-content');
 
-    const pdfBtn = proposta?.dsCaminhoArquivo
-      ? `<button class="btn-pdf" data-path="${proposta.dsCaminhoArquivo}" data-title="Programa de Governo" style="margin-bottom:20px;">
+      const pdfBtn = proposta?.dsCaminhoArquivo
+        ? `<button class="btn-pdf" data-path="${proposta.dsCaminhoArquivo}" data-title="Programa de Governo" style="margin-bottom:20px;">
            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
            Ver PDF do Programa de Governo
          </button>`
-      : '';
+        : '';
 
-    if (!resumos || resumos.length === 0) {
-      el.innerHTML = pdfBtn + `
+      if (!resumos || resumos.length === 0) {
+        el.innerHTML = pdfBtn + `
         <div class="state-msg" style="height:160px;">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <p>Resumos por IA ainda não gerados para esta candidatura.</p>
           ${proposta ? '<span>O PDF do programa de governo está disponível acima.</span>' : '<span>Nenhum programa de governo encontrado.</span>'}
         </div>`;
-    } else {
-      el.innerHTML = pdfBtn + resumos.map(p => `
+      } else {
+        el.innerHTML = pdfBtn + resumos.map(p => `
         <div class="proposta-item">
           <p class="proposta-tema">${p.dsTema || '—'}</p>
           <p class="proposta-resumo">${p.txResumo || '—'}</p>
         </div>`).join('');
+      }
+
+      el.querySelectorAll('.btn-pdf').forEach(btn => {
+        btn.addEventListener('click', () => openPdfModal(btn.dataset.path, btn.dataset.title));
+      });
     }
 
-    el.querySelectorAll('.btn-pdf').forEach(btn => {
-      btn.addEventListener('click', () => openPdfModal(btn.dataset.path, btn.dataset.title));
-    });
-  }
+    // ── Modal PDF ──────────────────────────────────────────────
+    const pdfModal = document.getElementById('pdf-modal');
+    const pdfFrame = document.getElementById('pdf-frame');
+    const pdfTitle = document.getElementById('pdf-modal-title');
 
-  // ── Modal PDF ──────────────────────────────────────────────
-  const pdfModal = document.getElementById('pdf-modal');
-  const pdfFrame = document.getElementById('pdf-frame');
-  const pdfTitle = document.getElementById('pdf-modal-title');
+    function openPdfModal(path, title) {
+      pdfFrame.src = `${API_BASE}/storage/${path}`;
+      pdfTitle.textContent = title || 'Certidão';
+      pdfModal.classList.add('open');
+    }
 
-  function openPdfModal(path, title) {
-    pdfFrame.src = `${API_BASE}/storage/${path}`;
-    pdfTitle.textContent = title || 'Certidão';
-    pdfModal.classList.add('open');
-  }
-
-  document.getElementById('pdf-modal-close').addEventListener('click', () => {
-    pdfModal.classList.remove('open');
-    pdfFrame.src = '';
-  });
-  pdfModal.addEventListener('click', e => {
-    if (e.target === pdfModal) {
+    document.getElementById('pdf-modal-close').addEventListener('click', () => {
       pdfModal.classList.remove('open');
       pdfFrame.src = '';
-    }
-  });
+    });
+    pdfModal.addEventListener('click', e => {
+      if (e.target === pdfModal) {
+        pdfModal.classList.remove('open');
+        pdfFrame.src = '';
+      }
+    });
 
-  function renderCandidaturas() {
-    const el = document.getElementById('candidaturas-content');
-    if (!allCandidaturas.length) { el.innerHTML = noData('candidaturas'); return; }
+    function renderCandidaturas() {
+      const el = document.getElementById('candidaturas-content');
+      if (!allCandidaturas.length) { el.innerHTML = noData('candidaturas'); return; }
 
-    el.innerHTML = allCandidaturas.map(c => {
-      const sit = (c.dsSituacaoCandidatura || '').toUpperCase();
-      const isEleito = sit.includes('ELEITO') && !sit.includes('NÃO') && !sit.includes('NAO');
-      const badgeClass = isEleito ? 'status-eleito' : 'status-nao';
-      return `
+      el.innerHTML = allCandidaturas.map(c => {
+        const sit = (c.dsSituacaoCandidatura || '').toUpperCase();
+        const isEleito = sit.includes('ELEITO') && !sit.includes('NÃO') && !sit.includes('NAO');
+        const badgeClass = isEleito ? 'status-eleito' : 'status-nao';
+        return `
         <div class="candidatura-item">
           <div class="cand-ano">${c.anoEleicao}</div>
           <div>
@@ -483,169 +1100,170 @@
           </div>
           <span class="cand-status ${badgeClass}">${c.dsSituacaoCandidatura || '—'}</span>
         </div>`;
-    }).join('');
-  }
-
-  function updateDynamic(cand, redesSociais) {
-    const fields = document.getElementById('dynamic-fields');
-    const empty  = document.getElementById('dynamic-empty');
-    document.getElementById('dynamic-year').textContent = cand?.anoEleicao || '';
-
-    if (!cand) {
-      fields.style.display = 'none';
-      empty.style.display  = 'block';
-      return;
+      }).join('');
     }
-    fields.style.display = 'flex';
-    empty.style.display  = 'none';
 
-    document.getElementById('f-urna').textContent    = cand.nmUrnaCandidato || '—';
-    document.getElementById('f-partido').textContent = cand.sgPartido || '—';
-    document.getElementById('f-cargo').textContent   = cand.dsCargo || '—';
-    document.getElementById('f-uf').textContent      = cand.sgUf || '—';
+    function updateDynamic(cand, redesSociais) {
+      const fields = document.getElementById('dynamic-fields');
+      const empty = document.getElementById('dynamic-empty');
+      document.getElementById('dynamic-year').textContent = cand?.anoEleicao || '';
 
-    const socialEl = document.getElementById('f-social');
-    socialEl.innerHTML = '';
-    const redes = (redesSociais || []).filter(rs => rs.urlPerfil);
-    if (redes.length === 0) {
-      socialEl.innerHTML = '<span style="font-size:11px;color:var(--muted)">Não informado</span>';
-    } else {
-      let added = 0;
-      redes.forEach(rs => {
-        const icon = getSocialIcon(rs.tipoRedeSocial);
-        if (!icon) return;
-        const a = document.createElement('a');
-        a.href = rs.urlPerfil;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        a.style.cssText = 'opacity:.5;transition:opacity .2s;display:flex';
-        a.onmouseover = () => a.style.opacity = '1';
-        a.onmouseout  = () => a.style.opacity = '.5';
-        a.innerHTML = icon;
-        socialEl.appendChild(a);
-        added++;
-      });
-      if (!added) {
-        socialEl.innerHTML = '<span style="font-size:11px;color:var(--muted)">Não informado</span>';
+      if (!cand) {
+        fields.style.display = 'none';
+        empty.style.display = 'block';
+        return;
       }
+      fields.style.display = 'flex';
+      empty.style.display = 'none';
+
+      document.getElementById('f-urna').textContent = cand.nmUrnaCandidato || '—';
+      document.getElementById('f-partido').textContent = cand.sgPartido || '—';
+      document.getElementById('f-cargo').textContent = cand.dsCargo || '—';
+      document.getElementById('f-uf').textContent = cand.sgUf || '—';
+
+      const socialEl = document.getElementById('f-social');
+      socialEl.innerHTML = '';
+      const redes = (redesSociais || []).filter(rs => rs.urlPerfil);
+      if (redes.length === 0) {
+        socialEl.innerHTML = '<span style="font-size:11px;color:var(--muted)">Não informado</span>';
+      } else {
+        let added = 0;
+        redes.forEach(rs => {
+          const icon = getSocialIcon(rs.tipoRedeSocial);
+          if (!icon) return;
+          const a = document.createElement('a');
+          a.href = rs.urlPerfil;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.style.cssText = 'opacity:.5;transition:opacity .2s;display:flex';
+          a.onmouseover = () => a.style.opacity = '1';
+          a.onmouseout = () => a.style.opacity = '.5';
+          a.innerHTML = icon;
+          socialEl.appendChild(a);
+          added++;
+        });
+        if (!added) {
+          socialEl.innerHTML = '<span style="font-size:11px;color:var(--muted)">Não informado</span>';
+        }
+      }
+
+      fields.classList.remove('fade');
+      void fields.offsetWidth;
+      fields.classList.add('fade');
     }
 
-    fields.classList.remove('fade');
-    void fields.offsetWidth;
-    fields.classList.add('fade');
-  }
+    // ── Mudança de ano ─────────────────────────────────────────
+    async function onYearChange() {
+      const year = parseInt(document.getElementById('year-select').value);
+      if (!year) {
+        updateDynamic(null, []);
+        document.getElementById('patrimonio-content').innerHTML = noYear('o patrimônio declarado');
+        document.getElementById('propostas-content').innerHTML = noYear('as propostas de governo');
+        document.getElementById('ficha-content').innerHTML = noYear('a ficha desta candidatura');
+        pdfModal.classList.remove('open');
+        pdfFrame.src = '';
+        return;
+      }
 
-  // ── Mudança de ano ─────────────────────────────────────────
-  async function onYearChange() {
-    const year = parseInt(document.getElementById('year-select').value);
-    if (!year) {
-      updateDynamic(null, []);
-      document.getElementById('patrimonio-content').innerHTML = noYear('o patrimônio declarado');
-      document.getElementById('propostas-content').innerHTML  = noYear('as propostas de governo');
-      document.getElementById('ficha-content').innerHTML      = noYear('a ficha desta candidatura');
-      pdfModal.classList.remove('open');
-      pdfFrame.src = '';
-      return;
-    }
+      const cand = allCandidaturas.find(c => c.anoEleicao === year);
+      if (!cand) return;
 
-    const cand = allCandidaturas.find(c => c.anoEleicao === year);
-    if (!cand) return;
+      document.getElementById('patrimonio-content').innerHTML = loading();
+      document.getElementById('ficha-content').innerHTML = loading();
+      document.getElementById('propostas-content').innerHTML = loading();
 
-    document.getElementById('patrimonio-content').innerHTML = loading();
-    document.getElementById('ficha-content').innerHTML      = loading();
-    document.getElementById('propostas-content').innerHTML  = loading();
-
-    const [bensResult, situacaoResult, redesResult, resumosResult, propostaResult] = await Promise.allSettled([
-      getBensBySqCandidato(cand.sqCandidato),
-      getSituacaoJuridicaBySqCandidato(cand.sqCandidato),
-      getRedesSociaisBySqCandidato(cand.sqCandidato, 1, 50),
-      getPropostasResumos(cand.sqCandidato),
-      getPropostaGoverno(cand.sqCandidato),
-    ]);
-
-    const bens     = bensResult.status     === 'fulfilled' ? (bensResult.value ?? []) : [];
-    const situacao = situacaoResult.status === 'fulfilled' ? situacaoResult.value : { certidoesCriminais: [], motivosCassacao: [] };
-    const redes    = redesResult.status    === 'fulfilled' ? (redesResult.value?.data ?? []) : [];
-    const resumos  = resumosResult.status  === 'fulfilled' ? (resumosResult.value ?? []) : [];
-    const proposta = propostaResult.status === 'fulfilled' ? propostaResult.value : null;
-
-    updateDynamic(cand, redes);
-    renderPatrimonio(bens);
-    renderFicha(situacao);
-    renderPropostas(resumos, proposta);
-  }
-
-  document.getElementById('year-select').addEventListener('change', onYearChange);
-
-  // ── Inicialização ──────────────────────────────────────────
-  async function init() {
-    const cpf = new URLSearchParams(window.location.search).get('cpf');
-    if (!cpf) {
-      document.getElementById('candidate-name').textContent = 'Candidato não encontrado';
-      return;
-    }
-
-    document.getElementById('patrimonio-content').innerHTML = noYear('o patrimônio declarado');
-    document.getElementById('propostas-content').innerHTML  = noYear('as propostas de governo');
-    document.getElementById('ficha-content').innerHTML      = noYear('a ficha desta candidatura');
-
-    try {
-      const [profile, candidaturasResult] = await Promise.all([
-        getCandidatoProfile(cpf),
-        getCandidaturasByCpf(cpf, 1, 100),
+      const [bensResult, situacaoResult, redesResult, resumosResult, propostaResult] = await Promise.allSettled([
+        getBensBySqCandidato(cand.sqCandidato),
+        getSituacaoJuridicaBySqCandidato(cand.sqCandidato),
+        getRedesSociaisBySqCandidato(cand.sqCandidato, 1, 50),
+        getPropostasResumos(cand.sqCandidato),
+        getPropostaGoverno(cand.sqCandidato),
       ]);
 
-      // Dados fixos
-      const nomeUrna = profile.nomeUrna || profile.nomeCompleto || '—';
-      document.getElementById('candidate-name').textContent  = nomeUrna;
-      document.getElementById('avatar-initials').textContent = initials(profile.nomeCompleto);
-      document.title = nomeUrna + ' — VOTO CONSCIENTE';
+      const bens = bensResult.status === 'fulfilled' ? (bensResult.value ?? []) : [];
+      const situacao = situacaoResult.status === 'fulfilled' ? situacaoResult.value : { certidoesCriminais: [], motivosCassacao: [] };
+      const redes = redesResult.status === 'fulfilled' ? (redesResult.value?.data ?? []) : [];
+      const resumos = resumosResult.status === 'fulfilled' ? (resumosResult.value ?? []) : [];
+      const proposta = propostaResult.status === 'fulfilled' ? propostaResult.value : null;
 
-      document.getElementById('f-nome').textContent       = profile.nomeCompleto || '—';
-      document.getElementById('f-nascimento').textContent = profile.dtNascimento ? formatDate(profile.dtNascimento) : '—';
-      document.getElementById('f-genero').textContent     = profile.dsGenero || '—';
-      document.getElementById('f-civil').textContent      = profile.dsEstadoCivil || '—';
-      document.getElementById('f-municipio').textContent  = profile.sgUfNascimento || '—';
-      document.getElementById('f-instrucao').textContent  = profile.grauInstrucao || '—';
-      document.getElementById('f-ocupacao').textContent   = profile.ocupacaoDeclarada || '—';
-
-      // Foto
-      if (profile.fotoUrl && profile.fotoUrl !== 'Dado não disponível') {
-        const img = document.getElementById('avatar-img');
-        img.src = API_BASE + profile.fotoUrl;
-        img.alt = nomeUrna;
-        img.onload = () => {
-          img.style.display = 'block';
-          document.getElementById('avatar-initials').style.display = 'none';
-        };
-      }
-
-      // Candidaturas
-      allCandidaturas = candidaturasResult?.data ?? [];
-      renderCandidaturas();
-
-      // Popular select de ano
-      const yearSelect = document.getElementById('year-select');
-      yearSelect.innerHTML = '<option value="">Selecione um ano</option>';
-      allCandidaturas.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c.anoEleicao;
-        opt.textContent = c.anoEleicao;
-        yearSelect.appendChild(opt);
-      });
-
-      // Seleciona o ano mais recente
-      if (allCandidaturas.length > 0) {
-        yearSelect.value = allCandidaturas[0].anoEleicao;
-        await onYearChange();
-      }
-    } catch (err) {
-      console.error(err);
-      document.getElementById('candidate-name').textContent = 'Erro ao carregar candidato';
+      updateDynamic(cand, redes);
+      renderPatrimonio(bens);
+      renderFicha(situacao);
+      renderPropostas(resumos, proposta);
     }
-  }
 
-  init();
-</script>
+    document.getElementById('year-select').addEventListener('change', onYearChange);
+
+    // ── Inicialização ──────────────────────────────────────────
+    async function init() {
+      const cpf = new URLSearchParams(window.location.search).get('cpf');
+      if (!cpf) {
+        document.getElementById('candidate-name').textContent = 'Candidato não encontrado';
+        return;
+      }
+
+      document.getElementById('patrimonio-content').innerHTML = noYear('o patrimônio declarado');
+      document.getElementById('propostas-content').innerHTML = noYear('as propostas de governo');
+      document.getElementById('ficha-content').innerHTML = noYear('a ficha desta candidatura');
+
+      try {
+        const [profile, candidaturasResult] = await Promise.all([
+          getCandidatoProfile(cpf),
+          getCandidaturasByCpf(cpf, 1, 100),
+        ]);
+
+        // Dados fixos
+        const nomeUrna = profile.nomeUrna || profile.nomeCompleto || '—';
+        document.getElementById('candidate-name').textContent = nomeUrna;
+        document.getElementById('avatar-initials').textContent = initials(profile.nomeCompleto);
+        document.title = nomeUrna + ' — VOTO CONSCIENTE';
+
+        document.getElementById('f-nome').textContent = profile.nomeCompleto || '—';
+        document.getElementById('f-nascimento').textContent = profile.dtNascimento ? formatDate(profile.dtNascimento) : '—';
+        document.getElementById('f-genero').textContent = profile.dsGenero || '—';
+        document.getElementById('f-civil').textContent = profile.dsEstadoCivil || '—';
+        document.getElementById('f-municipio').textContent = profile.sgUfNascimento || '—';
+        document.getElementById('f-instrucao').textContent = profile.grauInstrucao || '—';
+        document.getElementById('f-ocupacao').textContent = profile.ocupacaoDeclarada || '—';
+
+        // Foto
+        if (profile.fotoUrl && profile.fotoUrl !== 'Dado não disponível') {
+          const img = document.getElementById('avatar-img');
+          img.src = API_BASE + profile.fotoUrl;
+          img.alt = nomeUrna;
+          img.onload = () => {
+            img.style.display = 'block';
+            document.getElementById('avatar-initials').style.display = 'none';
+          };
+        }
+
+        // Candidaturas
+        allCandidaturas = candidaturasResult?.data ?? [];
+        renderCandidaturas();
+
+        // Popular select de ano
+        const yearSelect = document.getElementById('year-select');
+        yearSelect.innerHTML = '<option value="">Selecione um ano</option>';
+        allCandidaturas.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.anoEleicao;
+          opt.textContent = c.anoEleicao;
+          yearSelect.appendChild(opt);
+        });
+
+        // Seleciona o ano mais recente
+        if (allCandidaturas.length > 0) {
+          yearSelect.value = allCandidaturas[0].anoEleicao;
+          await onYearChange();
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('candidate-name').textContent = 'Erro ao carregar candidato';
+      }
+    }
+
+    init();
+  </script>
 </body>
+
 </html>
