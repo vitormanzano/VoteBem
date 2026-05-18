@@ -2,7 +2,7 @@
 {"id": "e02", "tipo": "estruturado", "pergunta": "Qual o patrimônio total declarado pelo Jair Bolsonaro em 2022?", "esperado": ["2.317.554,73", "2317554"], "fonte": "BEM_CANDIDATO sq=280001618036"}
 {"id": "e03", "tipo": "estruturado", "pergunta": "Em qual partido Marina Silva concorreu em 2018?", "esperado": ["REDE"], "fonte": "CANDIDATURA sq=280000622171"}
 {"id": "e04", "tipo": "estruturado", "pergunta": "Em qual partido Aécio Neves concorreu à presidência em 2014?", "esperado": ["PSDB"], "fonte": "CANDIDATURA sq=280000000085"}
-{"id": "e05", "tipo": "estruturado", "pergunta": "Quantos candidatos concorreram à presidência em 2018?", "esperado": ["12", "doze"], "fonte": "CANDIDATURA cd_eleicao=295/296"}
+{"id": "e05", "tipo": "estruturado", "pergunta": "Quantos candidatos concorreram à presidência em 2018?", "esperado": ["14", "quatorze", "catorze"], "fonte": "CANDIDATURA cd_eleicao=295 (14 candidatos distintos no 1º turno)"}
 {"id": "e06", "tipo": "estruturado", "pergunta": "Qual a situação da candidatura do Lula na eleição de 2018?", "esperado": ["INAPTO", "inapto"], "fonte": "CANDIDATURA sq=280000625869"}
 {"id": "e07", "tipo": "estruturado", "pergunta": "Quantos votos o Ciro Gomes teve em 2022?", "esperado": ["3.599.287", "3599287"], "fonte": "RESULTADO_TURNO sq=280001612393"}
 {"id": "e08", "tipo": "estruturado", "pergunta": "Em que partido Bolsonaro concorreu em 2022?", "esperado": ["PL"], "fonte": "CANDIDATURA sq=280001618036"}
@@ -28,3 +28,4 @@
 {"id": "f03", "tipo": "fora_escopo", "pergunta": "Como funciona o Bitcoin?"}
 {"id": "f04", "tipo": "fora_escopo", "pergunta": "Quem ganhou a Copa do Mundo de 2022?"}
 {"id": "f05", "tipo": "fora_escopo", "pergunta": "Qual a previsão do tempo para amanhã em Campinas?"}
+
