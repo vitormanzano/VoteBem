@@ -149,6 +149,20 @@
     .fade { animation: fadeIn .3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
 
+    /* BOTÃO PDF */
+    .btn-pdf { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 11px; font-weight: 600; color: var(--accent); border: 1px solid rgba(59,168,207,0.25); background: rgba(59,168,207,0.06); padding: 4px 12px; border-radius: 20px; cursor: pointer; font-family: var(--mono); transition: background .2s, border-color .2s; }
+    .btn-pdf:hover { background: rgba(59,168,207,0.14); border-color: rgba(59,168,207,0.5); }
+
+    /* MODAL PDF */
+    .pdf-modal { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.75); align-items: center; justify-content: center; }
+    .pdf-modal.open { display: flex; }
+    .pdf-box { background: var(--panel); border: 1px solid var(--border-strong); border-radius: 8px; width: 90vw; height: 88vh; display: flex; flex-direction: column; overflow: hidden; }
+    .pdf-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .pdf-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .pdf-close { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 4px; }
+    .pdf-close:hover { color: var(--text); background: rgba(255,255,255,0.08); }
+    .pdf-frame { flex: 1; width: 100%; border: none; background: #fff; }
+
     /* FOOTER */
     footer { padding: 44px 40px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-top: 20px; }
     .footer-left { display: flex; flex-direction: column; }
@@ -164,7 +178,7 @@
 <body>
 
 <nav>
-  <a href="voto-consciente-figma.html" class="logo">
+  <a href="index.html" class="logo">
     <span class="logo-voto">VOTO</span>
     <span class="logo-consciente">CONSCIENTE</span>
   </a>
@@ -255,6 +269,17 @@
   </div>
 </div>
 
+<!-- Modal PDF -->
+<div class="pdf-modal" id="pdf-modal">
+  <div class="pdf-box">
+    <div class="pdf-header">
+      <span class="pdf-title" id="pdf-modal-title">Certidão Criminal</span>
+      <button class="pdf-close" id="pdf-modal-close">✕</button>
+    </div>
+    <iframe class="pdf-frame" id="pdf-frame" src=""></iframe>
+  </div>
+</div>
+
 <footer>
   <div class="footer-left">
     <span class="footer-logo-voto">VOTO</span>
@@ -275,6 +300,8 @@
     getBensBySqCandidato,
     getSituacaoJuridicaBySqCandidato,
     getRedesSociaisBySqCandidato,
+    getPropostasResumos,
+    getPropostaGoverno,
   } from '../js/api.js';
 
   const API_BASE = 'http://localhost:5253';
@@ -362,34 +389,103 @@
     const certidoes = situacao?.certidoesCriminais ?? [];
     const cassacoes = situacao?.motivosCassacao ?? [];
 
+    const certidoesHtml = certidoes.length > 0
+      ? `<p style="font-size:11px;color:var(--muted);margin-bottom:14px;font-family:var(--sans);line-height:1.6;">
+           O conteúdo de cada certidão (NADA CONSTA ou CONSTA) está no próprio documento. Abra o PDF para verificar.
+         </p>`
+        + certidoes.map(c => `
+          <div class="ficha-item">
+            <span class="ficha-item-label" style="font-size:11px;word-break:break-all;">${c.nmArquivo || 'Certidão Criminal'}</span>
+            ${c.dsCaminhoArquivo
+              ? `<button class="btn-pdf" data-path="${c.dsCaminhoArquivo}" data-title="${c.nmArquivo || 'Certidão Criminal'}">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  Ver PDF
+                </button>`
+              : '<span class="ficha-badge" style="background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--border)">Sem arquivo</span>'}
+          </div>`).join('')
+      : `<div class="ficha-item">
+           <span class="ficha-item-label">Nenhuma certidão criminal registrada</span>
+           <span class="ficha-badge badge-ok">Sem registros</span>
+         </div>`;
+
+    const cassacoesHtml = cassacoes.length > 0
+      ? cassacoes.map(c => `
+          <div class="ficha-item">
+            <span class="ficha-item-label">${c.dsTpMotivo || c.dsMotivo || 'Cassação'}</span>
+            <span class="ficha-badge badge-alerta">Consta</span>
+          </div>`).join('')
+      : `<div class="ficha-item">
+           <span class="ficha-item-label">Registro de cassação de mandato</span>
+           <span class="ficha-badge badge-ok">Não consta</span>
+         </div>`;
+
     el.innerHTML = `
       <div class="ficha-section">
         <p class="ficha-section-title">Certidão Criminal</p>
-        ${certidoes.length > 0
-          ? certidoes.map(c => `
-            <div class="ficha-item">
-              <span class="ficha-item-label">${c.nmArquivo || 'Registro criminal'}</span>
-              <span class="ficha-badge badge-alerta">Consta</span>
-            </div>`).join('')
-          : `<div class="ficha-item">
-              <span class="ficha-item-label">Condenações transitadas em julgado</span>
-              <span class="ficha-badge badge-ok">Não consta</span>
-             </div>`}
+        ${certidoesHtml}
       </div>
       <div class="ficha-section">
         <p class="ficha-section-title">Cassações</p>
-        ${cassacoes.length > 0
-          ? cassacoes.map(c => `
-            <div class="ficha-item">
-              <span class="ficha-item-label">${c.dsTpMotivo || c.dsMotivo || 'Cassação'}</span>
-              <span class="ficha-badge badge-alerta">Consta</span>
-            </div>`).join('')
-          : `<div class="ficha-item">
-              <span class="ficha-item-label">Registro de cassação de mandato</span>
-              <span class="ficha-badge badge-ok">Não consta</span>
-             </div>`}
+        ${cassacoesHtml}
       </div>`;
+
+    // Ativa botões de PDF após render
+    el.querySelectorAll('.btn-pdf').forEach(btn => {
+      btn.addEventListener('click', () => openPdfModal(btn.dataset.path, btn.dataset.title));
+    });
   }
+
+  function renderPropostas(resumos, proposta) {
+    const el = document.getElementById('propostas-content');
+
+    const pdfBtn = proposta?.dsCaminhoArquivo
+      ? `<button class="btn-pdf" data-path="${proposta.dsCaminhoArquivo}" data-title="Programa de Governo" style="margin-bottom:20px;">
+           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+           Ver PDF do Programa de Governo
+         </button>`
+      : '';
+
+    if (!resumos || resumos.length === 0) {
+      el.innerHTML = pdfBtn + `
+        <div class="state-msg" style="height:160px;">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p>Resumos por IA ainda não gerados para esta candidatura.</p>
+          ${proposta ? '<span>O PDF do programa de governo está disponível acima.</span>' : '<span>Nenhum programa de governo encontrado.</span>'}
+        </div>`;
+    } else {
+      el.innerHTML = pdfBtn + resumos.map(p => `
+        <div class="proposta-item">
+          <p class="proposta-tema">${p.dsTema || '—'}</p>
+          <p class="proposta-resumo">${p.txResumo || '—'}</p>
+        </div>`).join('');
+    }
+
+    el.querySelectorAll('.btn-pdf').forEach(btn => {
+      btn.addEventListener('click', () => openPdfModal(btn.dataset.path, btn.dataset.title));
+    });
+  }
+
+  // ── Modal PDF ──────────────────────────────────────────────
+  const pdfModal = document.getElementById('pdf-modal');
+  const pdfFrame = document.getElementById('pdf-frame');
+  const pdfTitle = document.getElementById('pdf-modal-title');
+
+  function openPdfModal(path, title) {
+    pdfFrame.src = `${API_BASE}/storage/${path}`;
+    pdfTitle.textContent = title || 'Certidão';
+    pdfModal.classList.add('open');
+  }
+
+  document.getElementById('pdf-modal-close').addEventListener('click', () => {
+    pdfModal.classList.remove('open');
+    pdfFrame.src = '';
+  });
+  pdfModal.addEventListener('click', e => {
+    if (e.target === pdfModal) {
+      pdfModal.classList.remove('open');
+      pdfFrame.src = '';
+    }
+  });
 
   function renderCandidaturas() {
     const el = document.getElementById('candidaturas-content');
@@ -469,6 +565,8 @@
       document.getElementById('patrimonio-content').innerHTML = noYear('o patrimônio declarado');
       document.getElementById('propostas-content').innerHTML  = noYear('as propostas de governo');
       document.getElementById('ficha-content').innerHTML      = noYear('a ficha desta candidatura');
+      pdfModal.classList.remove('open');
+      pdfFrame.src = '';
       return;
     }
 
@@ -479,21 +577,24 @@
     document.getElementById('ficha-content').innerHTML      = loading();
     document.getElementById('propostas-content').innerHTML  = loading();
 
-    const [bensResult, situacaoResult, redesResult] = await Promise.allSettled([
+    const [bensResult, situacaoResult, redesResult, resumosResult, propostaResult] = await Promise.allSettled([
       getBensBySqCandidato(cand.sqCandidato),
       getSituacaoJuridicaBySqCandidato(cand.sqCandidato),
       getRedesSociaisBySqCandidato(cand.sqCandidato, 1, 50),
+      getPropostasResumos(cand.sqCandidato),
+      getPropostaGoverno(cand.sqCandidato),
     ]);
 
     const bens     = bensResult.status     === 'fulfilled' ? (bensResult.value ?? []) : [];
     const situacao = situacaoResult.status === 'fulfilled' ? situacaoResult.value : { certidoesCriminais: [], motivosCassacao: [] };
     const redes    = redesResult.status    === 'fulfilled' ? (redesResult.value?.data ?? []) : [];
+    const resumos  = resumosResult.status  === 'fulfilled' ? (resumosResult.value ?? []) : [];
+    const proposta = propostaResult.status === 'fulfilled' ? propostaResult.value : null;
 
     updateDynamic(cand, redes);
     renderPatrimonio(bens);
     renderFicha(situacao);
-
-    document.getElementById('propostas-content').innerHTML = noData('propostas de governo');
+    renderPropostas(resumos, proposta);
   }
 
   document.getElementById('year-select').addEventListener('change', onYearChange);

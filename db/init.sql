@@ -2,6 +2,9 @@
 -- VoteBem - Schema PostgreSQL
 -- =============================================
 
+CREATE EXTENSION IF NOT EXISTS vector;
+
+DROP TABLE IF EXISTS PROPOSTA_CHUNK CASCADE;
 DROP TABLE IF EXISTS RESUMO_PROPOSTA CASCADE;
 DROP TABLE IF EXISTS PROPOSTA_GOVERNO CASCADE;
 DROP TABLE IF EXISTS NOTA_FISCAL CASCADE;
@@ -207,3 +210,23 @@ CREATE INDEX idx_cassacao_sq ON MOTIVO_CASSACAO(sq_candidato);
 -- Despesas
 CREATE INDEX idx_despesa_sq ON DESPESA_CANDIDATO(sq_candidato);
 CREATE INDEX idx_nota_sq ON NOTA_FISCAL(sq_candidato);
+
+-- =============================================
+-- IA: chunks de propostas com embeddings (pgvector)
+-- Dim 384 = paraphrase-multilingual-MiniLM-L12-v2
+-- =============================================
+CREATE TABLE PROPOSTA_CHUNK (
+    id              BIGSERIAL   PRIMARY KEY,
+    sq_candidato    BIGINT      NOT NULL REFERENCES CANDIDATURA(sq_candidato),
+    ano_eleicao     INT         NOT NULL,
+    idx             INT         NOT NULL,
+    texto           TEXT        NOT NULL,
+    embedding       VECTOR(384) NOT NULL,
+    UNIQUE (sq_candidato, idx)
+);
+
+CREATE INDEX idx_proposta_chunk_sq ON PROPOSTA_CHUNK(sq_candidato);
+CREATE INDEX idx_proposta_chunk_ano ON PROPOSTA_CHUNK(ano_eleicao);
+CREATE INDEX idx_proposta_chunk_embedding
+    ON PROPOSTA_CHUNK USING ivfflat (embedding vector_cosine_ops)
+    WITH (lists = 50);
