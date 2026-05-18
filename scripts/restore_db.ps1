@@ -16,7 +16,7 @@ $CONTAINER  = "VoteBem"
 $DUMP_REMOTO = "/tmp/votebem.dump"
 
 if (-not (Test-Path $DUMP_LOCAL)) {
-    Write-Error "Dump não encontrado em $DUMP_LOCAL. Peça pro Vitor o arquivo (~5.6MB)."
+    Write-Error "Dump não encontrado em $DUMP_LOCAL. Peça pro Vitor o arquivo (~550KB)."
     exit 1
 }
 

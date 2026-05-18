@@ -17,7 +17,7 @@ Sem comentários, sem markdown, sem texto fora do JSON."""
 _VALIDAS = {"estruturado", "proposta", "recusar", "fora_escopo"}
 
 
-def classify(pergunta: str) -> str:
+def classify(pergunta: str, model: str | None = None) -> str:
     completion = chat_completion(
         messages=[
             {"role": "system", "content": ROUTER_SYSTEM},
@@ -25,6 +25,7 @@ def classify(pergunta: str) -> str:
         ],
         temperature=0.0,
         max_tokens=40,
+        model=model,
     )
     raw = (completion.choices[0].message.content or "").strip()
 

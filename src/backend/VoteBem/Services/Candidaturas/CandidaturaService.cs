@@ -13,9 +13,23 @@ namespace VoteBem.Services.Candidaturas
             if (string.IsNullOrEmpty(nrCpfCandidato))
                 throw new ArgumentException("CPF não pode ser vazio!");
 
-            var (candidaturas, total) = await candidaturaRepository.GetAllByCandidatoPaginatedAsync(pageNumber, pageSize, nrCpfCandidato.Trim());
+            var (candidaturas, _) = await candidaturaRepository.GetAllByCandidatoPaginatedAsync(pageNumber, pageSize, nrCpfCandidato.Trim());
             var anos = await candidaturaRepository.GetAnosEleicaoAsync(candidaturas.Select(ca => ca.CdEleicao));
-            return BuildPagedResult(candidaturas, anos, pageNumber, pageSize, total);
+
+            // Turno 1 e turno 2 de um mesmo ano podem ter CdEleicao diferentes.
+            // Mantém apenas o menor SQ por ano (turno 1), que é o que as propostas referenciam.
+            var deduped = candidaturas
+                .GroupBy(ca => anos.GetValueOrDefault(ca.CdEleicao))
+                .Select(g => g.OrderBy(ca => ca.SqCandidato).First())
+                .OrderByDescending(ca => anos.GetValueOrDefault(ca.CdEleicao))
+                .ToList();
+
+            var total = deduped.Count;
+            var paged = deduped
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize);
+
+            return BuildPagedResult(paged, anos, pageNumber, pageSize, total);
         }
 
         private static PagedResultDto<CandidaturaResponseDto> BuildPagedResult(IEnumerable<Candidatura> candidaturas, Dictionary<long, int> anos, int pageNumber, int pageSize, int total)

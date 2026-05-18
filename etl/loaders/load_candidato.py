@@ -6,7 +6,10 @@ from connection import Session
 from models.candidato import Candidato 
 
 ANOS = [2010, 2014, 2018, 2022]
-COLUNAS = ["NR_CPF_CANDIDATO", "NM_CANDIDATO", "NM_SOCIAL_CANDIDATO", "NM_URNA_CANDIDATO", "DT_NASCIMENTO", "SG_UF_NASCIMENTO", "CD_GENERO", "DS_GENERO", "CD_GRAU_INSTRUCAO", "DS_GRAU_INSTRUCAO", "CD_ESTADO_CIVIL", "DS_ESTADO_CIVIL", "CD_COR_RACA", "DS_COR_RACA"]
+COLUNAS = ["SQ_CANDIDATO", "NR_CPF_CANDIDATO", "NM_CANDIDATO", "NM_SOCIAL_CANDIDATO", "NM_URNA_CANDIDATO", "DT_NASCIMENTO", "SG_UF_NASCIMENTO", "CD_GENERO", "DS_GENERO", "CD_GRAU_INSTRUCAO", "DS_GRAU_INSTRUCAO", "CD_ESTADO_CIVIL", "DS_ESTADO_CIVIL", "CD_COR_RACA", "DS_COR_RACA"]
+
+def _cpf_valido(cpf: str) -> bool:
+    return bool(cpf) and cpf.isdigit() and len(cpf) == 11 and cpf != "00000000000"
 
 def load_candidatos(data_dir: Path):
     dfs = []
@@ -19,19 +22,47 @@ def load_candidatos(data_dir: Path):
                 encoding = "latin-1",
                 sep = ";",
                 quotechar = '"',
-                usecols = COLUNAS
+                usecols = COLUNAS,
+                dtype={"SQ_CANDIDATO": str, "NR_CPF_CANDIDATO": str},
         )
+        df["_ANO"] = ano
         dfs.append(df)
 
 
     df_total = pd.concat(dfs, ignore_index=True)
     df_total.replace(["#NULO#", "#NULO", "#NE#", "#NE"], None, inplace=True)
 
-    df_total["NR_CPF_CANDIDATO"] = df_total["NR_CPF_CANDIDATO"].astype(str).str.strip()
+    df_total["SQ_CANDIDATO"] = df_total["SQ_CANDIDATO"].str.strip().astype("int64")
+    df_total["NR_CPF_CANDIDATO"] = df_total["NR_CPF_CANDIDATO"].astype(str).str.strip().str.zfill(11)
 
-    df_total["NR_CPF_CANDIDATO"] = df_total["NR_CPF_CANDIDATO"].str.zfill(11)
+    # CPF inválido → CPF sintético por SQ (provisório, pode ser substituído abaixo).
+    df_total["NR_CPF_CANDIDATO"] = df_total.apply(
+        lambda r: r["NR_CPF_CANDIDATO"] if _cpf_valido(r["NR_CPF_CANDIDATO"])
+                  else f"SQ{str(r['SQ_CANDIDATO'])[-9:]}",
+        axis=1,
+    )
 
-    df_total.drop_duplicates(subset="NR_CPF_CANDIDATO", inplace=True)
+    # Se a mesma pessoa (nome + nascimento) tem CPF real em algum ano, usa ele em todos.
+    # Isso evita que candidatos de 2014 (sem CPF) apareçam duplicados para quem tem CPF em 2018/2022.
+    df_total["_CHAVE_PESSOA"] = (
+        df_total["NM_CANDIDATO"].str.strip().str.upper() + "|" +
+        df_total["DT_NASCIMENTO"].astype(str)
+    )
+    cpf_real_por_pessoa = (
+        df_total[df_total["NR_CPF_CANDIDATO"].apply(_cpf_valido)]
+        .groupby("_CHAVE_PESSOA")["NR_CPF_CANDIDATO"]
+        .first()
+    )
+    df_total["NR_CPF_CANDIDATO"] = df_total.apply(
+        lambda r: cpf_real_por_pessoa.get(r["_CHAVE_PESSOA"], r["NR_CPF_CANDIDATO"]),
+        axis=1,
+    )
+    df_total.drop(columns=["_CHAVE_PESSOA"], inplace=True)
+
+    # Para a mesma pessoa (mesmo CPF final) em vários anos, mantém o registro mais recente.
+    df_total.sort_values("_ANO", inplace=True)
+    df_total.drop_duplicates(subset="NR_CPF_CANDIDATO", keep="last", inplace=True)
+    df_total.drop(columns=["_ANO", "SQ_CANDIDATO"], inplace=True)
 
     df_total["NM_CANDIDATO"] = df_total["NM_CANDIDATO"].str.strip()
     df_total["NM_SOCIAL_CANDIDATO"] = df_total["NM_SOCIAL_CANDIDATO"].str.strip()

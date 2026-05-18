@@ -11,12 +11,13 @@ namespace VoteBem.Repository.Candidaturas
 
         public async Task<(IEnumerable<Candidatura> candidaturas, int quantidadeCandidaturas)> GetAllByCandidatoPaginatedAsync(int pageNumber, int pageSize, string nrCpfCandidato)
         {
-            var query = context.Candidaturas
+            var candidaturas = await context.Candidaturas
                 .Where(ca => ca.NrCpfCandidato == nrCpfCandidato)
                 .Include(ca => ca.Partido)
-                .AsNoTracking();
+                .AsNoTracking()
+                .ToListAsync();
 
-            return await PaginateAsync(query, pageNumber, pageSize);
+            return (candidaturas, candidaturas.Count);
         }
 
         public async Task<Dictionary<long, int>> GetAnosEleicaoAsync(IEnumerable<long> cdEleicoes)
@@ -27,16 +28,5 @@ namespace VoteBem.Repository.Candidaturas
                 .ToDictionaryAsync(g => g.Key, g => g.First().AnoEleicao);
         }
 
-        private static async Task<(IEnumerable<Candidatura>, int)> PaginateAsync(IQueryable<Candidatura> query, int pageNumber, int pageSize)
-        {
-            var total = await query.CountAsync();
-            var items = await query
-                .OrderByDescending(ca => ca.CdEleicao)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            return (items, total);
-        }
     }
 }
