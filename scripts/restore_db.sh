@@ -19,7 +19,7 @@ DUMP_REMOTO="/tmp/votebem.dump"
 
 if [[ ! -f "$DUMP_LOCAL" ]]; then
     echo "ERRO: dump não encontrado em $DUMP_LOCAL"
-    echo "      peça pro Vitor o arquivo (~5.6MB)"
+    echo "      peça pro Vitor o arquivo (~550KB)"
     exit 1
 fi
 

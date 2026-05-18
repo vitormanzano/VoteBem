@@ -9,12 +9,18 @@ from models.candidatura import Candidatura
 
 ANOS = [2010, 2014, 2018, 2022]
 
+
+def _cpf_valido(cpf: str) -> bool:
+    return bool(cpf) and cpf.isdigit() and len(cpf) == 11 and cpf != "00000000000"
+
+
 COLUNAS_BASE = [
     "ANO_ELEICAO", "SQ_CANDIDATO", "NR_CPF_CANDIDATO", "CD_ELEICAO", "NR_TURNO",
     "NR_PARTIDO", "SQ_COLIGACAO", "NM_URNA_CANDIDATO",
     "CD_CARGO", "DS_CARGO", "SG_UF", "NR_CANDIDATO",
     "CD_SITUACAO_CANDIDATURA", "DS_SITUACAO_CANDIDATURA",
     "CD_OCUPACAO", "DS_OCUPACAO",
+    "NM_CANDIDATO", "DT_NASCIMENTO",
 ]
 
 # só existem em alguns anos (ex: 2010)
@@ -79,6 +85,33 @@ def load_candidaturas(data_dir: Path):
 
     df_total["SQ_CANDIDATO"]     = df_total["SQ_CANDIDATO"].str.strip()
     df_total["NR_CPF_CANDIDATO"] = df_total["NR_CPF_CANDIDATO"].str.strip().str.zfill(11)
+
+    # Descarta linhas sem SQ_CANDIDATO antes de qualquer cast numérico.
+    df_total = df_total[df_total["SQ_CANDIDATO"].notna() & (df_total["SQ_CANDIDATO"] != "")]
+
+    # CPF inválido → CPF sintético por SQ (provisório, pode ser substituído abaixo).
+    _sq_int = df_total["SQ_CANDIDATO"].astype("int64")
+    df_total["NR_CPF_CANDIDATO"] = df_total["NR_CPF_CANDIDATO"].where(
+        df_total["NR_CPF_CANDIDATO"].apply(_cpf_valido),
+        "SQ" + _sq_int.astype(str).str[-9:],
+    )
+
+    # Se a mesma pessoa (nome + nascimento) tem CPF real em algum ano, usa ele em todos.
+    # Mesma lógica de load_candidato: resolve o fragmento de 2014 (sem CPF) contra 2018/2022 (com CPF).
+    df_total["_CHAVE_PESSOA"] = (
+        df_total["NM_CANDIDATO"].astype(str).str.strip().str.upper() + "|" +
+        df_total["DT_NASCIMENTO"].astype(str)
+    )
+    cpf_real_por_pessoa = (
+        df_total[df_total["NR_CPF_CANDIDATO"].apply(_cpf_valido)]
+        .groupby("_CHAVE_PESSOA")["NR_CPF_CANDIDATO"]
+        .first()
+    )
+    df_total["NR_CPF_CANDIDATO"] = df_total.apply(
+        lambda r: cpf_real_por_pessoa.get(r["_CHAVE_PESSOA"], r["NR_CPF_CANDIDATO"]),
+        axis=1,
+    )
+    df_total.drop(columns=["_CHAVE_PESSOA", "NM_CANDIDATO", "DT_NASCIMENTO"], inplace=True)
     df_total["CD_ELEICAO"]       = df_total["CD_ELEICAO"].astype(int)
     df_total["NR_TURNO"]         = df_total["NR_TURNO"].astype(int)
     df_total["NR_PARTIDO"]       = df_total["NR_PARTIDO"].astype(int)
