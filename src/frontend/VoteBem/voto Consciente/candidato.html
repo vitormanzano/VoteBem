@@ -713,7 +713,24 @@
       border: none;
       background: #fff;
     }
+
+    /*gráfico*/
+    .patrimonio-chart-wrap {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    }
+
+    .patrimonio-chart-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--label);
+    margin-bottom: 16px;
+    }
   </style>
+  
 </head>
 
 <body>
@@ -888,6 +905,7 @@
   </footer>
 
   <script src="global.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script type="module">
     import {
       getCandidatoProfile,
@@ -940,6 +958,72 @@
 
     let allCandidaturas = [];
 
+    let patrimonioHistory = {}; // { ano: totalNumber }
+
+    function parseBRL(str) {
+      if (!str) return 0;
+      const num = parseFloat(str.replace('R$', '').replace(/\./g, '').replace(',', '.'));
+      return isNaN(num) ? 0 : num;
+    }
+
+    function renderEvolucaoChart() {
+      const canvas = document.getElementById('chart-evolucao');
+      if (!canvas) return;
+
+      const anos = Object.keys(patrimonioHistory).sort();
+      if (anos.length < 2) {
+        canvas.closest('.patrimonio-chart-wrap').innerHTML += 
+          '<p style="font-size:12px;color:var(--muted);margin-top:8px;">Dados insuficientes para exibir evolução.</p>';
+        canvas.remove();
+        return;
+      }
+
+      const valores = anos.map(a => patrimonioHistory[a]);
+
+      new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels: anos,
+          datasets: [{
+            label: 'Patrimônio declarado',
+            data: valores,
+            borderColor: '#3ba8cf',
+            backgroundColor: 'rgba(59,168,207,0.08)',
+            borderWidth: 2,
+            pointBackgroundColor: '#3ba8cf',
+            pointRadius: 5,
+            fill: true,
+            tension: 0.3,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => ctx.parsed.y.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: 'rgba(240,242,245,0.45)', font: { family: 'JetBrains Mono' } },
+              grid: { color: 'rgba(255,255,255,0.06)' }
+            },
+            y: {
+              ticks: {
+                color: 'rgba(240,242,245,0.45)',
+                font: { family: 'JetBrains Mono' },
+                callback: v => 'R$ ' + (v / 1e6).toFixed(1) + 'M'
+              },
+              grid: { color: 'rgba(255,255,255,0.06)' }
+            }
+          }
+        }
+      });
+    }
+
     // ── Tabs ───────────────────────────────────────────────────
     ['patrimonio', 'propostas', 'candidaturas', 'ficha'].forEach(id => {
       document.getElementById('tab-btn-' + id).addEventListener('click', function () {
@@ -976,7 +1060,13 @@
       <div class="patrimonio-total">
         <span class="total-label">Total declarado</span>
         <span class="total-val">${totalFmt}</span>
+      </div>
+      <div class="patrimonio-chart-wrap">
+        <p class="patrimonio-chart-title">Evolução Patrimonial</p>
+        <canvas id="chart-evolucao" height="100"></canvas>
       </div>`;
+
+      renderEvolucaoChart();
     }
 
     function renderFicha(situacao) {
@@ -1240,6 +1330,18 @@
         // Candidaturas
         allCandidaturas = candidaturasResult?.data ?? [];
         renderCandidaturas();
+
+        // Busca patrimônio de todas as candidaturas para o gráfico de evolução
+        patrimonioHistory = {};
+        const bensPromises = allCandidaturas.map(c =>
+          getBensBySqCandidato(c.sqCandidato)
+            .then(bens => {
+              const total = (bens || []).reduce((sum, b) => sum + parseBRL(b.vrBem), 0);
+              if (total > 0) patrimonioHistory[c.anoEleicao] = total;
+            })
+            .catch(() => {})
+        );
+        await Promise.all(bensPromises);
 
         // Popular select de ano
         const yearSelect = document.getElementById('year-select');
