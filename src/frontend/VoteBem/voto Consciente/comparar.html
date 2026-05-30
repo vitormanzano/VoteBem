@@ -80,7 +80,6 @@
       background: var(--panel);
       border: 1px solid var(--border-strong);
       border-radius: 6px;
-      overflow: hidden;
     }
 
     .cand-header {
@@ -347,6 +346,25 @@
     .val-accent { color: var(--accent); font-weight: 600; }
     .val-muted { color: var(--muted); }
 
+    .ct-row-text {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 300;
+      line-height: 1.7;
+      align-items: flex-start;
+      color: rgba(240,242,245,0.75);
+    }
+    .ct-tema-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: .8;
+      margin-bottom: 6px;
+    }
+    .no-resumos { font-family: var(--sans); font-size: 12px; color: var(--muted); font-style: italic; }
+
     @media (max-width: 768px) {
       .page-header { padding: 32px 20px 24px; }
       .page-title { font-size: 24px; }
@@ -440,6 +458,7 @@
     getBensBySqCandidato,
     getSituacaoJuridicaBySqCandidato,
     getCandidatosByName,
+    getResumosBySqCandidato,
   } from '../js/api.js';
 
   const API_BASE = 'http://localhost:5253';
@@ -518,16 +537,18 @@
       getCandidaturasByCpf(cpf, 1, 100),
     ]);
     const candidatura = (result?.data ?? []).find(c => c.anoEleicao === ano) ?? null;
-    let bens = [], situacao = { certidoesCriminais: [], motivosCassacao: [] };
+    let bens = [], situacao = { certidoesCriminais: [], motivosCassacao: [] }, resumos = [];
     if (candidatura?.sqCandidato) {
-      const [b, s] = await Promise.allSettled([
+      const [b, s, r] = await Promise.allSettled([
         getBensBySqCandidato(candidatura.sqCandidato),
         getSituacaoJuridicaBySqCandidato(candidatura.sqCandidato),
+        getResumosBySqCandidato(candidatura.sqCandidato),
       ]);
       bens     = b.status === 'fulfilled' ? (b.value ?? []) : [];
       situacao = s.status === 'fulfilled' ? s.value : situacao;
+      resumos  = r.status === 'fulfilled' ? (r.value ?? []) : [];
     }
-    return { profile, candidatura, bens, situacao };
+    return { profile, candidatura, bens, situacao, resumos };
   }
 
   // ── Render card ───────────────────────────────────────────────
@@ -638,8 +659,8 @@
   // ── Comparison table ──────────────────────────────────────────
   function renderComparison() {
     const el = document.getElementById('compare-table');
-    const { profile: p1, candidatura: c1, bens: b1, situacao: s1 } = cand1Data;
-    const { profile: p2, candidatura: c2, bens: b2, situacao: s2 } = cand2Data;
+    const { profile: p1, candidatura: c1, bens: b1, situacao: s1, resumos: r1 } = cand1Data;
+    const { profile: p2, candidatura: c2, bens: b2, situacao: s2, resumos: r2 } = cand2Data;
     const n1 = p1.nomeUrna || p1.nomeCompleto || '—';
     const n2 = p2.nomeUrna || p2.nomeCompleto || '—';
 
@@ -682,6 +703,13 @@
         <div class="ct-row-value">${v2}</div>
       </div>`;
 
+    const textRow = (label, v1, v2) => `
+      <div class="ct-row">
+        <div class="ct-row-label">${label}</div>
+        <div class="ct-row-value ct-row-text">${v1}</div>
+        <div class="ct-row-value ct-row-text">${v2}</div>
+      </div>`;
+
     const section = label => `<div class="ct-section"><span>${label}</span></div>`;
 
     el.innerHTML = `
@@ -715,6 +743,29 @@
         ${row('Patrimônio Declarado', pat(b1),       pat(b2))}
         ${row('Certidões Criminais',  criminal(s1),  criminal(s2))}
         ${row('Cassações',            cassacao(s1),  cassacao(s2))}
+
+        ${section('Plano de Governo')}
+        ${(function() {
+          const allThemes = [...new Set([
+            ...(r1.map(r => r.dsTema)),
+            ...(r2.map(r => r.dsTema)),
+          ])];
+          if (!allThemes.length) {
+            return `<div class="ct-row">
+              <div class="ct-row-label" style="grid-column:1/-1;border-right:none">
+                <span class="no-resumos">Resumos ainda não gerados para estas candidaturas.</span>
+              </div>
+            </div>`;
+          }
+          return allThemes.map(tema => {
+            const t1 = r1.find(r => r.dsTema === tema);
+            const t2 = r2.find(r => r.dsTema === tema);
+            const cell = (resumo) => resumo?.txResumo
+              ? `<p class="ct-tema-label">${tema}</p>${resumo.txResumo}`
+              : `<span class="val-muted">Não disponível para este candidato.</span>`;
+            return textRow(tema, cell(t1), cell(t2));
+          }).join('');
+        })()}
       </div>`;
 
     el.style.display = 'block';
