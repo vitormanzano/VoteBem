@@ -52,6 +52,26 @@ def test_clean_text_string_vazia():
     assert clean_text("") == ""
 
 
+def test_clean_text_repara_ligadura_com_espaco_espurio():
+    """A extração de PDF insere um espaço após o glifo de ligadura (ﬁ),
+    partindo a palavra; clean_text deve recompor a palavra."""
+    txt = "objetivos estratégicos deﬁ nidos no plano"
+    assert clean_text(txt) == "objetivos estratégicos definidos no plano"
+
+
+def test_clean_text_repara_ligaduras_diversas():
+    """ﬁ, ﬂ e ﬃ no meio ou no início da palavra são todas recompostas."""
+    assert clean_text("eﬁ ciência") == "eficiência"
+    assert clean_text("aﬂ ige") == "aflige"          # ﬂ
+    assert clean_text("ﬁ nanceira") == "financeira"  # ligadura inicia a palavra
+    assert clean_text("eﬃ ciente") == "efficiente"   # ﬃ → ffi
+
+
+def test_clean_text_ligadura_sem_espaco_apenas_normaliza():
+    """Ligadura sem espaço espúrio só sofre normalização NFKC, sem juntar nada."""
+    assert clean_text("deﬁnidos") == "definidos"
+
+
 # ---------------------------------------------------------------------------
 # chunk_text
 # ---------------------------------------------------------------------------
