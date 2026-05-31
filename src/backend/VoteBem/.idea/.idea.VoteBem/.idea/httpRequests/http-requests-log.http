@@ -1,0 +1,45 @@
+GET http://localhost:5253/candidatos/all-paginated?pageNumber=1&pageSize=10
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/JetBrains Rider 2026.1.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2026-05-05T083142.200.json
+
+###
+
+GET http://localhost:5253/candidatos/all-paginated?pageNumber=1&pageSize=10
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/JetBrains Rider 2026.1.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2026-05-04T193553.200.json
+
+###
+
+GET http://localhost:5253/candidatos/by-name-paginated?name=lula
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/JetBrains Rider 2026.1.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2026-05-04T192741.200.json
+
+###
+
+GET http://localhost:5253/candidatos/by-name-paginated?name=lula
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/JetBrains Rider 2026.1.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2026-05-04T192440.500.json
+
+###
+
+GET http://localhost:5253/candidatos/by-partido-paginated?partido=pt
+Accept: application/json
+User-Agent: IntelliJ HTTP Client/JetBrains Rider 2026.1.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+
+<> 2026-05-04T192426.500.json
+
+###
+

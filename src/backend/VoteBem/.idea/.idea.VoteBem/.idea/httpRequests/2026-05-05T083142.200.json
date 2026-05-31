@@ -1,0 +1,70 @@
+{
+  "data": [
+    {
+      "nrCpfCandidato": "-0000000001",
+      "nomeUrna": "Aécio Neves",
+      "partido": "PT",
+      "cargoDisputado": "PRESIDENTE"
+    },
+    {
+      "nrCpfCandidato": "00274003953",
+      "nomeUrna": "Alvaro Dias",
+      "partido": "PODE",
+      "cargoDisputado": "PRESIDENTE"
+    },
+    {
+      "nrCpfCandidato": "01158597053",
+      "nomeUrna": "Ana Amélia",
+      "partido": "PP",
+      "cargoDisputado": "VICE-PRESIDENTE"
+    },
+    {
+      "nrCpfCandidato": "91307678572",
+      "nomeUrna": "Ana Paula Matos",
+      "partido": "PDT",
+      "cargoDisputado": "VICE-PRESIDENTE"
+    },
+    {
+      "nrCpfCandidato": "04551706493",
+      "nomeUrna": "Antonio Alves",
+      "partido": "PCB",
+      "cargoDisputado": "VICE-PRESIDENTE"
+    },
+    {
+      "nrCpfCandidato": "50021753768",
+      "nomeUrna": "Braga Netto",
+      "partido": "PL",
+      "cargoDisputado": "VICE-PRESIDENTE"
+    },
+    {
+      "nrCpfCandidato": "19686111859",
+      "nomeUrna": "Cabo Daciolo",
+      "partido": "PATRIOTA",
+      "cargoDisputado": "PRESIDENTE"
+    },
+    {
+      "nrCpfCandidato": "12005509353",
+      "nomeUrna": "Ciro Gomes",
+      "partido": "PDT",
+      "cargoDisputado": "PRESIDENTE"
+    },
+    {
+      "nrCpfCandidato": "35139706334",
+      "nomeUrna": "Cláudia Durans",
+      "partido": "PSTU",
+      "cargoDisputado": "VICE-PRESIDENTE"
+    },
+    {
+      "nrCpfCandidato": "13326724691",
+      "nomeUrna": "Dilma",
+      "partido": "PT",
+      "cargoDisputado": "PRESIDENTE"
+    }
+  ],
+  "page": 1,
+  "pageSize": 10,
+  "totalItems": 63,
+  "totalPages": 7,
+  "hasPreviousPage": false,
+  "hasNextPage": true
+}

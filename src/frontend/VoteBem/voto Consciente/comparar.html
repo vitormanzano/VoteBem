@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comparar Candidatos — VOTO CONSCIENTE</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="global.css">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0d10;
+      --panel: #0f1318;
+      --border: rgba(255,255,255,0.09);
+      --border-strong: rgba(255,255,255,0.14);
+      --text: #f0f2f5;
+      --muted: rgba(240,242,245,0.45);
+      --label: rgba(240,242,245,0.35);
+      --accent: #3ba8cf;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Inter', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--mono); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* PAGE HEADER */
+    .page-header { padding: 48px 40px 32px; border-bottom: 1px solid var(--border); }
+
+    .year-badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(59,168,207,0.1);
+      border: 1px solid rgba(59,168,207,0.2);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+
+    .page-title { font-size: 32px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; margin-bottom: 10px; }
+
+    .page-note {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 540px;
+    }
+
+    /* MAIN */
+    .compare-wrap { flex: 1; padding: 32px 40px 60px; display: flex; flex-direction: column; gap: 32px; }
+
+    /* SELECTION ROW */
+    .selection-row {
+      display: grid;
+      grid-template-columns: 1fr 48px 1fr;
+      align-items: start;
+    }
+
+    .vs-divider {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 52px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: var(--muted);
+    }
+
+    /* CANDIDATE CARD */
+    .cand-card {
+      background: var(--panel);
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+    }
+
+    .cand-header {
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .avatar {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: #2a3340;
+      margin-bottom: 14px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--border-strong);
+      flex-shrink: 0;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-initials { font-size: 22px; font-weight: 700; color: rgba(255,255,255,0.22); }
+
+    .cand-name { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.25; margin-bottom: 6px; }
+    .cand-sub { font-size: 11px; color: var(--muted); letter-spacing: .03em; line-height: 1.5; }
+
+    .no-year-warn {
+      padding: 10px 20px;
+      font-family: var(--sans);
+      font-size: 12px;
+      color: rgba(244,67,54,.75);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .btn-change {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      padding: 11px;
+      background: none;
+      border: none;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: color .2s, background .2s;
+    }
+    .btn-change:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+    .btn-change svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+
+    /* PLACEHOLDER */
+    .cand-placeholder {
+      padding: 40px 24px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+    }
+
+    .placeholder-ring {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      border: 2px dashed rgba(255,255,255,0.14);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .placeholder-ring svg { width: 20px; height: 20px; stroke: rgba(255,255,255,0.2); fill: none; stroke-width: 1.5; }
+    .placeholder-text { font-size: 12px; color: var(--muted); }
+
+    /* SEARCH PANEL */
+    .search-panel { padding: 16px 24px 24px; }
+
+    .search-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--label);
+      margin-bottom: 10px;
+    }
+
+    .search-wrap { position: relative; }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      outline: none;
+      transition: border-color .2s, background .2s;
+      caret-color: var(--accent);
+    }
+    .search-input::placeholder { color: rgba(255,255,255,0.25); }
+    .search-input:focus { background: rgba(255,255,255,0.09); border-color: rgba(59,168,207,0.35); }
+
+    .search-results {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: #1a2535;
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 50;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .result-item {
+      padding: 11px 14px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: background .15s;
+    }
+    .result-item:last-child { border-bottom: none; }
+    .result-item:hover { background: rgba(255,255,255,0.06); }
+    .result-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .result-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .result-empty { padding: 16px 14px; font-size: 12px; color: var(--muted); text-align: center; }
+
+    /* LOADING */
+    .card-loading {
+      padding: 48px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .spinner {
+      width: 22px; height: 22px;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ERROR */
+    .state-error {
+      padding: 40px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* COMPARISON TABLE */
+    .compare-table {
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .ct-header {
+      display: grid;
+      grid-template-columns: 180px 1fr 1fr;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border-strong);
+    }
+
+    .ct-header-label {
+      padding: 16px 20px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+    }
+    .ct-header-label span {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--label);
+    }
+
+    .ct-header-cand {
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-right: 1px solid var(--border);
+    }
+    .ct-header-cand:last-child { border-right: none; }
+
+    .mini-avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: #2a3340;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-strong);
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .mini-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .mini-initials { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.25); }
+
+    .mini-name { font-size: 12px; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .mini-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+    .ct-section {
+      padding: 8px 20px;
+      background: rgba(255,255,255,0.02);
+      border-bottom: 1px solid var(--border);
+    }
+    .ct-section span {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: .8;
+    }
+
+    .ct-row {
+      display: grid;
+      grid-template-columns: 180px 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+    .ct-row:last-child { border-bottom: none; }
+
+    .ct-row-label {
+      padding: 13px 20px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--label);
+      border-right: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+    }
+
+    .ct-row-value {
+      padding: 13px 20px;
+      font-size: 12px;
+      color: var(--text);
+      border-right: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      line-height: 1.4;
+    }
+    .ct-row-value:last-child { border-right: none; }
+
+    .badge-ok { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: #81c784; }
+    .badge-ok::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #81c784; flex-shrink: 0; }
+    .badge-warn { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: #ef9a9a; }
+    .badge-warn::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #ef9a9a; flex-shrink: 0; }
+    .val-accent { color: var(--accent); font-weight: 600; }
+    .val-muted { color: var(--muted); }
+
+    .ct-row-text {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 300;
+      line-height: 1.7;
+      align-items: flex-start;
+      color: rgba(240,242,245,0.75);
+    }
+    .ct-tema-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: .8;
+      margin-bottom: 6px;
+    }
+    .no-resumos { font-family: var(--sans); font-size: 12px; color: var(--muted); font-style: italic; }
+
+    @media (max-width: 768px) {
+      .page-header { padding: 32px 20px 24px; }
+      .page-title { font-size: 24px; }
+      .compare-wrap { padding: 20px 16px 40px; gap: 20px; }
+
+      .selection-row { grid-template-columns: 1fr; gap: 12px; }
+      .vs-divider { padding-top: 0; height: 20px; }
+
+      .ct-header { grid-template-columns: 90px 1fr 1fr; }
+      .ct-row    { grid-template-columns: 90px 1fr 1fr; }
+      .ct-header-label, .ct-header-cand, .ct-row-label, .ct-row-value { padding: 10px 12px; }
+      .ct-row-label { font-size: 10px; }
+      .ct-row-value { font-size: 11px; }
+      .mini-name { font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo-mark">VOTE<span>BEM</span></a>
+  <button class="nav-toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-links">
+    <a href="sobre.html">Sobre</a>
+    <a href="transparencia.html">Transparência</a>
+    <a href="candidatos.html">Candidatos</a>
+    <a href="chat.html">Chat</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="year-badge" id="year-badge">Ano —</div>
+  <h1 class="page-title">Comparar Candidatos</h1>
+  <p class="page-note">A comparação é feita entre candidatos que concorreram no mesmo ano eleitoral. Use a busca para selecionar um segundo candidato e visualizar os dados lado a lado.</p>
+</div>
+
+<div class="compare-wrap">
+
+  <div class="selection-row">
+
+    <div class="cand-card" id="cand1-card">
+      <div class="card-loading">
+        <div class="spinner"></div>
+        <span>Carregando...</span>
+      </div>
+    </div>
+
+    <div class="vs-divider">VS</div>
+
+    <div class="cand-card" id="cand2-card">
+      <div class="cand-placeholder">
+        <div class="placeholder-ring">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <span class="placeholder-text">Selecione um candidato para comparar</span>
+      </div>
+      <div class="search-panel">
+        <p class="search-label">Buscar candidato</p>
+        <div class="search-wrap">
+          <input class="search-input" id="search-input-2" type="text" placeholder="Nome do candidato..." autocomplete="off" />
+          <div class="search-results" id="search-results-2" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="compare-table" style="display:none"></div>
+
+</div>
+
+<footer>
+  <div class="footer-left">
+    <a href="index.html" class="logo-mark">VOTE<span>BEM</span></a>
+    <div class="footer-social">
+      <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+      <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+      <a href="#" aria-label="X"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.736-8.841L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+    </div>
+  </div>
+  <p class="footer-note">Este site não é afiliado a nenhum partido, candidato ou grupo político. As informações exibidas são de fontes públicas. Plataforma independente · Brasil 2026</p>
+</footer>
+
+<script src="global.js"></script>
+<script type="module">
+  import {
+    getCandidatoProfile,
+    getCandidaturasByCpf,
+    getBensBySqCandidato,
+    getSituacaoJuridicaBySqCandidato,
+    getCandidatosByName,
+    getResumosBySqCandidato,
+  } from '../js/api.js';
+
+  const API_BASE = 'http://localhost:5253';
+  const params   = new URLSearchParams(window.location.search);
+  const cpf1     = params.get('cpf');
+  const ano      = parseInt(params.get('ano'));
+
+  let cand1Data = null;
+  let cand2Data = null;
+
+  // ── Init ──────────────────────────────────────────────────────
+  if (!cpf1 || !ano) {
+    document.getElementById('cand1-card').innerHTML = `
+      <div class="state-error">
+        <p>Parâmetros inválidos.</p>
+        <a href="candidatos.html" style="color:var(--accent);font-size:12px;margin-top:6px">← Voltar para candidatos</a>
+      </div>`;
+  } else {
+    document.getElementById('year-badge').textContent = `Ano ${ano}`;
+    loadCard1();
+  }
+
+  bindSearch();
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#cand2-card')) {
+      const r = document.getElementById('search-results-2');
+      if (r) r.style.display = 'none';
+    }
+  });
+
+  // ── Helpers ───────────────────────────────────────────────────
+  function initials(nome) {
+    return (nome || '?').split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  }
+
+  function calcAge(dt) {
+    if (!dt) return null;
+    const b = new Date(dt);
+    let a = new Date().getFullYear() - b.getFullYear();
+    const m = new Date().getMonth() - b.getMonth();
+    if (m < 0 || (m === 0 && new Date().getDate() < b.getDate())) a--;
+    return a;
+  }
+
+  function sumPatrimonio(bens) {
+    if (!bens?.length) return null;
+    let total = 0;
+    bens.forEach(b => {
+      const n = parseFloat(String(b.vrBem ?? '').replace('R$', '').replace(/\./g, '').replace(',', '.'));
+      if (!isNaN(n)) total += n;
+    });
+    return total > 0 ? total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : null;
+  }
+
+  function bigAvatar(nome, fotoUrl) {
+    const init = initials(nome);
+    if (fotoUrl && fotoUrl !== 'Dado não disponível') {
+      return `<div class="avatar"><img src="${API_BASE}${fotoUrl}" alt="" onerror="this.style.display='none';this.nextSibling.style.display='flex'"/><span class="avatar-initials" style="display:none">${init}</span></div>`;
+    }
+    return `<div class="avatar"><span class="avatar-initials">${init}</span></div>`;
+  }
+
+  function miniAvatar(nome, fotoUrl) {
+    const init = initials(nome);
+    if (fotoUrl && fotoUrl !== 'Dado não disponível') {
+      return `<div class="mini-avatar"><img src="${API_BASE}${fotoUrl}" alt="" onerror="this.style.display='none';this.nextSibling.style.display='flex'"/><span class="mini-initials" style="display:none">${init}</span></div>`;
+    }
+    return `<div class="mini-avatar"><span class="mini-initials">${init}</span></div>`;
+  }
+
+  // ── Fetch ─────────────────────────────────────────────────────
+  async function fetchData(cpf) {
+    const [profile, result] = await Promise.all([
+      getCandidatoProfile(cpf),
+      getCandidaturasByCpf(cpf, 1, 100),
+    ]);
+    const candidatura = (result?.data ?? []).find(c => c.anoEleicao === ano) ?? null;
+    let bens = [], situacao = { certidoesCriminais: [], motivosCassacao: [] }, resumos = [];
+    if (candidatura?.sqCandidato) {
+      const [b, s, r] = await Promise.allSettled([
+        getBensBySqCandidato(candidatura.sqCandidato),
+        getSituacaoJuridicaBySqCandidato(candidatura.sqCandidato),
+        getResumosBySqCandidato(candidatura.sqCandidato),
+      ]);
+      bens     = b.status === 'fulfilled' ? (b.value ?? []) : [];
+      situacao = s.status === 'fulfilled' ? s.value : situacao;
+      resumos  = r.status === 'fulfilled' ? (r.value ?? []) : [];
+    }
+    return { profile, candidatura, bens, situacao, resumos };
+  }
+
+  // ── Render card ───────────────────────────────────────────────
+  function renderCard(id, data, canChange) {
+    const el = document.getElementById(id);
+    const { profile: p, candidatura: c } = data;
+    const nome = p.nomeUrna || p.nomeCompleto || '—';
+
+    el.innerHTML = `
+      <div class="cand-header">
+        ${bigAvatar(nome, p.fotoUrl)}
+        <p class="cand-name">${nome}</p>
+        <p class="cand-sub">${c?.sgPartido ?? '—'}${c?.dsCargo ? ' · ' + c.dsCargo : ''}${c?.sgUf ? ' · ' + c.sgUf : ''}</p>
+      </div>
+      ${!c ? `<p class="no-year-warn">⚠ Sem candidatura registrada em ${ano}.</p>` : ''}
+      ${canChange ? `<button class="btn-change" onclick="trocarCandidato2()"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>Trocar candidato</button>` : ''}
+    `;
+  }
+
+  // ── Load card 1 ───────────────────────────────────────────────
+  async function loadCard1() {
+    try {
+      cand1Data = await fetchData(cpf1);
+      renderCard('cand1-card', cand1Data, false);
+    } catch {
+      document.getElementById('cand1-card').innerHTML = `<div class="state-error"><p>Erro ao carregar candidato.</p></div>`;
+    }
+  }
+
+  // ── Load card 2 ───────────────────────────────────────────────
+  async function loadCard2(cpf) {
+    document.getElementById('cand2-card').innerHTML = `<div class="card-loading"><div class="spinner"></div><span>Carregando...</span></div>`;
+    try {
+      cand2Data = await fetchData(cpf);
+      renderCard('cand2-card', cand2Data, true);
+      if (cand2Data.candidatura) renderComparison();
+    } catch {
+      document.getElementById('cand2-card').innerHTML = `<div class="state-error"><p>Erro ao carregar candidato.</p></div>`;
+      setTimeout(restoreSearch, 2000);
+    }
+  }
+
+  // ── Reset card 2 ──────────────────────────────────────────────
+  window.trocarCandidato2 = function () {
+    cand2Data = null;
+    document.getElementById('compare-table').style.display = 'none';
+    restoreSearch();
+  };
+
+  function restoreSearch() {
+    document.getElementById('cand2-card').innerHTML = `
+      <div class="cand-placeholder">
+        <div class="placeholder-ring">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <span class="placeholder-text">Selecione um candidato para comparar</span>
+      </div>
+      <div class="search-panel">
+        <p class="search-label">Buscar candidato</p>
+        <div class="search-wrap">
+          <input class="search-input" id="search-input-2" type="text" placeholder="Nome do candidato..." autocomplete="off" />
+          <div class="search-results" id="search-results-2" style="display:none"></div>
+        </div>
+      </div>`;
+    bindSearch();
+  }
+
+  // ── Search ────────────────────────────────────────────────────
+  function bindSearch() {
+    const input   = document.getElementById('search-input-2');
+    const results = document.getElementById('search-results-2');
+    if (!input) return;
+    let timer;
+
+    input.addEventListener('input', () => {
+      clearTimeout(timer);
+      const q = input.value.trim();
+      if (!q) { results.style.display = 'none'; return; }
+
+      timer = setTimeout(async () => {
+        try {
+          const data  = await getCandidatosByName(q, 1, 8);
+          const items = data?.data ?? [];
+          if (!items.length) {
+            results.innerHTML = '<p class="result-empty">Nenhum candidato encontrado.</p>';
+          } else {
+            results.innerHTML = items.map(c => `
+              <div class="result-item" data-cpf="${c.nrCpfCandidato}">
+                <p class="result-name">${c.nomeUrna ?? '—'}</p>
+                <p class="result-meta">${c.partido ?? ''}${c.cargoDisputado ? ' · ' + c.cargoDisputado : ''}</p>
+              </div>`).join('');
+            results.querySelectorAll('.result-item').forEach(item => {
+              item.addEventListener('click', () => {
+                results.style.display = 'none';
+                loadCard2(item.dataset.cpf);
+              });
+            });
+          }
+          results.style.display = 'block';
+        } catch {
+          results.innerHTML = '<p class="result-empty">Erro ao buscar.</p>';
+          results.style.display = 'block';
+        }
+      }, 350);
+    });
+  }
+
+  // ── Comparison table ──────────────────────────────────────────
+  function renderComparison() {
+    const el = document.getElementById('compare-table');
+    const { profile: p1, candidatura: c1, bens: b1, situacao: s1, resumos: r1 } = cand1Data;
+    const { profile: p2, candidatura: c2, bens: b2, situacao: s2, resumos: r2 } = cand2Data;
+    const n1 = p1.nomeUrna || p1.nomeCompleto || '—';
+    const n2 = p2.nomeUrna || p2.nomeCompleto || '—';
+
+    const v   = val => val || `<span class="val-muted">—</span>`;
+    const acc = val => val ? `<span class="val-accent">${val}</span>` : `<span class="val-muted">—</span>`;
+
+    function pat(bens) {
+      const t = sumPatrimonio(bens);
+      return t ? `<span class="val-accent">${t}</span>` : `<span class="val-muted">Não informado</span>`;
+    }
+
+    function criminal(s) {
+      return (s?.certidoesCriminais?.length ?? 0) > 0
+        ? `<span class="badge-warn">Consta</span>`
+        : `<span class="badge-ok">Nada Consta</span>`;
+    }
+
+    function cassacao(s) {
+      return (s?.motivosCassacao?.length ?? 0) > 0
+        ? `<span class="badge-warn">Consta</span>`
+        : `<span class="badge-ok">Não Consta</span>`;
+    }
+
+    function situacaoLabel(c) {
+      if (!c?.dsSituacaoCandidatura) return `<span class="val-muted">—</span>`;
+      const s = c.dsSituacaoCandidatura;
+      const eleito = s.toUpperCase().includes('ELEITO') && !s.toUpperCase().includes('NÃO');
+      return eleito ? `<span class="badge-ok">${s}</span>` : `<span class="val-muted">${s}</span>`;
+    }
+
+    function age(p) {
+      const a = calcAge(p.dtNascimento);
+      return a ? `${a} anos` : `<span class="val-muted">—</span>`;
+    }
+
+    const row = (label, v1, v2) => `
+      <div class="ct-row">
+        <div class="ct-row-label">${label}</div>
+        <div class="ct-row-value">${v1}</div>
+        <div class="ct-row-value">${v2}</div>
+      </div>`;
+
+    const textRow = (label, v1, v2) => `
+      <div class="ct-row">
+        <div class="ct-row-label">${label}</div>
+        <div class="ct-row-value ct-row-text">${v1}</div>
+        <div class="ct-row-value ct-row-text">${v2}</div>
+      </div>`;
+
+    const section = label => `<div class="ct-section"><span>${label}</span></div>`;
+
+    el.innerHTML = `
+      <div class="compare-table">
+        <div class="ct-header">
+          <div class="ct-header-label"><span>Campo</span></div>
+          <div class="ct-header-cand">
+            ${miniAvatar(n1, p1.fotoUrl)}
+            <div><p class="mini-name">${n1}</p><p class="mini-sub">${c1?.sgPartido ?? '—'}</p></div>
+          </div>
+          <div class="ct-header-cand">
+            ${miniAvatar(n2, p2.fotoUrl)}
+            <div><p class="mini-name">${n2}</p><p class="mini-sub">${c2?.sgPartido ?? '—'}</p></div>
+          </div>
+        </div>
+
+        ${section(`Candidatura ${ano}`)}
+        ${row('Cargo',         v(c1?.dsCargo),               v(c2?.dsCargo))}
+        ${row('Partido',       v(c1?.sgPartido),             v(c2?.sgPartido))}
+        ${row('UF',            v(c1?.sgUf),                  v(c2?.sgUf))}
+        ${row('Situação',      situacaoLabel(c1),            situacaoLabel(c2))}
+        ${row('Teto Campanha', acc(c1?.vrDespesaMaxCampanha), acc(c2?.vrDespesaMaxCampanha))}
+
+        ${section('Dados Pessoais')}
+        ${row('Idade',     age(p1),                  age(p2))}
+        ${row('Instrução', v(p1.grauInstrucao),      v(p2.grauInstrucao))}
+        ${row('Ocupação',  v(p1.ocupacaoDeclarada),  v(p2.ocupacaoDeclarada))}
+        ${row('Gênero',    v(p1.dsGenero),           v(p2.dsGenero))}
+
+        ${section('Patrimônio & Ficha')}
+        ${row('Patrimônio Declarado', pat(b1),       pat(b2))}
+        ${row('Certidões Criminais',  criminal(s1),  criminal(s2))}
+        ${row('Cassações',            cassacao(s1),  cassacao(s2))}
+
+        ${section('Plano de Governo')}
+        ${(function() {
+          const allThemes = [...new Set([
+            ...(r1.map(r => r.dsTema)),
+            ...(r2.map(r => r.dsTema)),
+          ])];
+          if (!allThemes.length) {
+            return `<div class="ct-row">
+              <div class="ct-row-label" style="grid-column:1/-1;border-right:none">
+                <span class="no-resumos">Resumos ainda não gerados para estas candidaturas.</span>
+              </div>
+            </div>`;
+          }
+          return allThemes.map(tema => {
+            const t1 = r1.find(r => r.dsTema === tema);
+            const t2 = r2.find(r => r.dsTema === tema);
+            const cell = (resumo) => resumo?.txResumo
+              ? `<p class="ct-tema-label">${tema}</p>${resumo.txResumo}`
+              : `<span class="val-muted">Não disponível para este candidato.</span>`;
+            return textRow(tema, cell(t1), cell(t2));
+          }).join('');
+        })()}
+      </div>`;
+
+    el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+</script>
+</body>
+</html>

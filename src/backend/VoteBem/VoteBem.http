@@ -1,0 +1,42 @@
+@VoteBem_HostAddress = http://localhost:5253
+
+GET {{VoteBem_HostAddress}}/candidatos/all-paginated?pageNumber=1&pageSize=10
+Accept: application/json
+###
+
+GET {{VoteBem_HostAddress}}/candidatos/by-name-paginated?name=lula
+Accept: application/json
+
+### 
+GET {{VoteBem_HostAddress}}/candidatos/by-partido-paginated?partido=pt
+Accept: application/json
+
+### 
+GET {{VoteBem_HostAddress}}/candidatos/by-ano-eleitoral-paginated?ano=2022
+Accept: application/json
+
+
+
+### 
+GET {{VoteBem_HostAddress}}/candidatos/profile?nrCpfCandidato=""
+Accept: application/json
+
+###
+GET {{VoteBem_HostAddress}}/bem-candidatos/all-by-candidatura?sqCandidato=280001735149
+Accept: application/json
+
+###
+GET {{VoteBem_HostAddress}}/candidaturas/all-by-candidato-paginated?nrCpfCandidato=13326724691
+Accept: application/json
+
+###
+GET {{VoteBem_HostAddress}}/situacao-juridica/all-by-candidatura?sqCandidato=280001607829
+Accept: application/json
+
+###
+GET {{VoteBem_HostAddress}}/nota-fiscal/all-by-candidatura?sqCandidato=280001612393
+Accept: application/json
+
+###
+GET {{VoteBem_HostAddress}}/rede-social/all-by-candidatura?sqCandidato
+Accept: application/json
