@@ -63,13 +63,28 @@ def carregar_dataset() -> list[dict]:
     return items
 
 
-def chamar(url: str, pergunta: str) -> dict:
+def chamar(url: str, pergunta: str, retries_429: int = 3) -> dict:
+    """POST /ai/chat. Faz retry com backoff quando o Groq devolve rate limit (429).
+
+    O 429 vem embrulhado num HTTP 500 da nossa API; detectamos pelo corpo.
+    """
     body = json.dumps({"pergunta": pergunta}).encode("utf-8")
-    req = urllib.request.Request(
-        url, data=body, headers={"Content-Type": "application/json"}, method="POST"
-    )
-    with urllib.request.urlopen(req, timeout=120) as r:
-        return json.loads(r.read().decode("utf-8"))
+    for tentativa in range(retries_429 + 1):
+        req = urllib.request.Request(
+            url, data=body, headers={"Content-Type": "application/json"}, method="POST"
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=120) as r:
+                return json.loads(r.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            corpo = e.read().decode("utf-8", "replace")
+            eh_rate_limit = "429" in corpo or "rate limit" in corpo.lower()
+            if eh_rate_limit and tentativa < retries_429:
+                espera = 8 * (tentativa + 1)  # 8s, 16s, 24s
+                print(f"     {cor('rate limit — aguardando ' + str(espera) + 's...', AMARELO)}")
+                time.sleep(espera)
+                continue
+            raise  # outros erros, ou esgotou retries: propaga
 
 
 def avaliar_estruturado(item: dict, resp: dict) -> tuple[bool, str]:
@@ -128,6 +143,10 @@ def main() -> int:
     ap.add_argument("--url", default=URL_DEFAULT)
     ap.add_argument("--limit", type=int, default=None, help="Roda só N perguntas")
     ap.add_argument("--tipo", choices=list(AVALIADORES), help="Roda só um tipo")
+    ap.add_argument(
+        "--pausa", type=float, default=2.0,
+        help="Segundos de pausa entre perguntas para evitar rate limit (default 2.0)",
+    )
     args = ap.parse_args()
 
     itens = carregar_dataset()
@@ -172,6 +191,10 @@ def main() -> int:
         else:
             contagem[tipo]["fail"] += 1
             total_fail += 1
+
+        # espaça as chamadas para não estourar o rate limit do Groq
+        if args.pausa > 0 and i < len(itens):
+            time.sleep(args.pausa)
 
     print(cor("\n" + "=" * 70, BOLD))
     print(cor("RESULTADO POR TIPO", BOLD))

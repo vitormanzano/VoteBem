@@ -208,9 +208,6 @@ curl http://127.0.0.1:8001/health
 ```
 Deve retornar : `# {"status":"ok","model":"llama-3.3-70b-versatile"}`
 
-### 1. Inicializar projeto.
-Na raiz do repositório, execute:
-
 ### Atalho para subir backend e frontend
 
 ** macOS / Linux: **

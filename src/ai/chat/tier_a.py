@@ -11,6 +11,11 @@ from retrieval.tools import TOOL_FUNCTIONS
 
 MAX_TOOL_ITERATIONS = 5
 
+# Tool calling exige um modelo forte: o 8b erra a escolha de ferramenta e a
+# interpretação do resultado (devolve R$ 0,00, conta errado, desiste cedo).
+# Fixamos o 70b só aqui — são poucas chamadas, não pesa no rate limit do chat.
+TIER_A_MODEL = "llama-3.3-70b-versatile"
+
 TOOLS_SCHEMA = [
     {
         "type": "function",
@@ -164,6 +169,7 @@ def run(pergunta: str) -> str:
             tools=TOOLS_SCHEMA,
             temperature=0.1,
             max_tokens=1024,
+            model=TIER_A_MODEL,
         )
         msg = completion.choices[0].message
         tool_calls = getattr(msg, "tool_calls", None) or []
@@ -201,5 +207,6 @@ def run(pergunta: str) -> str:
         tools=None,
         temperature=0.1,
         max_tokens=1024,
+        model=TIER_A_MODEL,
     )
     return (completion.choices[0].message.content or "").strip()
