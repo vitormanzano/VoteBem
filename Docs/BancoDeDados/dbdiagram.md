@@ -124,6 +124,8 @@ Table CERTIDAO_CRIMINAL {
   sq_candidato bigint [not null, ref: > CANDIDATURA.sq_candidato]
   nm_arquivo varchar [not null]
   ds_caminho_arquivo varchar
+  dt_emissao date
+  dt_validade date
 }
 
 Table MOTIVO_CASSACAO {
@@ -148,6 +150,10 @@ Table DESPESA_CANDIDATO {
   ds_fonte_recurso varchar
   ds_especie_recurso varchar
   ds_despesa text
+
+  indexes {
+    (sq_candidato, nr_documento, cpf_cnpj_fornecedor, dt_despesa) [unique]
+  }
 }
 
 Table NOTA_FISCAL {
@@ -166,6 +172,19 @@ Table NOTA_FISCAL {
 
   indexes {
     (cd_eleicao, nr_candidato, sg_uf, nr_nota_fiscal, cpf_cnpj_emitente) [unique]
+  }
+}
+
+Table PROPOSTA_CHUNK {
+  id bigint [primary key, increment]
+  sq_candidato bigint [not null, ref: > CANDIDATURA.sq_candidato]
+  ano_eleicao int [not null]
+  idx int [not null]
+  texto text [not null]
+  embedding "vector(384)" [not null, note: 'pgvector — paraphrase-multilingual-MiniLM-L12-v2']
+
+  indexes {
+    (sq_candidato, idx) [unique]
   }
 }
 

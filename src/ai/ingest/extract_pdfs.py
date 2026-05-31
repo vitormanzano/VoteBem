@@ -26,9 +26,15 @@ from embeddings import embed_batch
 CHUNK_SIZE = 2000      # ~500 tokens
 CHUNK_OVERLAP = 200    # ~50 tokens
 
+# A extração de PDF emite um espaço espúrio logo após os glifos de ligadura
+# (ﬀ ﬁ ﬂ ﬃ ﬄ ﬅ ﬆ — U+FB00..U+FB06), partindo a palavra: "deﬁ nidos".
+# Removemos o espaço antes do NFKC, que depois converte a ligadura em letras.
+_LIGADURA_ESPACO = re.compile(r"([ﬀ-ﬆ])[ \t]+(?=[a-zà-ÿ])")
+
 
 def clean_text(s: str) -> str:
     """Normaliza unicode, remove caracteres de controle, colapsa espaços."""
+    s = _LIGADURA_ESPACO.sub(r"\1", s)
     s = unicodedata.normalize("NFKC", s)
     s = "".join(
         ch for ch in s

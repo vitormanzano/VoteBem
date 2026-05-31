@@ -30,6 +30,7 @@ sys.path.insert(0, str(SRC_AI))
 
 from db import get_connection  # noqa: E402
 from retrieval.vector_search import search_chunks  # noqa: E402
+from chat import tier_b  # noqa: E402  (pipeline real de produção: resolve candidato + filtra)
 
 DATASET = Path(__file__).resolve().parent / "dataset.jsonl"
 
@@ -86,7 +87,31 @@ def resolver_gabarito(candidato_esperado: str) -> dict[str, list[int]]:
     return {n: sq_candidatos_por_nome(n) for n in nomes}
 
 
-def avaliar_item(item: dict, ks: list[int]) -> dict:
+def buscar_chunks(pergunta: str, k_max: int, modo: str) -> list[dict]:
+    """Recupera chunks conforme o modo de avaliação.
+
+    - "global": busca crua entre todos os chunks, sem filtro de candidato
+      (baseline: mede a qualidade pura do embedding).
+    - "pipeline": replica o Tier B de produção — identifica o candidato citado
+      na pergunta e filtra a busca pelos chunks dele (mede o sistema real).
+    """
+    if modo == "global":
+        return search_chunks(pergunta, sq_candidatos=None, k=k_max, min_similarity=0.0)
+
+    # modo "pipeline": replica chat.tier_b.run() — HyDE + extração de nomes,
+    # resolve os candidatos citados e filtra a busca pelos chunks deles.
+    trecho, nomes = tier_b._analyze_query(pergunta)
+    filtro = None
+    if nomes:
+        infos = tier_b._disponibilidade(nomes)
+        sqs_com = [i["sq_candidato"] for i in infos if i["tem_chunks"]]
+        filtro = sqs_com or None
+    # busca pelo trecho hipotético (HyDE), igual ao tier_b; min_similarity=0
+    # para não zerar artificialmente o ranking na avaliação.
+    return search_chunks(trecho, sq_candidatos=filtro, k=k_max, min_similarity=0.0)
+
+
+def avaliar_item(item: dict, ks: list[int], modo: str = "global") -> dict:
     """Mede Hit@K, Recall@K (por candidato) e Precision@K para uma pergunta."""
     pergunta = item["pergunta"]
     esperado_str = item.get("candidato_esperado", "")
@@ -99,7 +124,7 @@ def avaliar_item(item: dict, ks: list[int]) -> dict:
     candidatos_vazios = [n for n, sqs in gabarito.items() if not sqs]
 
     k_max = max(ks)
-    chunks = search_chunks(pergunta, sq_candidatos=None, k=k_max, min_similarity=0.0)
+    chunks = buscar_chunks(pergunta, k_max, modo)
 
     resultado_por_k: dict[int, dict] = {}
     for k in ks:
@@ -138,9 +163,10 @@ def avaliar_item(item: dict, ks: list[int]) -> dict:
     }
 
 
-def imprimir_tabela_agregada(resultados: list[dict], ks: list[int]) -> dict:
+def imprimir_tabela_agregada(resultados: list[dict], ks: list[int], modo: str = "") -> dict:
     """Calcula e imprime médias agregadas. Retorna dict com os números."""
-    print(cor("\nMÉTRICAS AGREGADAS DE RECUPERAÇÃO", BOLD))
+    sufixo = f" — modo {modo}" if modo else ""
+    print(cor(f"\nMÉTRICAS AGREGADAS DE RECUPERAÇÃO{sufixo}", BOLD))
     print(f"{'K':>4}{'Hit@K':>12}{'Recall@K':>14}{'Precision@K':>16}")
     print(cor("-" * 46, CINZA))
 
@@ -164,27 +190,16 @@ def imprimir_tabela_agregada(resultados: list[dict], ks: list[int]) -> dict:
     return agregado
 
 
-def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--k", default="1,3,5,10", help="Valores de K, separados por vírgula")
-    ap.add_argument("--limit", type=int, default=None)
-    ap.add_argument("--json", dest="out_json", default=None)
-    args = ap.parse_args()
-
-    ks = sorted({int(x) for x in args.k.split(",") if x.strip()})
-    itens = carregar_dataset()
-    if args.limit:
-        itens = itens[: args.limit]
-
-    print(cor(f"\n{len(itens)} perguntas tipo=proposta — K={ks}\n", BOLD))
-
+def rodar_modo(itens: list[dict], ks: list[int], modo: str) -> tuple[list[dict], dict, float]:
+    """Avalia todos os itens em um modo. Retorna (resultados, agregado, duracao)."""
+    print(cor(f"\n{'='*60}\nMODO: {modo.upper()}\n{'='*60}", BOLD))
     resultados = []
     inicio = time.time()
 
     for i, item in enumerate(itens, 1):
         print(f"[{i:2d}/{len(itens)}] {item['id']} esperado={cor(item.get('candidato_esperado',''), AMARELO)}")
         try:
-            r = avaliar_item(item, ks)
+            r = avaliar_item(item, ks, modo)
         except Exception as e:  # noqa: BLE001
             print(f"     {cor('FAIL', VERMELHO)} {type(e).__name__}: {e}")
             continue
@@ -201,19 +216,58 @@ def main() -> int:
         print(f"     {' | '.join(marcas)}")
 
     duracao = time.time() - inicio
-    agregado = imprimir_tabela_agregada(resultados, ks)
+    agregado = imprimir_tabela_agregada(resultados, ks, modo)
+    return resultados, agregado, duracao
 
-    print(cor("\nRESUMO", BOLD))
-    print(f"  perguntas avaliadas: {len(resultados)}")
-    print(f"  duração: {duracao:.1f}s ({duracao/max(len(resultados),1):.2f}s/pergunta)")
 
-    if args.out_json:
-        Path(args.out_json).write_text(json.dumps({
-            "ks": ks,
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--k", default="1,3,5,10", help="Valores de K, separados por vírgula")
+    ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--json", dest="out_json", default=None)
+    ap.add_argument(
+        "--modo",
+        choices=["global", "pipeline", "ambos"],
+        default="global",
+        help="global = busca crua (baseline); pipeline = igual ao chatbot "
+             "(resolve candidato + filtra); ambos = roda os dois e compara.",
+    )
+    args = ap.parse_args()
+
+    ks = sorted({int(x) for x in args.k.split(",") if x.strip()})
+    itens = carregar_dataset()
+    if args.limit:
+        itens = itens[: args.limit]
+
+    modos = ["global", "pipeline"] if args.modo == "ambos" else [args.modo]
+
+    print(cor(f"\n{len(itens)} perguntas tipo=proposta — K={ks} — modos={modos}", BOLD))
+
+    saida: dict = {"ks": ks, "por_modo": {}}
+    for modo in modos:
+        resultados, agregado, duracao = rodar_modo(itens, ks, modo)
+        print(cor("\nRESUMO", BOLD))
+        print(f"  modo: {modo}")
+        print(f"  perguntas avaliadas: {len(resultados)}")
+        print(f"  duração: {duracao:.1f}s ({duracao/max(len(resultados),1):.2f}s/pergunta)")
+        saida["por_modo"][modo] = {
             "agregado": agregado,
             "por_item": resultados,
             "duracao_segundos": duracao,
-        }, indent=2, ensure_ascii=False))
+        }
+
+    # comparativo lado a lado quando rodou os dois modos
+    if len(modos) == 2:
+        print(cor("\nCOMPARATIVO global → pipeline (Hit@K)", BOLD))
+        print(f"{'K':>4}{'global':>12}{'pipeline':>12}{'ganho':>10}")
+        print(cor("-" * 38, CINZA))
+        for k in ks:
+            g = saida["por_modo"]["global"]["agregado"].get(k, {}).get("hit", 0) * 100
+            p = saida["por_modo"]["pipeline"]["agregado"].get(k, {}).get("hit", 0) * 100
+            print(f"{k:>4}{g:>11.1f}%{p:>11.1f}%{p-g:>+9.1f}")
+
+    if args.out_json:
+        Path(args.out_json).write_text(json.dumps(saida, indent=2, ensure_ascii=False))
         print(cor(f"\nmétricas salvas em {args.out_json}", CINZA))
 
     print()
